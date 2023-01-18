@@ -1,7 +1,9 @@
 package com.techwhizer.snsbiosystem;
 
+import com.techwhizer.snsbiosystem.util.AppConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.http.Header;
@@ -14,11 +16,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -31,21 +31,41 @@ public class Main extends Application {
     static String to;
     static Map<String, Object> userMap = new HashMap<>();
 
+    public static Stage primaryStage;
+
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
+        primaryStage = stage;
+        Parent root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("auth/login.fxml")));
+        //    stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream(AppConfig.APPLICATION_ICON))));
+        stage.setTitle(AppConfig.APPLICATION_NAME);
+        stage.setMaximized(true);
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("css/main.css")).toExternalForm());
         stage.setScene(scene);
         stage.show();
     }
 
-    private static final String getBasicAuthenticationHeader(String username, String password) {
-        String valueToEncode = username + ":" + password;
-        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
+    public void changeScene(String fxml, String title) {
+
+        try {
+            if (null != primaryStage && primaryStage.isShowing()) {
+                Parent pane = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxml)));
+                primaryStage.getScene().setRoot(pane);
+                primaryStage.setTitle(AppConfig.APPLICATION_NAME + " ( " + title + " ) ");
+                primaryStage.show();
+            }
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
+        launch(args);
+
+    }
+
+    private void auth() {
 
         String url = "http://localhost:8080/v1/auth/authenticate";
 
@@ -82,6 +102,12 @@ public class Main extends Application {
         } catch (Exception e) {
 
         }
+
+    }
+
+    private static final String getBasicAuthenticationHeader(String username, String password) {
+        String valueToEncode = username + ":" + password;
+        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
     private static void sendFile(String token) {
@@ -91,7 +117,7 @@ public class Main extends Application {
 
         File file = new File("D:\\sns\\Sorted Data\\sterilizerSortData.csv");
 
-        try {
+        /*try {
             HttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(url);
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -128,7 +154,7 @@ public class Main extends Application {
         } catch (IOException e) {
 
             System.out.println(e.getMessage());
-        }
+        }*/
 
     }
 

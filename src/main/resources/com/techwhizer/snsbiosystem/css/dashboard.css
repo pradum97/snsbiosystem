@@ -1,0 +1,41 @@
+.menuButton {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button:focused{
+    -fx-border-radius: 4;
+    -fx-background-color: #006666;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.accountButton:focused{
+    -fx-focus-color: transparent;
+}
+
+.button:pressed{
+    -fx-border-radius: 4;
+    -fx-background-color: #006666;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button:focused ImageView {
+    -fx-effect: innershadow( gaussian , #ffffff, 7 , 1 , 1 , 1 );
+}
+
+.button:hover ImageView {
+    -fx-effect: innershadow( gaussian , #ffffff, 7 , 1 , 1 , 1 );
+}
+
+.button:hover{
+    -fx-cursor: hand;
+}
+.dashboardSeparator .line {
+    -fx-background-color: grey;
+    -fx-pref-height: 1;
+    -fx-border-color: null ;
+}
