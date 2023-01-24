@@ -1,75 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="848.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.controller.dashboard.account.MyProfile">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="779.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.controller.profile.MyProfile">
    <center>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" fillWidth="false" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" prefHeight="499.0" prefWidth="742.0" style="-fx-border-color: grey; -fx-border-radius: 5;" VBox.vgrow="ALWAYS">
                <children>
-                  <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                  <HBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
                      <children>
-                        <VBox alignment="CENTER" prefHeight="400.0" prefWidth="220.0" spacing="20.0">
-                           <children>
-                              <VBox alignment="CENTER" prefHeight="170.0" prefWidth="199.0" spacing="20.0">
-                                 <children>
-                                    <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../../img/icon/avtar.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label fx:id="fullNameL" alignment="CENTER" prefHeight="15.0" prefWidth="186.0" textAlignment="CENTER" wrapText="true">
-                                       <font>
-                                          <Font name="Arial Bold" size="12.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets top="150.0" />
-                                 </VBox.margin>
-                              </VBox>
-                              <Separator prefWidth="200.0" />
-                              <VBox alignment="TOP_CENTER">
-                                 <children>
-                                    <Label fx:id="roleMsgL" text="ROLE :">
-                                       <font>
-                                          <Font name="Arial Bold" size="13.0" />
-                                       </font>
-                                    </Label>
-                                    <ListView fx:id="roleLv">
-                                       <VBox.margin>
-                                          <Insets top="5.0" />
-                                       </VBox.margin>
-                                    </ListView>
-                                 </children>
-                              </VBox>
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </VBox>
                         <ScrollPane fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
                            <content>
-                              <VBox alignment="CENTER" spacing="5.0">
+                              <VBox alignment="TOP_CENTER" spacing="5.0">
                                  <children>
-                                    <VBox fx:id="contentContainer" spacing="7.0">
+                                    <VBox fx:id="contentContainer" alignment="TOP_CENTER" spacing="15.0">
                                        <children>
+                                          <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" spacing="20.0">
+                                             <children>
+                                                <VBox prefWidth="216.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                                   <children>
+                                                      <Label text="NAME :">
+                                                         <font>
+                                                            <Font name="Arial Bold" size="13.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets left="3.0" />
+                                                         </VBox.margin>
+                                                      </Label>
+                                                      <Label fx:id="fullNameL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefHeight="29.0" prefWidth="726.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                         <font>
+                                                            <Font name="Arial Bold" size="13.0" />
+                                                         </font>
+                                                         <padding>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </padding>
+                                                      </Label>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                          <ListView fx:id="roleLv" orientation="HORIZONTAL" prefHeight="30.0">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </ListView>
                                           <HBox alignment="CENTER" spacing="20.0">
                                              <children>
-                                                <VBox prefWidth="216.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="CLIENT ID :">
                                                          <font>
@@ -79,7 +65,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="clientIdL" minWidth="130.0" opacity="0.89" prefWidth="209.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="clientIdL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefHeight="30.0" prefWidth="335.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -89,7 +75,7 @@
                                                       </Label>
                                                    </children>
                                                 </VBox>
-                                                <VBox layoutX="10.0" layoutY="10.0" prefWidth="326.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                                <VBox layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="373.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="USERNAME :">
                                                          <font>
@@ -99,7 +85,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="usernameL" minWidth="100.0" opacity="0.89" prefWidth="379.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="usernameL" minHeight="30.0" minWidth="100.0" opacity="0.89" prefHeight="30.0" prefWidth="360.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -113,7 +99,7 @@
                                           </HBox>
                                           <HBox alignment="CENTER" spacing="20.0">
                                              <children>
-                                                <VBox prefWidth="226.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="WORK PHONE NUMBER :">
                                                          <font>
@@ -123,7 +109,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="workPhoneNumberL" minWidth="130.0" opacity="0.89" prefWidth="230.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="workPhoneNumberL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefHeight="29.0" prefWidth="335.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -133,7 +119,7 @@
                                                       </Label>
                                                    </children>
                                                 </VBox>
-                                                <VBox prefWidth="374.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="WORK EMAIL :">
                                                          <font>
@@ -143,7 +129,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="workEmailL" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="workEmailL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -157,7 +143,7 @@
                                           </HBox>
                                           <HBox alignment="CENTER" spacing="20.0">
                                              <children>
-                                                <VBox prefWidth="226.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="COMPANY NAME :">
                                                          <font>
@@ -167,7 +153,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="companyNameL" minWidth="130.0" opacity="0.89" prefWidth="234.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="companyNameL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="335.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -177,7 +163,7 @@
                                                       </Label>
                                                    </children>
                                                 </VBox>
-                                                <VBox prefWidth="370.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="OFFICE CITY :">
                                                          <font>
@@ -187,7 +173,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="officeCityL" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="officeCityL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -201,7 +187,7 @@
                                           </HBox>
                                           <HBox alignment="CENTER" spacing="20.0">
                                              <children>
-                                                <VBox prefWidth="226.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="OFFICE STATE :">
                                                          <font>
@@ -211,7 +197,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="officeStateL" minWidth="130.0" opacity="0.89" prefWidth="230.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="officeStateL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="335.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -221,7 +207,7 @@
                                                       </Label>
                                                    </children>
                                                 </VBox>
-                                                <VBox prefWidth="374.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="OFFICE ZIP :">
                                                          <font>
@@ -231,7 +217,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="officeZipL" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="officeZipL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -255,7 +241,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="officeAddressL" maxHeight="1.7976931348623157E308" minWidth="130.0" opacity="0.89" prefWidth="615.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true" VBox.vgrow="ALWAYS">
+                                                      <Label fx:id="officeAddressL" maxHeight="1.7976931348623157E308" minHeight="30.0" opacity="0.89" prefWidth="734.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true" VBox.vgrow="ALWAYS">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -269,7 +255,7 @@
                                           </HBox>
                                           <HBox alignment="CENTER" spacing="20.0">
                                              <children>
-                                                <VBox prefWidth="226.0" spacing="5.0">
+                                                <VBox spacing="5.0">
                                                    <children>
                                                       <Label text="OFFICE FAX NUMBER :">
                                                          <font>
@@ -279,7 +265,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="officeFaxNumberL" minWidth="130.0" opacity="0.89" prefWidth="230.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="officeFaxNumberL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="335.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -289,7 +275,7 @@
                                                       </Label>
                                                    </children>
                                                 </VBox>
-                                                <VBox prefWidth="374.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="HOME CITY :">
                                                          <font>
@@ -299,7 +285,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="homeCityL" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="homeCityL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -313,9 +299,9 @@
                                           </HBox>
                                           <HBox alignment="CENTER" spacing="20.0">
                                              <children>
-                                                <VBox prefWidth="226.0" spacing="5.0">
+                                                <VBox spacing="5.0">
                                                    <children>
-                                                      <Label text="HOMESTATE :">
+                                                      <Label text="HOME STATE :">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -323,7 +309,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="homeStateL" minWidth="130.0" opacity="0.89" prefWidth="230.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="homeStateL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="335.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -333,7 +319,7 @@
                                                       </Label>
                                                    </children>
                                                 </VBox>
-                                                <VBox prefWidth="374.0" spacing="5.0">
+                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="HOME ZIP :">
                                                          <font>
@@ -343,7 +329,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="homeZipL" minWidth="130.0" opacity="0.89" prefWidth="368.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="homeZipL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefHeight="29.0" prefWidth="370.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -367,7 +353,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="homeAddressL" maxHeight="1.7976931348623157E308" minWidth="130.0" opacity="0.89" prefWidth="615.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="homeAddressL" maxHeight="1.7976931348623157E308" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="734.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -391,7 +377,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <Label fx:id="createdDateL" minWidth="130.0" opacity="0.89" prefWidth="615.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
+                                                      <Label fx:id="createdDateL" minHeight="30.0" minWidth="130.0" opacity="0.89" prefWidth="734.0" style="-fx-border-color: #cccccc; -fx-border-radius: 2;" wrapText="true">
                                                          <font>
                                                             <Font name="Arial Bold" size="13.0" />
                                                          </font>
@@ -408,10 +394,19 @@
                                  </children>
                               </VBox>
                            </content>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
                         </ScrollPane>
                      </children>
                   </HBox>
                </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
             </VBox>
          </children>
       </VBox>
@@ -419,31 +414,6 @@
    <bottom>
       <VBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <HBox fx:id="buttonContainer" alignment="CENTER_RIGHT" spacing="40.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#cancelBn" prefHeight="26.0" prefWidth="159.0" style="-fx-background-color: red; -fx-background-radius: 3;" text="CANCEL" textFill="WHITE">
-                     <font>
-                        <Font name="Arial Bold" size="12.0" />
-                     </font>
-                  </Button>
-                  <Button layoutX="242.0" layoutY="19.0" mnemonicParsing="false" onAction="#updateBnClick" prefHeight="26.0" prefWidth="159.0" style="-fx-background-color: blue; -fx-background-radius: 3;" text="UPDATE" textFill="WHITE">
-                     <font>
-                        <Font name="Arial Bold" size="12.0" />
-                     </font>
-                  </Button>
-                  <Button layoutX="321.0" layoutY="19.0" mnemonicParsing="false" onAction="#changePassword" prefHeight="26.0" prefWidth="159.0" style="-fx-background-color: #006666; -fx-background-radius: 3;" text="CHANGE PASSWORD" textFill="WHITE">
-                     <font>
-                        <Font name="Arial Bold" size="12.0" />
-                     </font>
-                  </Button>
-               </children>
-               <VBox.margin>
-                  <Insets bottom="10.0" top="10.0" />
-               </VBox.margin>
-               <padding>
-                  <Insets right="35.0" />
-               </padding>
-            </HBox>
             <ProgressIndicator fx:id="progressBar" minHeight="25.0" minWidth="25.0">
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
@@ -452,4 +422,7 @@
          </children>
       </VBox>
    </bottom>
+   <padding>
+      <Insets top="5.0" />
+   </padding>
 </BorderPane>

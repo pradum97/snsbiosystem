@@ -115,6 +115,7 @@ public class Login implements Initializable {
 
                     AuthResponse authRes = new Gson().fromJson(content, AuthResponse.class);
                     authInfo.put("auth_response",authRes);
+                    authInfo.put("current_id",authRes.getId());
                     Platform.runLater(()->new Main().changeScene("dashboard.fxml","DASHBOARD"));
                 }else {
                     customDialog.showAlertBox(" Authenticate Failed","Username or Password Incorrect.");

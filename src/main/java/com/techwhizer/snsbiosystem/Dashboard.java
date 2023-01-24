@@ -1,6 +1,8 @@
 package com.techwhizer.snsbiosystem;
 
 import com.google.gson.Gson;
+import com.techwhizer.snsbiosystem.controller.auth.Login;
+import com.techwhizer.snsbiosystem.model.AuthResponse;
 import com.techwhizer.snsbiosystem.model.DashboardModel;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.UrlConfig;
@@ -8,13 +10,16 @@ import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -27,18 +32,23 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Dashboard extends OptionalMethod implements Initializable {
 
     @FXML
     public Button dashboardBn, manageKitBn, manageSterilizerBn, userBn, labBn, accountBn;
     public Button logoutBn;
-    public Label totalUsersL;
-    public Label totalKitsL;
-    public Label totalSterilizerL;
+
+    public Label fullName;
+    public Label username;
+    public StackPane mainContainer;
     @FXML
     ImageView hideIv, showIv;
     public VBox menuContainer, topUserContainer;
@@ -46,11 +56,11 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        userBnClick(null);
         customDialog = new CustomDialog();
         config();
         startThread();
     }
-
 
     private void config() {
         hideElement(showIv);
@@ -135,6 +145,59 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
     }
 
+    public void logoutBnClick(ActionEvent event) {
+
+        ImageView image = new ImageView(new ImageLoader().load("img/icon/warning_ic.png"));
+        image.setFitWidth(45);
+        image.setFitHeight(45);
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Warning ");
+        alert.setGraphic(image);
+        alert.setHeaderText("Are you sure you want to logout?");
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner(Main.primaryStage);
+        Optional<ButtonType> result = alert.showAndWait();
+        ButtonType button = result.orElse(ButtonType.CANCEL);
+        if (button == ButtonType.OK) {
+            new Main().changeScene("auth/login.fxml", "LOGIN HERE");
+            Login.authInfo.clear();
+        } else {
+            alert.close();
+        }
+    }
+
+    private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
+        @Override
+        public void onPreExecute() {
+        }
+
+        @Override
+        public Boolean doInBackground(String... params) {
+            /* Background Thread is running */
+            Platform.runLater(()->{
+                setUserData();
+            });
+
+            return false;
+        }
+
+        @Override
+        public void onPostExecute(Boolean success) {
+        }
+
+        @Override
+        public void progressCallback(Integer... params) {
+        }
+    }
+
+    private void setUserData() {
+
+        AuthResponse authResponse =(AuthResponse) Login.authInfo.get("auth_response");
+        fullName.setText(authResponse.getFirstName()+" "+authResponse.getLastName());
+        username.setText(authResponse.getUserName());
+    }
+
     public void accountBnClick(ActionEvent event) {
         ToggleButton profileBn = new ToggleButton("PROFILE");
         ToggleButton editProfileBn = new ToggleButton("EDIT PROFILE");
@@ -162,75 +225,43 @@ public class Dashboard extends OptionalMethod implements Initializable {
         stage2.setResizable(false);
 
         changePassword.setOnAction(event1 -> customDialog.showFxmlDialog2("auth/changePassword.fxml", ""));
-        editProfileBn.setOnAction(event1 -> customDialog.showFxmlFullDialog("update/user/updateProfile.fxml", ""));
-        profileBn.setOnAction(event12 -> customDialog.showFxmlDialog2("dashboard/account/my_profile.fxml", "PROFILE"));
+        editProfileBn.setOnAction(event1 -> customDialog.showFxmlFullDialog("update/user/createProfile.fxml", ""));
+        profileBn.setOnAction(event12 -> {
+            Long id =(Long) Login.authInfo.get("current_id");
+            Main.primaryStage.setUserData(id);
+            customDialog.showFxmlFullDialog("profile/my_profile.fxml", "PROFILE");
+        });
 
         stage2.showAndWait();
     }
 
-    private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
-        @Override
-        public void onPreExecute() {
-        }
-
-        @Override
-        public Boolean doInBackground(String... params) {
-            /* Background Thread is running */
-
-            Platform.runLater(Dashboard.this::countData);
-            return false;
-        }
-
-        @Override
-        public void onPostExecute(Boolean success) {
-        }
-
-        @Override
-        public void progressCallback(Integer... params) {
-        }
+    public void labBnClick(ActionEvent event) {
+        replaceScene("dashboard/labs.fxml");
     }
 
-    private void countData() {
+    public void userBnClick(ActionEvent event) {
+        replaceScene("dashboard/users.fxml");
+    }
 
-        try {
+    public void sterilizerBnClick(ActionEvent event) {
+        replaceScene("dashboard/sterilizers.fxml");
+    }
 
-            HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
-                    .setCookieSpec("easy").build()).build();
-
-            HttpGet httpPut = new HttpGet(UrlConfig.getDashboardUrl());
-            httpPut.addHeader("Content-Type", "application/json");
-            HttpResponse response = httpClient.execute(httpPut);
-            HttpEntity resEntity = response.getEntity();
-            if (resEntity != null) {
-                String content = EntityUtils.toString(resEntity);
-                int statusCode = response.getStatusLine().getStatusCode();
-
-                DashboardModel dash = new Gson().fromJson(content, DashboardModel.class);
-
-                totalUsersL.setText(String.valueOf(dash.getTotalUsers()));
-                totalKitsL.setText(String.valueOf(dash.getTotalKits()));
-                totalSterilizerL.setText(String.valueOf(dash.getTotalSterilizers()));
-            }
-
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
-            alert.setTitle("Failed");
-            alert.setHeaderText(e.getCause().getMessage());
-            alert.initOwner(Main.primaryStage);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            ButtonType button = result.orElse(ButtonType.CANCEL);
-
-            if (button == ButtonType.OK) {
-                new Main().changeScene("auth/login.fxml", "LOGIN");
-            }
-
-            alert.showAndWait();
-        }
+    public void dashboardBnClick(ActionEvent event) {
+        replaceScene("dashboard/home.fxml");
     }
 
     public void manageKitBnClick(ActionEvent event) {
+        replaceScene("dashboard/kits.fxml");
+    }
 
+    private void replaceScene(String fxml_file_name) {
+        try {
+            Parent parent = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxml_file_name)));
+            mainContainer.getChildren().removeAll();
+            mainContainer.getChildren().setAll(parent);
+        } catch (IOException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+        }
     }
 }

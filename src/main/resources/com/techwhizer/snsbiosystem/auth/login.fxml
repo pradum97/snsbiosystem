@@ -79,7 +79,7 @@
       
                               <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="316.0">
       
-                                  <Button alignment="CENTER_RIGHT" focusTraversable="false" onAction="#forget_password_bn" prefHeight="26.0" prefWidth="153.0" style=" -fx-cursor: hand;-fx-background-color: white;" text="FORGOT PASSWORD?" textAlignment="CENTER" textFill="#ff0202">
+                                  <Button alignment="CENTER_RIGHT" focusTraversable="false" onAction="#forget_password_bn" prefHeight="26.0" prefWidth="153.0" style="-fx-background-color: white;" text="FORGOT PASSWORD?" textAlignment="CENTER" textFill="#ff0202">
                                       <font>
                                           <Font name="Arial Bold" size="11.0" />
                                       </font>

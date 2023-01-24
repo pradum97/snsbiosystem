@@ -56,12 +56,12 @@ public class CustomDialog {
     }
 
     public void showAlertBox(String title, String message) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
             alert.setTitle(title);
             alert.setHeaderText(message);
-           alert.initOwner(Main.primaryStage);
+            alert.initOwner(Main.primaryStage);
             alert.showAndWait();
 
         });
@@ -99,10 +99,9 @@ public class CustomDialog {
 
     }
 
-    public void showFxmlFullDialog(String fxml_file, String title) {
+    public Parent showFxmlFullDialog(String fxml_file, String title) {
 
         try {
-
             Parent root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource(fxml_file)));
             stage3 = new Stage();
             stage3.getIcons().add((new ImageLoader().load(AppConfig.APPLICATION_ICON)));
@@ -122,8 +121,11 @@ public class CustomDialog {
 
             stage3.showAndWait();
 
+            return root;
+
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 

@@ -3,7 +3,6 @@ package com.techwhizer.snsbiosystem.util;
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.controller.auth.Login;
 import com.techwhizer.snsbiosystem.model.RolesModel;
-import javafx.collections.ObservableList;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,6 +11,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import java.util.HashMap;
 
 public class Role {
 
@@ -31,7 +32,15 @@ public class Role {
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
 
-                return new Gson().fromJson(content, RolesModel.class);
+                HashMap<String,Object> map = new Gson().fromJson(content, HashMap.class);
+                RolesModel rm = new RolesModel();
+
+                rm.setAdmin(map.get("Admin").toString());
+                rm.setDealer(map.get("Dealer").toString());
+                rm.setDoctor(map.get("Doctor").toString());
+                rm.setPatient(map.get("Patient").toString());
+
+                return rm;
             }else {
                 return null;
             }

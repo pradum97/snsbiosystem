@@ -1,12 +1,13 @@
 package com.techwhizer.snsbiosystem.util;
 
 import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.model.UserDTO;
+import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.skin.TableHeaderRow;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +20,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class OptionalMethod {
+
+    public void customColumn(TableColumn columnName) {
+
+        columnName.setCellFactory(tc -> {
+            TableCell cell = new TableCell<>();
+            Text text = new Text();
+            text.setStyle("-fx-font-size: 14");
+            cell.setGraphic(text);
+            text.setStyle("-fx-text-alignment: CENTER ;");
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(columnName.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell;
+        });
+    }
+
 
     public ProgressIndicator getProgressBar(double height , double width){
         ProgressIndicator pi = new ProgressIndicator();

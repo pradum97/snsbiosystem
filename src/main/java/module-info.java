@@ -8,25 +8,26 @@ module com.techwhizer.snsbiosystem {
     requires jfx.asynctask;
     requires javafx.graphics;
     requires com.google.gson;
-
-
+    requires java.logging;
 
 
     opens com.techwhizer.snsbiosystem to javafx.fxml;
     exports com.techwhizer.snsbiosystem;
+    opens com.techwhizer.snsbiosystem.custom_enum to javafx.fxml;
+    exports com.techwhizer.snsbiosystem.custom_enum;
 
-    opens com.techwhizer.snsbiosystem.controller.dashboard.account to javafx.fxml;
-    exports com.techwhizer.snsbiosystem.controller.dashboard.account ;
 
     opens com.techwhizer.snsbiosystem.controller.auth to com.google.gson;
     exports com.techwhizer.snsbiosystem.controller.auth;
 
-    opens com.techwhizer.snsbiosystem.controller.update.user to com.google.gson;
-    exports com.techwhizer.snsbiosystem.controller.update.user;
+    opens com.techwhizer.snsbiosystem.controller.dashboard to com.google.gson;
+    exports com.techwhizer.snsbiosystem.controller.dashboard;
 
     opens com.techwhizer.snsbiosystem.model to com.google.gson;
-    exports com.techwhizer.snsbiosystem.model to com.google.gson;
+    exports com.techwhizer.snsbiosystem.model;
 
+    exports com.techwhizer.snsbiosystem.controller.profile;
+    opens com.techwhizer.snsbiosystem.controller.profile to com.google.gson, javafx.fxml;
 
 
 }

@@ -1,5 +1,7 @@
 package com.techwhizer.snsbiosystem;
 
+import com.google.gson.Gson;
+import com.techwhizer.snsbiosystem.model.UserDTO;
 import com.techwhizer.snsbiosystem.util.AppConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,12 +27,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main extends Application {
-
-    static String username = "snsadmin";
-    static String password = "snsadmin";
-    static String to;
-    static Map<String, Object> userMap = new HashMap<>();
-
     public static Stage primaryStage;
 
     @Override
@@ -65,50 +61,6 @@ public class Main extends Application {
 
     }
 
-    private void auth() {
-
-        String url = "http://localhost:8080/v1/auth/authenticate";
-
-        HttpClient httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec("easy")
-                        .build()).build();
-
-        HttpGet httpPost = new HttpGet(url);
-        httpPost.addHeader("Content-Type", "application/json");
-        httpPost.addHeader("Authorization", getBasicAuthenticationHeader(username, password));
-
-        try {
-            HttpResponse response = httpClient.execute(httpPost);
-            HttpEntity resEntity = response.getEntity();
-
-            if (resEntity != null) {
-                String content = EntityUtils.toString(resEntity);
-                Header[] headers = response.getHeaders("Set-Cookie");
-                String token = headers[0].getValue();
-
-                to = token;
-
-                userMap.put("token",token);
-                userMap.put("basic_auth_header",getBasicAuthenticationHeader(username, password));
-                userMap.put("user_data",content);
-                sendFile(token);
-
-                //   System.out.println(content);
-                //  JSONObject jo = new JSONObject(content);
-
-            }
-
-        } catch (Exception e) {
-
-        }
-
-    }
-
-    private static final String getBasicAuthenticationHeader(String username, String password) {
-        String valueToEncode = username + ":" + password;
-        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
-    }
 
     private static void sendFile(String token) {
 

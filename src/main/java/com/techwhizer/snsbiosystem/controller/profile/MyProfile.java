@@ -1,9 +1,9 @@
-package com.techwhizer.snsbiosystem.controller.dashboard.account;
+package com.techwhizer.snsbiosystem.controller.profile;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.controller.auth.Login;
-import com.techwhizer.snsbiosystem.model.AuthResponse;
 import com.techwhizer.snsbiosystem.model.User;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.UrlConfig;
@@ -31,7 +31,6 @@ import java.util.ResourceBundle;
 
 public class MyProfile implements Initializable {
     public ListView<String> roleLv;
-    public Label fullNameL, roleMsgL;
     public Label clientIdL;
     public Label usernameL;
     public Label workPhoneNumberL;
@@ -47,78 +46,58 @@ public class MyProfile implements Initializable {
     public Label homeZipL;
     public Label homeAddressL;
     public Label createdDateL;
-    public HBox buttonContainer;
     public VBox contentContainer;
     public ProgressIndicator progressBar;
+    public Label fullNameL;
     private OptionalMethod method;
     private CustomDialog customDialog;
-
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
 
-        method.hideElement(buttonContainer);
+        method.hideElement(roleLv);
         contentContainer.setDisable(true);
         progressBar.setVisible(true);
 
-        MyAsyncTask myAsyncTask = new MyAsyncTask();
+      Long id = (Long) Main.primaryStage.getUserData();
+
+        MyAsyncTask myAsyncTask = new MyAsyncTask(id);
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();
     }
-
-    public void cancelBn(ActionEvent event) {
-        Stage stage =(Stage) clientIdL.getScene().getWindow();
-        if (null != stage && stage.isShowing()){
-            stage.close();
-        }
-
-    }
-
-    public void updateBnClick(ActionEvent event) {
-        customDialog.showFxmlFullDialog("update/user/updateProfile.fxml","");
-    }
-
-    public void changePassword(ActionEvent event) {
-        customDialog.showFxmlDialog2("auth/changePassword.fxml","");
-    }
-
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
-
+        private Long id;
+        public MyAsyncTask(Long id) {
+            this.id = id;
+        }
         @Override
         public void onPreExecute() {
-
 
         }
 
         @Override
         public Boolean doInBackground(String... params) {
-
-            getUserProfile();
+            getUserProfile(id);
             return false;
-
         }
 
         @Override
         public void onPostExecute(Boolean success) {
             method.hideElement(progressBar);
-            buttonContainer.setVisible(true);
             contentContainer.setDisable(false);
         }
 
         @Override
         public void progressCallback(Integer... params) {
 
-
         }
     }
 
-    private void getUserProfile() {
+    private void getUserProfile(Long id) {
 
        String token = (String) Login.authInfo.get("token");
-       Long id = ((AuthResponse) Login.authInfo.get("auth_response")).getId();
 
         try {
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
@@ -137,18 +116,24 @@ public class MyProfile implements Initializable {
 
         } catch (Exception e) {
             method.hideElement(progressBar);
-            buttonContainer.setVisible(true);
             contentContainer.setDisable(false);
             customDialog.showAlertBox("Failed", "Something went wrong. Please try again");
             throw new RuntimeException(e);
         }
 
     }
-
     private void setUserDetails(User user) {
 
-        fullNameL.setText(user.getFirstName() + " " + user.getLastName());
+        String name;
 
+        if (user.getFirstName().isEmpty() &&
+                user.getLastName().isEmpty()){
+            name = "";
+        }else {
+            name = user.getFirstName() + " " + user.getLastName();
+        }
+
+        fullNameL.setText(name);
         clientIdL.setText(String.valueOf(user.getClientID()));
         usernameL.setText(user.getRequestedLoginName());
         workPhoneNumberL.setText(user.getWorkPhoneNumber());
@@ -157,19 +142,12 @@ public class MyProfile implements Initializable {
         officeCityL.setText(user.getOfficeCity());
         officeStateL.setText(user.getOfficeState());
         officeZipL.setText(user.getOfficeZip());
-        officeAddressL.setText(user.getOfficeAddress()+user.getOfficeAddress()+user.getOfficeAddress()+user.getOfficeAddress());
+        officeAddressL.setText(user.getOfficeAddress());
         officeFaxNumberL.setText(user.getOfficeFaxNumber());
         homeStateL.setText(user.getHomeState());
         homeCityL.setText(user.getHomeCity());
         homeZipL.setText(user.getHomeZip());
-        homeAddressL.setText(user.getHomeAddress()+user.getOfficeAddress()+user.getOfficeAddress()+user.getOfficeAddress());
+        homeAddressL.setText(user.getHomeAddress());
         createdDateL.setText(String.valueOf(user.getCreatedDate()));
-
-        if (user.getRoles().size() > 1) {
-            roleMsgL.setText("ROLES : ");
-        } else {
-            roleMsgL.setText("ROLE : ");
-        }
-        roleLv.setItems(FXCollections.observableArrayList(user.getRoles()));
     }
 }

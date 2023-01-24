@@ -1,1 +1,10 @@
-password status check while login , ex-pending password
+stop previous running server
+
+step-1:netstat -a -o -n
+step-2:taskkill /F /PID<PID NUM>
+
+
+prefaredMethodForReportSharing
+
+
+
