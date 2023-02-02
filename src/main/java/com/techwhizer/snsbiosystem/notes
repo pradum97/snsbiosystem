@@ -1,10 +1,23 @@
 stop previous running server
-
 step-1:netstat -a -o -n
 step-2:taskkill /F /PID<PID NUM>
+******************************************************************
+
+row per page disable is. data is not available
+
+auto load table data data after 20 row
+filter and shorting
+pagination in notice
+view notice
 
 
-prefaredMethodForReportSharing
+logout button background change
+
+kit usages test result update
+
+change "-" to N/A in table view
 
 
-
+question
+search type- contain or equal
+token expire

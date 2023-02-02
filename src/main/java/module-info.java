@@ -9,6 +9,7 @@ module com.techwhizer.snsbiosystem {
     requires javafx.graphics;
     requires com.google.gson;
     requires java.logging;
+    requires java.sql;
 
 
     opens com.techwhizer.snsbiosystem to javafx.fxml;
@@ -16,18 +17,40 @@ module com.techwhizer.snsbiosystem {
     opens com.techwhizer.snsbiosystem.custom_enum to javafx.fxml;
     exports com.techwhizer.snsbiosystem.custom_enum;
 
+    opens com.techwhizer.snsbiosystem.dialog to javafx.fxml;
+    exports com.techwhizer.snsbiosystem.dialog;
 
-    opens com.techwhizer.snsbiosystem.controller.auth to com.google.gson;
-    exports com.techwhizer.snsbiosystem.controller.auth;
+    opens com.techwhizer.snsbiosystem.notice.contorller to javafx.fxml;
+    exports com.techwhizer.snsbiosystem.notice.contorller;
 
-    opens com.techwhizer.snsbiosystem.controller.dashboard to com.google.gson;
-    exports com.techwhizer.snsbiosystem.controller.dashboard;
+    opens com.techwhizer.snsbiosystem.notice.model to com.google.gson;
+    exports com.techwhizer.snsbiosystem.notice.model;
 
-    opens com.techwhizer.snsbiosystem.model to com.google.gson;
-    exports com.techwhizer.snsbiosystem.model;
 
-    exports com.techwhizer.snsbiosystem.controller.profile;
-    opens com.techwhizer.snsbiosystem.controller.profile to com.google.gson, javafx.fxml;
+    opens com.techwhizer.snsbiosystem.user.controller.auth to com.google.gson;
+    exports com.techwhizer.snsbiosystem.user.controller.auth;
+
+    opens com.techwhizer.snsbiosystem.sterilizer.model to com.google.gson;
+    exports com.techwhizer.snsbiosystem.sterilizer.model;
+
+    opens com.techwhizer.snsbiosystem.kit.model to com.google.gson;
+    exports com.techwhizer.snsbiosystem.kit.model ;
+
+    opens com.techwhizer.snsbiosystem.kit.controller to com.google.gson;
+    exports com.techwhizer.snsbiosystem.kit.controller ;
+
+    exports com.techwhizer.snsbiosystem.user.model;
+    opens com.techwhizer.snsbiosystem.user.model to com.google.gson;
+    exports com.techwhizer.snsbiosystem.user.controller;
+    opens com.techwhizer.snsbiosystem.user.controller to com.google.gson, javafx.fxml;
+    exports com.techwhizer.snsbiosystem.dashboard.controller;
+    opens com.techwhizer.snsbiosystem.dashboard.controller to com.google.gson;
+    exports com.techwhizer.snsbiosystem.dashboard.model;
+    opens com.techwhizer.snsbiosystem.dashboard.model to com.google.gson;
+    exports com.techwhizer.snsbiosystem.sterilizer.controller;
+    opens com.techwhizer.snsbiosystem.sterilizer.controller to com.google.gson;
+    exports com.techwhizer.snsbiosystem.kit.controller.kitusage;
+    opens com.techwhizer.snsbiosystem.kit.controller.kitusage to com.google.gson;
 
 
 }

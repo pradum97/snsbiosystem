@@ -5,7 +5,11 @@
     -fx-font-weight: bold;
 }
 
-.button:focused{
+.button {
+    -fx-cursor: hand;
+}
+
+.menuButton:focused{
     -fx-border-radius: 4;
     -fx-background-color: #006666;
     -fx-text-fill: white;
@@ -15,16 +19,7 @@
     -fx-focus-color: transparent;
 }
 
-
-.button:focused ImageView {
-    -fx-effect: innershadow( gaussian , #ffffff, 7 , 1 , 1 , 1 );
-}
-
-.button:hover ImageView {
-    -fx-effect: innershadow( gaussian , #ffffff, 7 , 1 , 1 , 1 );
-}
-
-.button:hover{
+.accountButton{
     -fx-cursor: hand;
 }
 .dashboardSeparator .line {

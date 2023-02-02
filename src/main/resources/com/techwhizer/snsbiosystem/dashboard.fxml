@@ -15,7 +15,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@css/dashboard.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.Dashboard">
+<BorderPane stylesheets="@css/dashboard.css" xmlns="http://javafx.com/javafx/19"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.Dashboard">
    <left>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -106,11 +107,11 @@
                                                 <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Button>
-                                          <Button fx:id="labBn" alignment="TOP_CENTER" graphicTextGap="7.0" layoutX="10.0" layoutY="154.0" mnemonicParsing="false" onAction="#labBnClick" styleClass="menuButton" text="LAB" textAlignment="CENTER" textFill="WHITE">
+                                          <Button fx:id="noticeBn" alignment="TOP_CENTER" graphicTextGap="7.0" layoutX="10.0" layoutY="154.0" mnemonicParsing="false" onAction="#noticeBnClick" styleClass="menuButton" text="NOTICE" textAlignment="CENTER" textFill="WHITE">
                                              <graphic>
                                                 <ImageView fitHeight="19.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@img/menu_icon/lab_ic.png" />
+                                                      <Image url="@img/icon/notice_ic.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>

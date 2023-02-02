@@ -1,13 +1,16 @@
 package com.techwhizer.snsbiosystem;
 
 
-import com.techwhizer.snsbiosystem.util.AppConfig;
+import com.techwhizer.snsbiosystem.app.AppConfig;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -20,6 +23,7 @@ public class CustomDialog {
     public static Stage stage;
     public static Stage stage2;
     public static Stage stage3;
+    Alert alert ;
     private Modality NONE = Modality.NONE;
 
     public void showFxmlDialog(String fxml_file, String title) {
@@ -55,17 +59,43 @@ public class CustomDialog {
 
     }
 
-    public void showAlertBox(String title, String message) {
+    public Alert showAlertBox(String title, String message) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
+            alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle(title);
             alert.setHeaderText(message);
             alert.initOwner(Main.primaryStage);
             alert.showAndWait();
-
         });
 
+        return alert;
+    }
+
+    public Alert showAlertBox(String title, String message,String content) {
+        Platform.runLater(() -> {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(title);
+            alert.setHeaderText(message);
+            alert.setContentText(content);
+            alert.initOwner(Main.primaryStage);
+            alert.showAndWait();
+        });
+
+        return alert;
+    }
+
+    public void showFullAlertBox(String title, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            TextArea area = new TextArea(message);
+            area.setWrapText(true);
+            area.setEditable(false);
+            area.setStyle("-fx-font-size: 15;-fx-text-fill: black;-fx-background-color: white;text-replace: false;");
+            alert.getDialogPane().setContent(area);
+            alert.setTitle(title);
+            alert.initOwner(Main.primaryStage);
+            alert.showAndWait();
+        });
     }
 
     public void showFxmlDialog2(String fxml_file, String title) {

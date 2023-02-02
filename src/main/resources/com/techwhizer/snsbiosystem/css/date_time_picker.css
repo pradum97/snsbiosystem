@@ -1,0 +1,9 @@
+.popupContent {
+    -fx-font-weight: bold;
+    -fx-font-size: 15;
+}
+
+.popupContent .day-name-cell {
+    -fx-font-size: 15;
+    -fx-padding: 1px;
+}

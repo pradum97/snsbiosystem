@@ -11,8 +11,6 @@ public class TaskSample {
         MyAsyncTask myAsyncTask = new MyAsyncTask();
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();
-
-
     }
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
 
@@ -31,7 +29,6 @@ public class TaskSample {
         @Override
         public void onPostExecute(Boolean success) {
         }
-
         @Override
         public void progressCallback(Integer... params) {
 

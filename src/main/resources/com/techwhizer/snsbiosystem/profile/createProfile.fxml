@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
@@ -14,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="670.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.controller.profile.CreateProfile">
+<BorderPane prefHeight="645.0" prefWidth="870.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.user.controller.CreateProfile">
 
     <center>
       <VBox fx:id="contentContainer" alignment="CENTER" fillWidth="false">
@@ -150,6 +151,19 @@
                                                       </TextField>
                                                   </children>
                                               </VBox>
+                                    <VBox layoutX="14.0" layoutY="10.0" prefWidth="280.0" spacing="5.0">
+                                       <children>
+                                          <Label text="REPORT SHARING METHOD :">
+                                             <font>
+                                                <Font name="Arial Bold" size="13.0" />
+                                             </font>
+                                             <VBox.margin>
+                                                <Insets left="3.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <ComboBox fx:id="sharingMethodCom" minHeight="33.0" prefHeight="30.0" prefWidth="278.0" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;" />
+                                       </children>
+                                    </VBox>
                                           </children>
                                  <padding>
                                     <Insets left="4.0" right="4.0" />
@@ -392,7 +406,7 @@
                                                 <Insets left="3.0" />
                                              </VBox.margin>
                                           </Label>
-                                          <HBox fx:id="roleContainer" alignment="CENTER" minHeight="45.0" prefWidth="200.0" spacing="50.0" style="-fx-border-color: #b3b3b3; -fx-border-radius: 2;">
+                                          <HBox alignment="CENTER" minHeight="45.0" prefWidth="200.0" spacing="50.0" style="-fx-border-color: #b3b3b3; -fx-border-radius: 2;">
                                              <VBox.margin>
                                                 <Insets left="5.0" right="5.0" />
                                              </VBox.margin>
@@ -422,16 +436,16 @@
                               </HBox>
                               <HBox alignment="CENTER" layoutX="10.0" layoutY="596.0" spacing="80.0">
                                  <children>
-                                    <Button layoutX="275.0" layoutY="10.0" mnemonicParsing="false" onAction="#cancelBnClick" prefHeight="26.0" prefWidth="142.0" style="-fx-background-color: red; -fx-background-radius: 3;" text="CANCEL" textFill="WHITE">
+                                    <Button layoutX="275.0" layoutY="10.0" mnemonicParsing="false" onAction="#cancelBnClick" prefHeight="30.0" prefWidth="142.0" styleClass="previewCancelButton" text="CANCEL" textFill="WHITE">
                                        <font>
-                                          <Font name="Arial Bold" size="12.0" />
+                                          <Font name="Arial Bold" size="13.0" />
                                        </font>
                                     </Button>
                                     <HBox alignment="CENTER">
                                        <children>
-                                          <Button fx:id="submitBn" mnemonicParsing="false" onAction="#submitBnClick" prefHeight="26.0" prefWidth="142.0" style="-fx-background-color: #006666; -fx-background-radius: 3;" text="UPDATE" textFill="WHITE">
+                                          <Button fx:id="submitBn" mnemonicParsing="false" onAction="#submitBnClick" prefHeight="30.0" prefWidth="142.0" styleClass="previewsubmitButton" text="UPDATE" textFill="WHITE">
                                              <font>
-                                                <Font name="Arial Bold" size="12.0" />
+                                                <Font name="Arial Bold" size="13.0" />
                                              </font>
                                           </Button>
                                           <ProgressIndicator fx:id="progressBar" minHeight="35.0" minWidth="35.0" />
@@ -439,7 +453,7 @@
                                     </HBox>
                                  </children>
                                  <VBox.margin>
-                                    <Insets bottom="15.0" top="10.0" />
+                                    <Insets bottom="15.0" top="20.0" />
                                  </VBox.margin>
                                  <padding>
                                     <Insets left="4.0" right="4.0" />

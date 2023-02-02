@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.controller.auth.Login">
+<VBox alignment="CENTER" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.user.controller.auth.Login">
 
 
     <VBox maxHeight="700" maxWidth="500.0" prefHeight="518.0" prefWidth="565.0" style="-fx-background-color: #ffffff; -fx-background-radius: 4; -fx-border-radius: 4; -fx-padding: 8; -fx-border-color: grey;">

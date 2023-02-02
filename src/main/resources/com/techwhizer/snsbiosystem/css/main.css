@@ -5,11 +5,20 @@
     -fx-text-fill: black;
 }
 
-#roleListView{
+.date-time-picker {
+    -fx-font-size: 18pt;
+    -fx-font-weight: bold;
+}
+
+.date-time-picker .day-name-cell {
+    -fx-padding: 10px;
+}
+
+#roleListView {
     -fx-alignment: center_left;
 }
 
-#filterByCom,#sortByCom,#searchByCom {
+#filterByCom, #sortByCom, #searchByCom, #roleCom {
     -fx-text-fill: #f0f0f0;
     -fx-text-inner-color: #000;
     -fx-font-weight: bold;
@@ -17,25 +26,38 @@
     -fx-alignment: center;
 }
 
-
 #roleLv.list-view {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-radius: 3;
 }
 
+.previewCancelButton {
+    -fx-background-color: red;
+    -fx-border-radius: 30;
+    -fx-background-radius: 30;
+    -fx-alignment: center;
+    -fx-padding: 5 0 5 0;
+    -fx-cursor: hand;
+}
+
+.previewsubmitButton {
+    -fx-background-color: blue;
+    -fx-border-radius: 3;
+    -fx-background-radius: 30;
+    -fx-alignment: center;
+    -fx-padding: 5 0 5 0;
+    -fx-cursor: hand;
+}
+
 .button {
     -fx-cursor: hand;
 }
 
-/*.button:focused {
-   -fx-font-weight: bold
-}*/
-
-
-.menu .label {
+.menu.label {
     -fx-text-fill: black;
 }
+
 .context-menu {
     -fx-background-color: red;
     -fx-border-color: red;
@@ -137,15 +159,6 @@
     -fx-cell-size: 50px;
     -fx-alignment: center;
 }
-
-/*.table-view .table-cell:odd {
-    -fx-background-color: #d5d7d9;
-    -fx-cursor: hand;
-}
-.table-view .table-cell:even {
-    -fx-background-color: white;
-    -fx-cursor: hand;
-}*/
 .table-view{
   -fx-background-color: white;
 }
