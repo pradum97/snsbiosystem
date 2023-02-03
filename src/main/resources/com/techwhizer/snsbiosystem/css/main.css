@@ -1,4 +1,4 @@
-#roleLv .list-cell {
+#roleLv .list-cell{
     -fx-focus-traversable: false;
     -fx-font-weight: bold;
     -fx-background-color: transparent;
@@ -16,9 +16,13 @@
 
 #roleListView {
     -fx-alignment: center_left;
+    -fx-selection-bar:white ;
+    -fx-selection-bar-non-focused: white ;
+    -fx-background-color: white;
+    -fx-control-inner-background: white ;
 }
 
-#filterByCom, #sortByCom, #searchByCom, #roleCom {
+#filterByRoleCom, #sortByCom, #searchByCom, #roleCom {
     -fx-text-fill: #f0f0f0;
     -fx-text-inner-color: #000;
     -fx-font-weight: bold;

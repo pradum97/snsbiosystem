@@ -5,7 +5,6 @@ import com.techwhizer.snsbiosystem.kit.constants.KitUsageSearchType;
 import com.techwhizer.snsbiosystem.sterilizer.constants.SterilizerSearchType;
 import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
 import com.techwhizer.snsbiosystem.user.constant.SterilizerType;
-import com.techwhizer.snsbiosystem.user.constant.UserRole;
 import com.techwhizer.snsbiosystem.user.constant.UserSearchFilters;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,15 +33,6 @@ public class LocalDb {
         return FXCollections.observableArrayList(UserSearchFilters.CLIENT_ID,UserSearchFilters.NAME,
                 UserSearchFilters.EMAIL,UserSearchFilters.PHONE,UserSearchFilters.ADDRESS,UserSearchFilters.USERNAME);
     }
-    public ObservableList<String> getFilterType() {
-        return FXCollections.observableArrayList(UserRole.ALL,UserRole.ROLE_ADMIN, UserRole.ROLE_DEALER,
-                UserRole.ROLE_DOCTOR, UserRole.ROLE_PATIENT);
-    }
-    public ObservableList<String> getRoleType() {
-        return FXCollections.observableArrayList(UserRole.ROLE_ADMIN, UserRole.ROLE_DEALER,
-                UserRole.ROLE_DOCTOR, UserRole.ROLE_PATIENT);
-    }
-
 
     public ObservableList<String> getSterilizerType() {
 

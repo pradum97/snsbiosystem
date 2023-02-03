@@ -57,12 +57,16 @@
                             <children>
                                 <HBox alignment="CENTER" spacing="20.0">
                                     <children>
-                                        <ImageView fx:id="refreshBn" fitHeight="27.0" fitWidth="27.0" onMouseClicked="#refreshClick" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
-                                            <image>
-                                                <Image url="@../img/icon/refresh_ic_red.png" />
-                                            </image>
-                                        </ImageView>
-                                        <Button graphicTextGap="8.0" minWidth="175.0" mnemonicParsing="false" onAction="#uploadSterilizerBnClick" prefHeight="27.0" prefWidth="175.0" style="-fx-background-color: #006666; -fx-border-radius: 2;" text="UPLOAD STERILIZER" textFill="WHITE">
+                              <Button mnemonicParsing="false" onMouseClicked="#refreshClick">
+                                 <graphic>
+                                              <ImageView fx:id="refreshBn" fitHeight="22.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                                                  <image>
+                                                      <Image url="@../img/icon/refresh_ic_red.png" />
+                                                  </image>
+                                              </ImageView>
+                                 </graphic>
+                              </Button>
+                                        <Button graphicTextGap="8.0" minWidth="175.0" mnemonicParsing="false" onAction="#uploadSterilizerBnClick" prefHeight="27.0" prefWidth="175.0" style="-fx-background-color: #660033; -fx-border-radius: 2;" text="UPLOAD STERILIZER" textFill="WHITE">
                                             <font>
                                                 <Font name="Arial" size="12.0" />
                                             </font>
@@ -115,10 +119,10 @@
                     <columns>
                         <TableColumn fx:id="colSlNum" editable="false" maxWidth="60.0" minWidth="40.0" text="SL #" />
                         <TableColumn fx:id="colSterilizerId" editable="false" maxWidth="200.0" minWidth="150.0" text="STERILIZER ID" />
-                        <TableColumn fx:id="colSterilizerType" editable="false" maxWidth="220.0" minWidth="200.0" text="STERILIZER TYPE" />
-                        <TableColumn fx:id="colSterilizerBrand" editable="false" minWidth="300.0" text="STERILIZER BRAND" />
-                        <TableColumn fx:id="colSterilizerSerialNumber" editable="false" maxWidth="350.0" minWidth="300.0" text="STERILIZER SERIAL NUMBER" />
-                        <TableColumn fx:id="colSterilizerListNumber" editable="false" maxWidth="220.0" minWidth="200.0" text="STERILIZER LIST NUMBER" />
+                        <TableColumn fx:id="colSterilizerType" editable="false" maxWidth="200.0" minWidth="190.0" text="STERILIZER TYPE" />
+                        <TableColumn fx:id="colSterilizerBrand" editable="false" maxWidth="270.0" minWidth="250.0" prefWidth="-1.0" text="STERILIZER BRAND" />
+                        <TableColumn fx:id="colSterilizerSerialNumber" editable="false" maxWidth="230.0" minWidth="230.0" text="STERILIZER SERIAL NUMBER" />
+                        <TableColumn fx:id="colSterilizerListNumber" editable="false" maxWidth="200.0" minWidth="190.0" text="STERILIZER LIST NUMBER" />
                         <TableColumn fx:id="colAction" editable="false" maxWidth="240.0" minWidth="240.0" text="ACTION" />
                     </columns>
                     <columnResizePolicy>
@@ -129,7 +133,7 @@
         </VBox>
     </center>
     <bottom>
-        <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="paginationContainer" alignment="CENTER" disable="true" spacing="20.0" BorderPane.alignment="CENTER">
             <children>
             <VBox>
                <children>

@@ -17,13 +17,28 @@ public class CommonUtility {
     public final static String ORDER_ASC = "ASCENDING";
     public final static String ORDER_DESC = "DESCENDING";
 
+    public static String getCutText(String text){
+
+        int maxLength = 180;
+        String str = "";
+
+        if (text.length() > 180){
+            str  = text.substring(0,maxLength)+"...";
+        }else {
+            str = text ;
+        }
+
+        return str;
+    }
+
     public static ObservableList<String> orderList = FXCollections.observableArrayList(ORDER_ASC, ORDER_DESC);
     public static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATEPICKER_DATE_FORMAT);
     public static DateTimeFormatter dateTimeFormator = DateTimeFormatter.ofPattern(DATE_FORMAT);
     public static HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
             .setCookieSpec("easy").build()).build();
 
-    public final static String TABLE_EMPTY_LABEL = "N/A";
+    public final static String EMPTY_LABEL_FOR_TABLE = "N/A";
+    public final static String ALL = "ALL";
 
     public static String parserOrder(String str) {
         String order = null;

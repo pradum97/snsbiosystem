@@ -65,6 +65,7 @@ public class PreviewKits implements Initializable {
     public TableColumn<KitDTO, String> colExpiryDate;
     public TableColumn<KitDTO, String> colLotNumber;
     public TableColumn<KitDTO, String> colTestUsed;
+    public HBox paginationContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private File file;
@@ -78,7 +79,6 @@ public class PreviewKits implements Initializable {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
         method.hideElement(progressbar);
-
         if (null != Main.primaryStage.getUserData() &&
                 Main.primaryStage.getUserData() instanceof File) {
             file = (File) Main.primaryStage.getUserData();
@@ -178,7 +178,7 @@ public class PreviewKits implements Initializable {
                             stringBuilder.append("Total Failed : ").append(failedCount).append("\n\n");
                             stringBuilder.append("Kit Number").append("\n");
                             for (KitDTO kitDTO : failed) {
-                                stringBuilder.append(" ").append(null == kitDTO.getKitNumber()?CommonUtility.TABLE_EMPTY_LABEL:kitDTO.getKitNumber()).append("  -   ").
+                                stringBuilder.append(" ").append(null == kitDTO.getKitNumber() ? CommonUtility.EMPTY_LABEL_FOR_TABLE : kitDTO.getKitNumber()).append("  -   ").
                                         append(null == kitDTO.getErrorMessage() ? "Invalid Data" : kitDTO.getErrorMessage()).append("\n");
                             }
                             Main.primaryStage.setUserData(true);
@@ -319,7 +319,7 @@ public class PreviewKits implements Initializable {
                 });
 
                 if (kitsList.size() > 0) {
-                    pagination.setVisible(true);
+                    paginationContainer.setDisable(false);
                     search_Item();
                 }
             } else {
@@ -345,6 +345,7 @@ public class PreviewKits implements Initializable {
     private void changeTableView(int index, int limit) {
 
         int totalPage = (int) (Math.ceil(filteredData.size() * 1.0 / RowPerPage.PREVIEW_KITS_ROW_PER_PAGE));
+
         Platform.runLater(() -> pagination.setPageCount(totalPage));
 
         setOptionalCell();
@@ -434,11 +435,13 @@ public class PreviewKits implements Initializable {
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -464,11 +467,13 @@ public class PreviewKits implements Initializable {
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -494,10 +499,12 @@ public class PreviewKits implements Initializable {
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -526,10 +533,12 @@ public class PreviewKits implements Initializable {
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -555,10 +564,12 @@ public class PreviewKits implements Initializable {
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -577,13 +588,17 @@ public class PreviewKits implements Initializable {
                     if (null != kd.getTestUsed()) {
                         String type = String.valueOf(kd.getTestUsed());
                         if (!type.isEmpty()) {
+                            setGraphic(null);
                             setText(type);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }

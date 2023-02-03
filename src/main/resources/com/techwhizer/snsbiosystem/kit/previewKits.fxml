@@ -20,9 +20,9 @@
    <bottom>
       <VBox prefHeight="90.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox>
+            <HBox fx:id="paginationContainer" disable="true">
                <children>
-                  <Pagination fx:id="pagination" visible="false" HBox.hgrow="ALWAYS" />
+                  <Pagination fx:id="pagination" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
             <HBox style="-fx-border-color: grey;">

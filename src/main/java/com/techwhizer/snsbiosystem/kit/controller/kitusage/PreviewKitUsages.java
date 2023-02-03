@@ -64,6 +64,7 @@ public class PreviewKitUsages implements Initializable {
     public TableColumn<KitUsageDTO, String> colSterilizerType;
     public TableColumn<KitUsageDTO, String> colSterilizerBrand;
     public TableColumn<KitUsageDTO, String> colSerialNumber;
+    public HBox paginationContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private File file;
@@ -77,6 +78,10 @@ public class PreviewKitUsages implements Initializable {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
         method.hideElement(progressbar);
+
+        Platform.runLater(() -> {
+            OptionalMethod.minimizedStage((Stage) uploadNowBn.getScene().getWindow(), true);
+        });
 
         if (null != Main.primaryStage.getUserData() &&
                 Main.primaryStage.getUserData() instanceof File) {
@@ -176,7 +181,7 @@ public class PreviewKitUsages implements Initializable {
                             stringBuilder.append("Total Failed : ").append(failedCount).append("\n\n");
                             stringBuilder.append("KIT NUM").append("\n");
                             for (KitUsageDTO kitDTO : failed) {
-                                stringBuilder.append(" ").append(kitDTO.getKitNumber() == null?"-":kitDTO.getKitNumber()).append("   ").
+                                stringBuilder.append(" ").append(kitDTO.getKitNumber() == null ? CommonUtility.EMPTY_LABEL_FOR_TABLE : kitDTO.getKitNumber()).append("   ").
                                         append(null == kitDTO.getErrorMessage() ? "Invalid Data" : kitDTO.getErrorMessage()).append("\n");
                             }
                             Main.primaryStage.setUserData(true);
@@ -318,7 +323,7 @@ public class PreviewKitUsages implements Initializable {
                 });
 
                 if (kitsList.size() > 0) {
-                    pagination.setVisible(true);
+                    paginationContainer.setDisable(false);
                     search_Item();
                 }
             } else {
@@ -427,13 +432,16 @@ public class PreviewKitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -458,6 +466,7 @@ public class PreviewKitUsages implements Initializable {
                         Text text = new Text(txt);
                         text.setStyle("-fx-text-alignment:center;");
                         text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                        setText(null);
                         setGraphic(text);
 
 
@@ -488,6 +497,7 @@ public class PreviewKitUsages implements Initializable {
                         Text text = new Text(txt);
                         text.setStyle("-fx-text-alignment:center;");
                         text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                        setText(null);
                         setGraphic(text);
 
                     } else {
@@ -517,6 +527,7 @@ public class PreviewKitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
@@ -549,6 +560,7 @@ public class PreviewKitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
@@ -581,13 +593,16 @@ public class PreviewKitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -613,13 +628,16 @@ public class PreviewKitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -644,13 +662,16 @@ public class PreviewKitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }

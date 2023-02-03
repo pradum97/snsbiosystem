@@ -80,7 +80,6 @@ public class Kits implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
-        method.hideElement(paginationContainer);
 
         if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
@@ -116,18 +115,18 @@ public class Kits implements Initializable {
             orderCom.setItems(CommonUtility.orderList);
             orderCom.getSelectionModel().selectFirst();
             sortingCom.getSelectionModel().selectFirst();
-        });
 
-        rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
-            sortData(0, OperationType.START, 0L, null, null);
+            rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
+                sortData(0, OperationType.START, 0L, null, null);
+            });
+            rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
+            pagination.currentPageIndexProperty().addListener(
+                    (observable1, oldValue1, newValue1) -> {
+                        int pageIndex = newValue1.intValue();
+                        sortData(pageIndex, OperationType.START, 0L, null, null);
+                    });
+            applySorting.setDisable(false);
         });
-        Platform.runLater(()->{rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);});
-        pagination.currentPageIndexProperty().addListener(
-                (observable1, oldValue1, newValue1) -> {
-                    int pageIndex = newValue1.intValue();
-                    sortData(pageIndex, OperationType.START, 0L, null, null);
-                });
-        applySorting.setDisable(false);
     }
     public void applySorting(ActionEvent event) {
 
@@ -205,7 +204,7 @@ public class Kits implements Initializable {
 
             switch (operationType) {
                 case SORTING_LOADING -> comboBoxConfig();
-                case START -> getAllKits();
+                case START -> getAllKits(sortedDataMap);
                 case DELETE -> deleteSterilizer(kitId, button);
                 case DOWNLOAD_REPORT -> {
                     if (null != reportMap) {
@@ -242,65 +241,6 @@ public class Kits implements Initializable {
         public void progressCallback(Integer... params) {
         }
 
-        private void getAllKits() {
-
-            if (null != kitsList) {
-                kitsList.clear();
-            }
-
-            try {
-                Thread.sleep(100);
-                HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec("easy").build()).build();
-                URIBuilder param = new URIBuilder(UrlConfig.getGetKitsUrl());
-
-                if (null != sortedDataMap) {
-                    String sort = (String) sortedDataMap.get("sort");
-                    int rowSize = (Integer) sortedDataMap.get("row_size");
-                    int pageIndex = (Integer) sortedDataMap.get("page_index");
-                    param.setParameter("sort", sort);
-                    param.setParameter("size", String.valueOf(rowSize));
-                    param.setParameter("page", String.valueOf(pageIndex));
-                }
-
-                if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map) {
-                    Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
-                    if (map.get("operation_type") == KitOperationType.PREVIEW_INDIVIDUAL_KIT) {
-                        Long userId = (Long) map.get("user_id");
-                        param.setParameter("q[user_id]", String.valueOf(userId));
-                        System.out.println(userId);
-                    } else {
-                    }
-                }
-                HttpGet httpGet = new HttpGet(param.build());
-                httpGet.addHeader("Content-Type", "application/json");
-                httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
-                HttpResponse response = httpClient.execute(httpGet);
-                HttpEntity resEntity = response.getEntity();
-
-                if (resEntity != null) {
-                    String content = EntityUtils.toString(resEntity);
-
-                    KitPageResponse KkitPageResponse = new Gson().fromJson(content, KitPageResponse.class);
-                    List<KitDTO> kds = KkitPageResponse.getKits();
-
-                    kitsList = FXCollections.observableArrayList(kds);
-                    if (kitsList.size() > 0) {
-                        paginationContainer.setVisible(true);
-                        int totalPage = KkitPageResponse.getTotalPage();
-                        search_Item(totalPage);
-                    }
-
-                }
-            } catch (IOException | URISyntaxException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            Platform.runLater(() -> {
-                refreshBn.setDisable(false);
-            });
-
-        }
-
         private void deleteSterilizer(Long kitsId, Button button) {
 
             try {
@@ -333,6 +273,65 @@ public class Kits implements Initializable {
                 });
             }
         }
+    }
+
+    private void getAllKits(Map<String, Object> sortedDataMap) {
+
+        if (null != kitsList) {
+            kitsList.clear();
+        }
+
+        try {
+            Thread.sleep(100);
+            HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
+                    .setCookieSpec("easy").build()).build();
+            URIBuilder param = new URIBuilder(UrlConfig.getGetKitsUrl());
+
+            if (null != sortedDataMap) {
+                String sort = (String) sortedDataMap.get("sort");
+                int rowSize = (Integer) sortedDataMap.get("row_size");
+                int pageIndex = (Integer) sortedDataMap.get("page_index");
+                param.setParameter("sort", sort);
+                param.setParameter("size", String.valueOf(rowSize));
+                param.setParameter("page", String.valueOf(pageIndex));
+            }
+
+            if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map) {
+                Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
+                if (map.get("operation_type") == KitOperationType.PREVIEW_INDIVIDUAL_KIT) {
+                    Long userId = (Long) map.get("user_id");
+                    param.setParameter("q[user_id]", String.valueOf(userId));
+                    System.out.println(userId);
+                } else {
+                }
+            }
+            HttpGet httpGet = new HttpGet(param.build());
+            httpGet.addHeader("Content-Type", "application/json");
+            httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
+            HttpResponse response = httpClient.execute(httpGet);
+            HttpEntity resEntity = response.getEntity();
+
+            if (resEntity != null) {
+                String content = EntityUtils.toString(resEntity);
+
+                KitPageResponse KkitPageResponse = new Gson().fromJson(content, KitPageResponse.class);
+                List<KitDTO> kds = KkitPageResponse.getKits();
+
+                kitsList = FXCollections.observableArrayList(kds);
+                if (kitsList.size() > 0) {
+                    paginationContainer.setVisible(true);
+                    int totalPage = KkitPageResponse.getTotalPage();
+                    search_Item(totalPage);
+                }
+
+            }
+        } catch (IOException | URISyntaxException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Platform.runLater(() -> {
+            refreshBn.setDisable(false);
+        });
+
     }
 
     private ImageView getImage(String path) {
@@ -497,10 +496,9 @@ public class Kits implements Initializable {
                         customDialog.showFxmlFullDialog("kit/addKit.fxml", "UPDATE KIT");
 
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
-
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-                                applySorting(null);
+                                sortData(pagination.getCurrentPageIndex(), OperationType.START, 0L, null, null);
                             }
                         }
 
@@ -557,13 +555,16 @@ public class Kits implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -588,13 +589,16 @@ public class Kits implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -620,13 +624,16 @@ public class Kits implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -652,13 +659,16 @@ public class Kits implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -687,13 +697,16 @@ public class Kits implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -719,13 +732,16 @@ public class Kits implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }

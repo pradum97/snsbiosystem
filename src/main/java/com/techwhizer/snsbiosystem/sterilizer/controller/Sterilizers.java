@@ -79,11 +79,9 @@ public class Sterilizers implements Initializable {
         customDialog = new CustomDialog();
         searchByCom.setItems(new LocalDb().getSterilizerSearchType());
         searchByCom.getSelectionModel().select(1);
-        method.hideElement(paginationContainer);
         searchByCom.valueProperty().addListener((observableValue, s, t1) -> searchTf.setText(""));
         startThread(OperationType.SORTING_LOADING, 0L, null, null);
     }
-
 
     private void comboBoxConfig() {
         pagination.setCurrentPageIndex(0);
@@ -262,7 +260,7 @@ public class Sterilizers implements Initializable {
                 List<SterilizerTableView> stvs = pageResponse.getSterilizers();
                 sterilizerList = FXCollections.observableArrayList(stvs);
                 if (sterilizerList.size() > 0) {
-                    paginationContainer.setVisible(true);
+                    paginationContainer.setDisable(false);
                     int totalPage = pageResponse.getTotalPage();
                     search_Item(totalPage);
                 }
@@ -330,7 +328,7 @@ public class Sterilizers implements Initializable {
     }
 
     private void search_Item(int totalPage) {
-        searchTf.setText("");
+        searchTf.setText(null);
 
         filteredData = new FilteredList<>(sterilizerList, p -> true);
 
@@ -528,13 +526,16 @@ public class Sterilizers implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -559,13 +560,15 @@ public class Sterilizers implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
-
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -591,13 +594,17 @@ public class Sterilizers implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
+
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -614,22 +621,16 @@ public class Sterilizers implements Initializable {
 
                 } else {
                     SterilizerTableView stv = tableview.getItems().get(getIndex());
-
-                    if (null != stv.getSerialNumber()) {
-
-                        String txt = stv.getSerialNumber();
-
-                        if (!txt.isEmpty()) {
-                            Text text = new Text(txt);
-                            text.setStyle("-fx-text-alignment:center;");
-                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
-                            setGraphic(text);
-
-                        } else {
-                            setText("-");
-                        }
+                    String txt = stv.getSerialNumber();
+                    if (null != txt && !txt.isEmpty()) {
+                        Text text = new Text(txt);
+                        text.setStyle("-fx-text-alignment:center;");
+                        text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                        setGraphic(text);
+                        setText(null);
                     } else {
-                        setText("-");
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
+                        setGraphic(null);
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.techwhizer.snsbiosystem.notice.contorller;
+package com.techwhizer.snsbiosystem.notice.controller;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
@@ -52,6 +52,7 @@ public class CreateNotice implements Initializable {
     public Button submitBn;
     public VBox publishDateContainer;
     public ProgressIndicator progressBar;
+    public HBox buttonContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private ObservableList<Boolean> bool = FXCollections.observableArrayList(Boolean.FALSE, Boolean.TRUE);
@@ -125,6 +126,11 @@ public class CreateNotice implements Initializable {
 
         publishDate = noticeBoardDTO.getPublishOn();
         expiryDate = noticeBoardDTO.getExpiresOn();
+
+        if (adminCb.isSelected()&&doctorCb.isSelected()&dealerCb.isSelected()&&
+                patientCb.isSelected()&&guestCb.isSelected()){
+            selectAllCb.setSelected(true);
+        }
     }
 
     private void buttonConfig() {
@@ -359,7 +365,7 @@ public class CreateNotice implements Initializable {
     private void createNotice(String json) {
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -397,7 +403,7 @@ public class CreateNotice implements Initializable {
     }
 
     private void resetAllField() {
-
+        Main.primaryStage.setUserData(true);
         messageTa.setText("");
         adminCb.setSelected(false);
         doctorCb.setSelected(false);

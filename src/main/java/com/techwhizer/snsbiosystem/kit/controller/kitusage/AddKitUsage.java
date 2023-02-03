@@ -6,6 +6,7 @@ import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
+import com.techwhizer.snsbiosystem.kit.constants.TestResultOptions;
 import com.techwhizer.snsbiosystem.kit.model.AddKitResponse;
 import com.techwhizer.snsbiosystem.kit.model.AddKitUsagesResponse;
 import com.techwhizer.snsbiosystem.kit.model.KitDTO;
@@ -17,6 +18,7 @@ import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -48,6 +50,7 @@ public class AddKitUsage implements Initializable {
     public DatePicker testDateDp;
     public TextField sterilizerId;
     public TextField sterilizerType;
+    public ComboBox<String> testResultCom;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private LocalDb localDb;
@@ -64,6 +67,7 @@ public class AddKitUsage implements Initializable {
         localDb = new LocalDb();
         method.hideElement(progressbar);
         method.convertDateFormat(testDateDp);
+        callThread(null,OperationType.SORTING_LOADING);
 
         Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
         operationType = (OperationType) map.get("operation_type");
@@ -91,7 +95,6 @@ public class AddKitUsage implements Initializable {
             }
         }
     }
-
     private void setTextFieldData() {
 
         kitNumberTf.setText(null == kud.getKitNumber() ? "" : String.valueOf(kud.getKitNumber()));
@@ -168,6 +171,12 @@ public class AddKitUsage implements Initializable {
 
         kitDTO.setKitNumber(kitNumberL);
         kitDTO.setTestDate(testDateL);
+
+        if (!testResultCom.getSelectionModel().isEmpty()){
+            String str = testResultCom.getSelectionModel().getSelectedItem();
+            kitDTO.setTestResult(str);
+        }
+
         kitDTO.setSterilizerID((Long)sterilizerData.get("sterilizer_id"));
         kitDTO.setSterilizerListNumber((Integer) sterilizerData.get("sterilizer_list_number"));
 
@@ -177,7 +186,6 @@ public class AddKitUsage implements Initializable {
         if (null != kud) {
             kitDTO.setId(kud.getId());
         }
-
         Set<KitUsageDTO> list = new HashSet<>(Arrays.asList(kitDTO));
         String jsonList = new Gson().toJson(list);
 
@@ -194,40 +202,41 @@ public class AddKitUsage implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         ButtonType button = result.orElse(ButtonType.CANCEL);
         if (button == ButtonType.OK) {
-            callThread(jsonList);
+            callThread(jsonList, null);
         } else {
             alert.close();
         }
     }
 
-    private void callThread(String json) {
-        MyAsyncTask myAsyncTask = new MyAsyncTask(json);
+    private void callThread(String json, OperationType operationType) {
+        MyAsyncTask myAsyncTask = new MyAsyncTask(json, operationType);
         myAsyncTask.execute();
     }
 
     public void chooseSterilizerId(MouseEvent event) {
 
-        customDialog.showFxmlDialog2("dialog/sterilizerChooser.fxml","SELECT STERILIZER");
-        if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map<?,?>){
+        customDialog.showFxmlDialog2("dialog/sterilizerChooser.fxml", "SELECT STERILIZER");
+        if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map<?, ?>) {
             sterilizerData = (Map<String, Object>) Main.primaryStage.getUserData();
 
-            if (null != sterilizerData.get("sterilizer_id")){
+            if (null != sterilizerData.get("sterilizer_id")) {
                 sterilizerId.setText(String.valueOf(sterilizerData.get("sterilizer_id")));
                 sterilizerType.setText(String.valueOf(sterilizerData.get("sterilizer_type")));
             }
         }
     }
 
-
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
-        String json;
+        private String json;
+        private OperationType start;
 
-        public MyAsyncTask(String json) {
+        public MyAsyncTask(String json, OperationType start) {
             this.json = json;
+            this.start = start;
         }
+
         @Override
         public void onPreExecute() {
-
             progressbar.setVisible(true);
             method.hideElement(submitBn);
         }
@@ -235,11 +244,17 @@ public class AddKitUsage implements Initializable {
         @Override
         public Boolean doInBackground(String... params) {
 
-            if (operationType == OperationType.CREATE) {
-                createKitUsage(json);
+            if (null != start) {
+                if (start == OperationType.SORTING_LOADING) {
+                    getResultKey();
+                }
+            }else {
 
-            } else if (operationType == OperationType.UPDATE) {
-                updateKit(json);
+                if (operationType == OperationType.CREATE) {
+                    createKitUsage(json);
+                } else if (operationType == OperationType.UPDATE) {
+                    updateKitUsage(json);
+                }
             }
 
             return false;
@@ -257,7 +272,17 @@ public class AddKitUsage implements Initializable {
         }
     }
 
-    private void updateKit(String json) {
+    private void getResultKey() {
+        testResultCom.setItems(FXCollections.observableArrayList(TestResultOptions.sortingMap.keySet()));
+
+        Platform.runLater(() -> {
+            if (operationType == OperationType.UPDATE) {
+                testResultCom.getSelectionModel().select(TestResultOptions.getKeyFromValue(kud.getTestResult()));
+            }
+        });
+    }
+
+    private void updateKitUsage(String json) {
 
         try {
             String token = (String) Login.authInfo.get("token");
@@ -272,8 +297,8 @@ public class AddKitUsage implements Initializable {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
-                int statusCode = response.getStatusLine().getStatusCode();
 
+                int statusCode = response.getStatusLine().getStatusCode();
                 AddKitResponse asr = new Gson().fromJson(content, AddKitResponse.class);
                 List<KitDTO> failedData = asr.getInvalidKits();
 
@@ -293,7 +318,7 @@ public class AddKitUsage implements Initializable {
                     }
 
                 } else {
-                    customDialog.showAlertBox("Failed.", content);
+                    customDialog.showAlertBox("Failed.", "Something went wrong. Please try again.");
                 }
             }
         } catch (Exception e) {

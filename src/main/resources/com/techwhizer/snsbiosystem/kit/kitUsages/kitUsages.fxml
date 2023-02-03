@@ -133,8 +133,9 @@
                         <TableColumn fx:id="colListNumber" editable="false" maxWidth="150.0" minWidth="100.0" text="LIST NUMBER" />
                         <TableColumn fx:id="colSterilizerType" editable="false" maxWidth="150.0" minWidth="130.0" text="TYPE" />
                         <TableColumn fx:id="colSterilizerBrand" editable="false" maxWidth="240.0" minWidth="150.0" text="BRAND" />
-                        <TableColumn fx:id="colSerialNumber" editable="false" maxWidth="240.0" minWidth="210.0" text="SERIAL NUMBER" />
-                        <TableColumn fx:id="colAction" editable="false" minWidth="70.0" text="ACTION" />
+                        <TableColumn fx:id="colSerialNumber" editable="false" maxWidth="220.0" minWidth="200.0" text="SERIAL NUMBER" />
+                  <TableColumn fx:id="colResult" editable="false" maxWidth="220.0" minWidth="200.0" text="RESULT" />
+                        <TableColumn fx:id="colAction" editable="false" minWidth="80.0" text="ACTION" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -144,7 +145,7 @@
         </VBox>
     </center>
    <bottom>
-      <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+      <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" visible="false" BorderPane.alignment="CENTER">
          <children>
             <VBox>
                <children>

@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="546.0" prefWidth="657.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.notice.contorller.CreateNotice">
+<BorderPane prefHeight="546.0" prefWidth="657.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.notice.controller.CreateNotice">
    <center>
       <VBox alignment="CENTER" fillWidth="false" BorderPane.alignment="CENTER">
          <children>
@@ -208,7 +208,7 @@
                            </padding>
                         </HBox>
                         <Separator prefWidth="200.0" />
-                        <HBox alignment="CENTER" spacing="100.0">
+                        <HBox fx:id="buttonContainer" alignment="CENTER" spacing="100.0">
                            <children>
                               <Button minHeight="30.0" mnemonicParsing="false" onAction="#cancelBn" prefHeight="26.0" prefWidth="159.0" styleClass="previewCancelButton" text="CANCEL" textFill="WHITE">
                                  <font>

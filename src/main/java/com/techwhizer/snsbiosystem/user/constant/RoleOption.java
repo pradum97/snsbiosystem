@@ -13,11 +13,21 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class RoleOption {
-    public static HashMap<String,String> getRoleOption(){
+
+    public static Map<String, String> sortingMap = getSortingOptions();
+
+    public static String getKeyValue(String key){
+        return sortingMap == null||sortingMap.isEmpty() ? getSortingOptions().get(key):sortingMap.get(key);
+    }
+
+    public static HashMap<String,String> getSortingOptions(){
 
         try {
+
+            Thread.sleep(100);
 
             HttpClient httpClient = HttpClients.custom() .setDefaultRequestConfig(RequestConfig.custom()
                     .setCookieSpec("easy") .build()).build();

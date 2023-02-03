@@ -18,15 +18,35 @@ import java.util.Map;
 
 public class TestResultOptions {
 
+    public static Map<String, String> sortingMap = getSortingOptions();
+
+    public static String getKeyValue(String key) {
+        return sortingMap == null || sortingMap.isEmpty() ? getSortingOptions().get(key) : sortingMap.get(key);
+    }
+
+    public static String getKeyFromValue(String key) {
+        String val = null;
+
+        for (Map.Entry<String, String> entry : sortingMap.entrySet()) {
+            if (entry.getValue().equals(key)) {
+             val = entry.getKey();
+            }
+        }
+        return val;
+    }
+
+
+
     public static void main(String[] args) {
 
         System.out.println(getSortingOptions());
     }
-        public static Map<String, String> getSortingOptions(){
 
-            try {
-                Thread.sleep(100);
-                HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
+    public static Map<String, String> getSortingOptions() {
+
+        try {
+            Thread.sleep(100);
+            HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
                         .setCookieSpec("easy").build()).build();
                 URIBuilder uriBuilder = new URIBuilder(UrlConfig.getTestResultOptionUrl());
                 HttpGet httpGet = new HttpGet(uriBuilder.build());

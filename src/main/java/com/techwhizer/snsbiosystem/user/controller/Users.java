@@ -7,24 +7,24 @@ import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.constants.KitOperationType;
+import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.report.DownloadReport;
-import com.techwhizer.snsbiosystem.user.constant.UserRole;
+import com.techwhizer.snsbiosystem.user.constant.RoleOption;
 import com.techwhizer.snsbiosystem.user.constant.UserSearchFilters;
+import com.techwhizer.snsbiosystem.user.constant.UserSortingOption;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.PageResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.LocalDb;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.util.RowPerPage;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -53,7 +53,7 @@ import java.util.*;
 
 public class Users implements Initializable {
     public ImageView refreshBn;
-    public ComboBox<String> filterByCom;
+    public ComboBox<String> filterByRoleCom;
     public ComboBox<String> sortByCom;
     public TextField searchTf;
     public TableView<UserDTO> tableview;
@@ -64,6 +64,11 @@ public class Users implements Initializable {
     public TableColumn<UserDTO, String> colEmail;
     public TableColumn<UserDTO, String> colPhone;
     public TableColumn<UserDTO, String> colAction;
+    public ComboBox<Integer> rowSizeCom;
+    public ComboBox<String> sortingCom;
+    public ComboBox<String> orderCom;
+    public HBox paginationContainer;
+    public Button applySorting;
     private CustomDialog customDialog;
     private OptionalMethod method;
     private LocalDb localDb;
@@ -78,13 +83,83 @@ public class Users implements Initializable {
         method = new OptionalMethod();
         localDb = new LocalDb();
         searchByCom.valueProperty().addListener((observableValue, s, t1) -> searchTf.setText(""));
-        setComboBoxData();
 
-
+        startThread(null, OperationType.SORTING_LOADING, 0L, null, null, null);
     }
 
-    public void startThread(String role, OperationType operationType, Long clientId, Button button, Map<String, Object> map) {
-        MyAsyncTask myAsyncTask = new MyAsyncTask(role, operationType, clientId, button, map);
+    private void comboBoxConfig() {
+        pagination.setCurrentPageIndex(0);
+        rowSizeCom.setItems(PaginationUtil.rowSize);
+        sortingCom.setItems(FXCollections.observableArrayList(UserSortingOption.sortingMap.keySet()));
+
+        ObservableList<String> roleList = FXCollections.observableArrayList(CommonUtility.ALL);
+        roleList.addAll(FXCollections.observableArrayList(RoleOption.sortingMap.keySet()));
+        filterByRoleCom.setItems(FXCollections.observableArrayList(RoleOption.sortingMap.keySet()));
+        orderCom.setItems(CommonUtility.orderList);
+
+        Platform.runLater(() -> {
+
+            rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
+            orderCom.getSelectionModel().select(CommonUtility.ORDER_ASC);
+            sortingCom.getSelectionModel().selectFirst();
+
+
+            pagination.currentPageIndexProperty().addListener(
+                    (observable1, oldValue1, newValue1) -> {
+                        int pageIndex = newValue1.intValue();
+                        String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                        sortData(role, OperationType.START, 0L, null, null, pageIndex);
+
+
+                    });
+
+            rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
+                String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                sortData(role, OperationType.START, 0L, null, null, 0);
+            });
+
+            filterByRoleCom.valueProperty().addListener((observableValue, s, t1) -> sortData(t1, OperationType.START, 0L, null, null, 0));
+            applySorting.setDisable(false);
+            searchByCom.valueProperty().addListener((observableValue, s, newValue) -> {
+                searchTf.setPromptText(" Search By : " + newValue.toLowerCase());
+            });
+
+            searchByCom.setItems(localDb.getUserSearchType());
+            filterByRoleCom.getSelectionModel().select(CommonUtility.ALL);
+            searchByCom.getSelectionModel().selectFirst();
+
+            comboboxSetting(filterByRoleCom);
+            comboboxSetting(sortByCom);
+            comboboxSetting(searchByCom);
+        });
+    }
+
+    public void applySorting(ActionEvent event) {
+        String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
+        sortData(role, OperationType.START, 0L, null, null, 0);
+    }
+
+    private void sortData(String role, OperationType operationType, Long clientId, Button button,
+                          Map<String, Object> reportMap, int pageIndex) {
+
+        String filedName = UserSortingOption.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
+        String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
+        int rowSize = rowSizeCom.getSelectionModel().getSelectedItem();
+        String sort = filedName + "," + order;
+
+        Map<String, Object> sortedDataMap = new HashMap<>();
+        sortedDataMap.put("sort", sort);
+        sortedDataMap.put("row_size", rowSize);
+        sortedDataMap.put("page_index", pageIndex);
+
+        startThread(role, operationType, clientId, button, reportMap, sortedDataMap);
+    }
+
+    public void startThread(String role, OperationType operationType,
+                            Long clientId, Button button, Map<String, Object> reportMap,
+                            Map<String, Object> sortedDataMap) {
+
+        MyAsyncTask myAsyncTask = new MyAsyncTask(role, operationType, clientId, button, reportMap, sortedDataMap);
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();
     }
@@ -99,7 +174,8 @@ public class Users implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-                startThread(filterByCom.getSelectionModel().getSelectedItem(), OperationType.START, 0L, null, null);
+                String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex());
             }
         }
     }
@@ -110,14 +186,16 @@ public class Users implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-                startThread(filterByCom.getSelectionModel().getSelectedItem(), OperationType.START, 0L, null, null);
 
+                String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex());
             }
         }
     }
 
     public void refreshClick(MouseEvent mouseEvent) {
-        startThread(filterByCom.getSelectionModel().getSelectedItem(), OperationType.START, 0L, null, null);
+
+        applySorting(null);
     }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
@@ -125,18 +203,20 @@ public class Users implements Initializable {
         private OperationType operationType;
         private Long clientId;
         private Button button;
-        private Map<String, Object> map;
+        private Map<String, Object> reportMap;
         private Button downloadButton;
+        private Map<String, Object> sortedDataMap;
 
         public MyAsyncTask(String role, OperationType operationType,
-                           Long clientId, Button button, Map<String, Object> map) {
+                           Long clientId, Button button, Map<String, Object> reportMap, Map<String, Object> sortedDataMap) {
             this.role = role;
             this.operationType = operationType;
             this.clientId = clientId;
             this.button = button;
-            this.map = map;
-            if (null != map) {
-                downloadButton = (Button) map.get("button");
+            this.reportMap = reportMap;
+            this.sortedDataMap = sortedDataMap;
+            if (null != reportMap) {
+                downloadButton = (Button) reportMap.get("button");
             }
         }
 
@@ -144,24 +224,12 @@ public class Users implements Initializable {
         public void onPreExecute() {
             refreshBn.setDisable(true);
             if (operationType == OperationType.DELETE) {
-
                 if (null != button) {
                     ProgressIndicator pi = method.getProgressBar(25, 25);
                     pi.setStyle("-fx-progress-color: white;-fx-border-width: 2");
                     button.setGraphic(pi);
                 }
-            } else if (operationType == OperationType.DOWNLOAD_REPORT) {
-
-                if (null != map) {
-
-                    if (null != downloadButton) {
-                        ProgressIndicator pi = method.getProgressBar(25, 25);
-                        pi.setStyle("-fx-progress-color: white;-fx-border-width: 2");
-                        downloadButton.setGraphic(pi);
-                    }
-                }
-
-            } else {
+            } else if (operationType != OperationType.DOWNLOAD_REPORT) {
                 if (null != tableview) {
                     tableview.setItems(null);
                     tableview.refresh();
@@ -175,18 +243,18 @@ public class Users implements Initializable {
         public Boolean doInBackground(String... params) {
 
             switch (operationType) {
-                case START -> getAllUser(role);
+                case SORTING_LOADING -> comboBoxConfig();
+                case START -> getAllUser(role, sortedDataMap);
                 case DELETE -> deleteUser(clientId, button);
                 case DOWNLOAD_REPORT -> {
-                    if (null != map) {
-                        new DownloadReport().dialogController(map, OperationType.CUSTOMER_REPORT);
+                    if (null != reportMap) {
+                        new DownloadReport().dialogController(reportMap, OperationType.CUSTOMER_REPORT);
                     }
                 }
             }
 
             return false;
         }
-
 
         @Override
         public void onPostExecute(Boolean success) {
@@ -203,8 +271,6 @@ public class Users implements Initializable {
             } else {
                 tableview.setPlaceholder(new Label("No user found"));
             }
-
-
         }
 
         @Override
@@ -212,25 +278,31 @@ public class Users implements Initializable {
         }
     }
 
-    private void getAllUser(String role) {
+    private void getAllUser(String role, Map<String, Object> sortedDataMap) {
         if (null != userList) {
             userList.clear();
         }
-
-        role = role.replace("ROLE_", "");
 
         try {
             Thread.sleep(100);
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
                     .setCookieSpec("easy").build()).build();
-            URIBuilder uriBuilder = new URIBuilder(UrlConfig.getAllUsersUrl());
-            uriBuilder.addParameter("sort", "id,desc");
+            URIBuilder param = new URIBuilder(UrlConfig.getAllUsersUrl());
 
-            if (!role.equalsIgnoreCase(UserRole.ALL)) {
-                uriBuilder.setParameter("q[role]", role);
+            if (null != sortedDataMap) {
+                String sort = (String) sortedDataMap.get("sort");
+                int rowSize = (Integer) sortedDataMap.get("row_size");
+                int pageIndex = (Integer) sortedDataMap.get("page_index");
+                param.setParameter("sort", sort);
+                param.setParameter("size", String.valueOf(rowSize));
+                param.setParameter("page", String.valueOf(pageIndex));
             }
 
-            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            if (!role.equalsIgnoreCase(CommonUtility.ALL)) {
+                param.setParameter("q[role]", role);
+            }
+
+            HttpGet httpGet = new HttpGet(param.build());
 
             httpGet.addHeader("Content-Type", "application/json");
             httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
@@ -239,12 +311,14 @@ public class Users implements Initializable {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
+
                 PageResponse pageResponse = new Gson().fromJson(content, PageResponse.class);
                 List<UserDTO> users = pageResponse.getUsers();
                 userList = FXCollections.observableArrayList(users);
                 if (userList.size() > 0) {
-                    pagination.setVisible(true);
-                    search_Item();
+                    paginationContainer.setDisable(false);
+                    int totalPage = pageResponse.getTotalPage();
+                    search_Item(totalPage);
                 }
 
             }
@@ -253,15 +327,12 @@ public class Users implements Initializable {
         } finally {
             Platform.runLater(() -> refreshBn.setDisable(false));
         }
-
     }
 
-    private void search_Item() {
+    private void search_Item(int totalPage) {
         searchTf.setText("");
-
         filteredData = new FilteredList<>(userList, p -> true);
 
-        int rowsPerPage = RowPerPage.USERS_ROW_PER_PAGE;
         searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
 
             filteredData.setPredicate(user -> {
@@ -305,23 +376,24 @@ public class Users implements Initializable {
                 }
             });
 
-            changeTableView(pagination.getCurrentPageIndex(), rowsPerPage);
+            changeTableView(totalPage);
 
         });
 
-        pagination.setCurrentPageIndex(0);
-        changeTableView(0, rowsPerPage);
-        pagination.currentPageIndexProperty().addListener(
-                (observable1, oldValue1, newValue1) -> {
-                    tableview.scrollTo(0);
-                    changeTableView(newValue1.intValue(), rowsPerPage);
-                });
+        changeTableView(totalPage);
     }
 
-    private void changeTableView(int index, int limit) {
+    private void changeTableView(int totalPage) {
 
-        int totalPage = (int) (Math.ceil(filteredData.size() * 1.0 / RowPerPage.USERS_ROW_PER_PAGE));
-        Platform.runLater(() -> pagination.setPageCount(totalPage));
+        Platform.runLater(() -> {
+                    pagination.setPageCount(totalPage);
+                    if (filteredData.size() > 0) {
+                        tableview.setPlaceholder(method.getProgressBar(40, 40));
+                    } else {
+                        tableview.setPlaceholder(new Label("No user found"));
+                    }
+                }
+        );
 
         colSlNum.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
                 tableview.getItems().indexOf(cellData.getValue()) + 1));
@@ -329,23 +401,7 @@ public class Users implements Initializable {
         colClientId.setCellValueFactory(new PropertyValueFactory<>("clientID"));
 
         setOptionalCell();
-
-        int fromIndex = index * limit;
-        int toIndex = Math.min(fromIndex + limit, userList.size());
-
-        int minIndex = Math.min(toIndex, filteredData.size());
-        SortedList<UserDTO> sortedData = new SortedList<>(
-                FXCollections.observableArrayList(filteredData.subList(Math.min(fromIndex, minIndex), minIndex)));
-        sortedData.comparatorProperty().bind(tableview.comparatorProperty());
-        Platform.runLater(() -> {
-            if (sortedData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("No user found"));
-            }
-        });
-
-        tableview.setItems(sortedData);
+        tableview.setItems(filteredData);
         tableview.setRowFactory(tv -> new TableRow<>() {
             @Override
             protected void updateItem(UserDTO item, boolean empty) {
@@ -375,7 +431,7 @@ public class Users implements Initializable {
         return iv;
     }
 
-    private void setOptionalCell(){
+    private void setOptionalCell() {
 
         Callback<TableColumn<UserDTO, String>, TableCell<UserDTO, String>>
                 cellFactory = (TableColumn<UserDTO, String> param) -> new TableCell<>() {
@@ -394,9 +450,9 @@ public class Users implements Initializable {
                     Button downloadBn = new Button();
                     Button viewKits = new Button();
 
-                    ImageView activeIc = getImage("img/icon/admin_icon.png");
-                    activeIc.setFitWidth(30);
-                    activeIc.setFitHeight(30);
+                    ImageView activeIc = getImage("img/icon/active_ic.png");
+                    activeIc.setFitWidth(32);
+                    activeIc.setFitHeight(32);
 
                     editBn.setGraphic(getImage("img/icon/update_ic.png"));
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));
@@ -421,11 +477,11 @@ public class Users implements Initializable {
                     viewKits.setOnAction(event -> {
                         method.selectTable(getIndex(), tableview);
                         UserDTO userDTO = tableview.getSelectionModel().getSelectedItem();
-                        Map<String ,Object> map = new HashMap<>();
+                        Map<String, Object> map = new HashMap<>();
                         map.put("operation_type", KitOperationType.PREVIEW_INDIVIDUAL_KIT);
-                        map.put("user_id",userDTO.getClientID());
+                        map.put("user_id", userDTO.getClientID());
                         Main.primaryStage.setUserData(map);
-                        customDialog.showFxmlFullDialog("kit/kits.fxml","KIT LIST");
+                        customDialog.showFxmlFullDialog("kit/kits.fxml", "KIT LIST");
                     });
 
                     downloadBn.setOnAction((event -> {
@@ -434,7 +490,8 @@ public class Users implements Initializable {
                         map.put("button", downloadBn);
                         map.put("customer_id", tableview.getItems().get(getIndex()).getClientID());
 
-                        startThread(filterByCom.getSelectionModel().getSelectedItem(), OperationType.DOWNLOAD_REPORT, 0L, null, map);
+                        String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                        sortData(role, OperationType.DOWNLOAD_REPORT, 0L, null, map, pagination.getCurrentPageIndex());
 
                     }));
 
@@ -455,8 +512,8 @@ public class Users implements Initializable {
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-                                startThread(filterByCom.getSelectionModel().getSelectedItem(), OperationType.START, 0L, null, null);
-
+                                String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex());
                             }
                         }
 
@@ -478,15 +535,16 @@ public class Users implements Initializable {
                         ButtonType button = result.orElse(ButtonType.CANCEL);
                         if (button == ButtonType.OK) {
 
-                            startThread(filterByCom.getSelectionModel().getSelectedItem(),
-                                    OperationType.DELETE, icm.getClientID(), deleteBbn, null);
+                            String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                            sortData(role, OperationType.DELETE, icm.getClientID(), deleteBbn, null, pagination.getCurrentPageIndex());
 
                         } else {
                             alert.close();
                         }
                     });
 
-                    HBox managebtn = new HBox(viewKits, downloadBn, viewBn, editBn, (signedUsername.equals(currentUsername) ? activeIc : deleteBbn));
+                    HBox managebtn = new HBox(viewKits, downloadBn, viewBn,
+                            editBn, (signedUsername.equals(currentUsername) ? activeIc : deleteBbn));
                     managebtn.setStyle("-fx-alignment:center");
 
                     managebtn.setSpacing(15);
@@ -518,14 +576,17 @@ public class Users implements Initializable {
 
                             Text text = new Text(user.getFirstName() + " " + user.getLastName());
                             text.setStyle("-fx-text-alignment:center;");
-                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(2));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -542,19 +603,23 @@ public class Users implements Initializable {
 
                 } else {
                     UserDTO user = tableview.getItems().get(getIndex());
+
                     if (null != user.getOfficeAddress()) {
                         if (!user.getOfficeAddress().isEmpty()) {
-                            Text text = new Text(user.getOfficeAddress());
-                            text.setStyle("-fx-text-alignment:justify;");
-                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            Text text = new Text(CommonUtility.getCutText(user.getOfficeAddress()));
+                            text.setStyle("-fx-text-alignment:center;");
+                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(2));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -575,13 +640,16 @@ public class Users implements Initializable {
                         if (!user.getWorkEmail().isEmpty()) {
                             Text text = new Text(user.getWorkEmail());
                             text.setStyle("-fx-text-alignment:center;");
-                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(2));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -602,11 +670,13 @@ public class Users implements Initializable {
                         if (!user.getWorkPhoneNumber().isEmpty()) {
                             setText(user.getWorkPhoneNumber());
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -615,39 +685,25 @@ public class Users implements Initializable {
     }
 
     @SafeVarargs
-    private void comboboxConfig(ComboBox<String>... comboBox) {
+    private void comboboxSetting(ComboBox<String>... comboBox) {
 
-        for (ComboBox<String> com : comboBox) {
-            com.setButtonCell(new ListCell<>() {
-                @Override
-                public void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item != null) {
-                        setText(item);
-                        setAlignment(Pos.CENTER);
-                        Insets old = getPadding();
-                        setPadding(new Insets(old.getTop(), 0, old.getBottom(), 0));
+        Platform.runLater(() -> {
+
+            for (ComboBox<String> com : comboBox) {
+                com.setButtonCell(new ListCell<>() {
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            setText(item);
+                            setAlignment(Pos.CENTER);
+                            Insets old = getPadding();
+                            setPadding(new Insets(old.getTop(), 0, old.getBottom(), 0));
+                        }
                     }
-                }
-            });
-        }
-    }
-
-    private void setComboBoxData() {
-        filterByCom.valueProperty().addListener((observableValue, s, newValue) -> startThread(newValue, OperationType.START, 0L, null, null));
-        searchByCom.valueProperty().addListener((observableValue, s, newValue) -> {
-            searchTf.setPromptText(" Search By : " + newValue.toLowerCase());
+                });
+            }
         });
-
-        filterByCom.setItems(localDb.getFilterType());
-        filterByCom.getSelectionModel().selectFirst();
-
-        searchByCom.setItems(localDb.getUserSearchType());
-        searchByCom.getSelectionModel().selectFirst();
-
-        comboboxConfig(filterByCom);
-        comboboxConfig(sortByCom);
-        comboboxConfig(searchByCom);
     }
 
     private void deleteUser(Long id, Button button) {
@@ -668,7 +724,8 @@ public class Users implements Initializable {
                 customDialog.showAlertBox("", content);
 
                 if (statusCode == 200) {
-                    startThread(filterByCom.getSelectionModel().getSelectedItem(), OperationType.START, 0L, null, null);
+
+                    applySorting(null);
                 }
 
             }

@@ -158,6 +158,11 @@ public class AddKit implements Initializable {
             //  return;
         }
 
+        if (expiryDate.isEmpty()) {
+            method.show_popup("Please select expiry date", expiryDateDp);
+            return;
+        }
+
         if (!expiryDate.isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat(CommonUtility.COMMON_DATE_PATTERN);
             Date date;

@@ -10,6 +10,7 @@ import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.sterilizer.model.AddSterilizerResponse;
 import com.techwhizer.snsbiosystem.sterilizer.model.SterilizerDTO;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.RowPerPage;
 import com.victorlaerte.asynctask.AsyncTask;
@@ -43,7 +44,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 public class PreviewSterilizers implements Initializable {
     public Pagination pagination;
@@ -53,26 +57,31 @@ public class PreviewSterilizers implements Initializable {
     public Label uploadNowBn;
     public ProgressIndicator progressbar;
     public TableView<SterilizerDTO> tableview;
-    public TableColumn<SterilizerDTO,String> colClientId;
-    public TableColumn<SterilizerDTO,String> colSterilizerId;
-    public TableColumn<SterilizerDTO,String> colSterilizerListNumber;
-    public TableColumn<SterilizerDTO,String> colSterilizerType;
-    public TableColumn<SterilizerDTO,String> colSterilizerBrand;
-    public TableColumn<SterilizerDTO,String> colSterilizerSerialNumber;
-    public TableColumn<SterilizerDTO,String> colStatus;
+    public TableColumn<SterilizerDTO, String> colClientId;
+    public TableColumn<SterilizerDTO, String> colSterilizerId;
+    public TableColumn<SterilizerDTO, String> colSterilizerListNumber;
+    public TableColumn<SterilizerDTO, String> colSterilizerType;
+    public TableColumn<SterilizerDTO, String> colSterilizerBrand;
+    public TableColumn<SterilizerDTO, String> colSterilizerSerialNumber;
+    public TableColumn<SterilizerDTO, String> colStatus;
+    public HBox paginationContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private File file;
     private int statusCode;
-    
+
     private ObservableList<SterilizerDTO> sterilizerList = FXCollections.observableArrayList();
     private FilteredList<SterilizerDTO> filteredData;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
         method.hideElement(progressbar);
+
+        Platform.runLater(()->{
+            OptionalMethod.minimizedStage((Stage) uploadNowBn.getScene().getWindow(),true);
+        });
 
         if (null != Main.primaryStage.getUserData() &&
                 Main.primaryStage.getUserData()  instanceof File){
@@ -88,6 +97,7 @@ public class PreviewSterilizers implements Initializable {
 
             });
         }
+
     }
 
     private void callThread(OperationType operationType, String loadingMsg, String json) {
@@ -173,7 +183,7 @@ public class PreviewSterilizers implements Initializable {
                             stringBuilder.append("Total Failed : ").append(failedCount).append("\n\n");
                             stringBuilder.append("S ID").append("\n");
                             for (SterilizerDTO u : failedSterilizer) {
-                                stringBuilder.append(" ").append(null == u.getSterilizerListNumber()?"-":u.getSterilizerListNumber()).append("  -   ").
+                                stringBuilder.append(" ").append(null == u.getSterilizerListNumber() ? CommonUtility.EMPTY_LABEL_FOR_TABLE : u.getSterilizerListNumber()).append("  -   ").
                                         append(null == u.getErrorMessage()?"Invalid Data":u.getErrorMessage()).append("\n");
                             }
                             Main.primaryStage.setUserData(true);
@@ -312,7 +322,7 @@ public class PreviewSterilizers implements Initializable {
                 });
 
                 if (sterilizerList.size() > 0) {
-                    pagination.setVisible(true);
+                    paginationContainer.setDisable(false);
                     search_Item();
                 }
             }else {
@@ -324,31 +334,31 @@ public class PreviewSterilizers implements Initializable {
     }
     private void search_Item() {
         filteredData = new FilteredList<>(sterilizerList, p -> true);
-        //pagination.setCurrentPageIndex(0);
+        pagination.setCurrentPageIndex(0);
         int rowsPerPage = RowPerPage.PREVIEW_STERILIZERS_ROW_PER_PAGE;
         changeTableView(0, rowsPerPage);
-      /*  pagination.currentPageIndexProperty().addListener(
+        pagination.currentPageIndexProperty().addListener(
                 (observable1, oldValue1, newValue1) -> {
                     tableview.scrollTo(0);
                     changeTableView(newValue1.intValue(), rowsPerPage);
-                });*/
+                });
     }
     private void changeTableView(int index, int limit) {
 
-      /*  int totalPage = (int) (Math.ceil(filteredData.size() * 1.0 / RowPerPage.PREVIEW_STERILIZERS_ROW_PER_PAGE));
-        Platform.runLater(() -> pagination.setPageCount(totalPage));*/
+        int totalPage = (int) (Math.ceil(filteredData.size() * 1.0 / RowPerPage.PREVIEW_STERILIZERS_ROW_PER_PAGE));
+        Platform.runLater(() -> pagination.setPageCount(totalPage));
 
         setOptionalCell();
 
-       /* int fromIndex = index * limit;
+        int fromIndex = index * limit;
         int toIndex = Math.min(fromIndex + limit, sterilizerList.size());
 
         int minIndex = Math.min(toIndex, filteredData.size());
         SortedList<SterilizerDTO> sortedData = new SortedList<>(
                 FXCollections.observableArrayList(filteredData.subList(Math.min(fromIndex, minIndex), minIndex)));
-        sortedData.comparatorProperty().bind(tableview.comparatorProperty());*/
+        sortedData.comparatorProperty().bind(tableview.comparatorProperty());
 
-        tableview.setItems(filteredData);
+        tableview.setItems(sortedData);
         tableview.setRowFactory(tv -> new TableRow<SterilizerDTO>() {
             @Override
             protected void updateItem(SterilizerDTO item, boolean empty) {
@@ -422,13 +432,16 @@ public class PreviewSterilizers implements Initializable {
                             Text text = new Text(id);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -452,14 +465,17 @@ public class PreviewSterilizers implements Initializable {
                             Text text = new Text(sterilizerId);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -483,12 +499,15 @@ public class PreviewSterilizers implements Initializable {
                             Text text = new Text(brand);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -511,12 +530,15 @@ public class PreviewSterilizers implements Initializable {
                             Text text = new Text(listNumber);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -540,12 +562,15 @@ public class PreviewSterilizers implements Initializable {
                             Text text = new Text(serialNum);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -566,11 +591,13 @@ public class PreviewSterilizers implements Initializable {
                         if (!type.isEmpty()) {
                             setText(type);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }

@@ -5,14 +5,12 @@ import com.google.gson.reflect.TypeToken;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
+import com.techwhizer.snsbiosystem.user.constant.RoleOption;
 import com.techwhizer.snsbiosystem.user.model.CreateUsersResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
-import com.techwhizer.snsbiosystem.util.ChooseFile;
-import com.techwhizer.snsbiosystem.util.LocalDb;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.app.UrlConfig;
-import com.techwhizer.snsbiosystem.util.RowPerPage;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -72,7 +70,8 @@ public class PreviewProfile implements Initializable {
     public Label totalValidRecordL;
     public Label totalInvalidRecordL, fileNameL;
     public Label uploadNowBn;
-    public ProgressIndicator progressbar;
+    public ProgressIndicator progressbar,fileChooseProgressBar;
+    public HBox paginationContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private ObservableList<UserDTO> userList = FXCollections.observableArrayList();
@@ -87,7 +86,8 @@ public class PreviewProfile implements Initializable {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
         method.hideElement(progressbar, bottomContainer, tableContainer);
-        roleCom.setItems(new LocalDb().getRoleType());
+
+        new MyAsyncTask(null,OperationType.SORTING_LOADING,null,null).execute();
     }
 
     public void chooseFileBnClick(MouseEvent mouseEvent) {
@@ -107,7 +107,7 @@ public class PreviewProfile implements Initializable {
             return;
         }
 
-        String role = roleCom.getSelectionModel().getSelectedItem().replace("ROLE_", "");
+        String role = roleCom.getSelectionModel().getSelectedItem();
 
         ImageView image = new ImageView(new ImageLoader().load("img/icon/warning_ic.png"));
         image.setFitWidth(45);
@@ -131,6 +131,10 @@ public class PreviewProfile implements Initializable {
             method.hideElement(chooseFileContainer);
             tableContainer.setVisible(true);
             bottomContainer.setVisible(true);
+            Platform.runLater(()->{
+                OptionalMethod.minimizedStage((Stage) uploadNowBn.getScene().getWindow(),true);
+            });
+
             callThread(role, OperationType.PREVIEW, "Please wait Data is being verified.", null);
 
 
@@ -269,7 +273,8 @@ public class PreviewProfile implements Initializable {
                 VBox.setMargin(label, new Insets(10, 0, 0, 0));
                 box.setStyle("-fx-alignment: center");
                 tableview.setPlaceholder(box);
-            } else {
+            }else if (operationType == OperationType.SORTING_LOADING){}
+            else {
                 method.hideElement(uploadNowBn);
                 progressbar.setVisible(true);
             }
@@ -281,9 +286,10 @@ public class PreviewProfile implements Initializable {
                 createMultipleProfile(json);
             }else if (operationType == OperationType.PREVIEW){
                 sendRequest(role);
+            } else if (operationType == OperationType.SORTING_LOADING) {
+                roleCom.setItems(FXCollections.observableArrayList(RoleOption.sortingMap.keySet()));
             }
             return false;
-
         }
 
         @Override
@@ -292,15 +298,14 @@ public class PreviewProfile implements Initializable {
             if (operationType == OperationType.CREATE) {
                 method.hideElement(progressbar);
                 uploadNowBn.setVisible(true);
+            } else if (operationType == OperationType.SORTING_LOADING) {
+                fileChooseProgressBar.setVisible(false);
             } else {
-
                 if (statusCode == 500 ){
                     tableview.setPlaceholder(new Label("CSV File not valid. Please select valid CSV file."));
                 }else {
                     tableview.setPlaceholder(new Label("User Not founded"));
                 }
-
-
             }
         }
 
@@ -355,7 +360,7 @@ public class PreviewProfile implements Initializable {
                 });
 
                 if (userList.size() > 0) {
-                    pagination.setVisible(true);
+                    paginationContainer.setDisable(false);
                     search_Item();
                 }
             }else {
@@ -487,13 +492,16 @@ public class PreviewProfile implements Initializable {
                             Text text = new Text(user.getFirstName());
                             text.setStyle("-fx-text-alignment:justify;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -515,14 +523,17 @@ public class PreviewProfile implements Initializable {
                             Text text = new Text(user.getLastName());
                             text.setStyle("-fx-text-alignment:justify;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -545,12 +556,15 @@ public class PreviewProfile implements Initializable {
                             Text text = new Text(String.valueOf(user.getClientID()));
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -572,12 +586,15 @@ public class PreviewProfile implements Initializable {
                             Text text = new Text(user.getRequestedLoginName());
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -598,12 +615,15 @@ public class PreviewProfile implements Initializable {
                             Text text = new Text(user.getWorkEmail());
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -623,11 +643,13 @@ public class PreviewProfile implements Initializable {
                         if (!user.getWorkPhoneNumber().isEmpty()) {
                             setText(user.getWorkPhoneNumber());
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -650,13 +672,16 @@ public class PreviewProfile implements Initializable {
                             Text text = new Text(user.getOfficeCompanyName());
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }

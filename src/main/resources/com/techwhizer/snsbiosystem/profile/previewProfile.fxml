@@ -19,9 +19,9 @@
    <bottom>
       <VBox fx:id="bottomContainer" prefHeight="90.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox>
+            <HBox fx:id="paginationContainer" disable="true">
                <children>
-                  <Pagination fx:id="pagination" visible="false" HBox.hgrow="ALWAYS" />
+                  <Pagination fx:id="pagination" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
             <HBox style="-fx-border-color: grey;">
@@ -164,13 +164,14 @@
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox fx:id="roleCom" minHeight="35.0" prefHeight="35.0" prefWidth="276.0" promptText="Select role" style="-fx-border-color: GREY; -fx-border-radius: 3;" />
+                                    <ComboBox fx:id="roleCom" minHeight="35.0" prefHeight="35.0" prefWidth="276.0" promptText="SELECT ROLE" style="-fx-border-color: GREY; -fx-border-radius: 3;" />
                                  </children>
                                  <VBox.margin>
                                     <Insets top="20.0" />
                                  </VBox.margin>
                               </HBox>
                               <Separator prefWidth="200.0" />
+                              <ProgressIndicator fx:id="fileChooseProgressBar" minHeight="35.0" minWidth="35.0" />
                               <HBox alignment="BOTTOM_CENTER" prefHeight="50.0" prefWidth="358.0" spacing="60.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <Label onMouseClicked="#cancelCsvChooser" prefHeight="26.0" prefWidth="145.0" styleClass="previewCancelButton" text="CANCEL" textFill="WHITE">

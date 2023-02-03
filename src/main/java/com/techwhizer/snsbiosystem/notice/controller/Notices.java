@@ -1,4 +1,4 @@
-package com.techwhizer.snsbiosystem.notice.contorller;
+package com.techwhizer.snsbiosystem.notice.controller;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
@@ -8,10 +8,10 @@ import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.notice.model.NoticeBoardDTO;
 import com.techwhizer.snsbiosystem.notice.model.NoticePageResponse;
+import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.util.RowPerPage;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -55,6 +55,8 @@ public class Notices implements Initializable {
     public TableColumn<NoticeBoardDTO, String> colAction;
     public Pagination pagination;
     public ImageView refreshBn;
+    public ComboBox<Integer> rowSizeCom;
+    public HBox paginationContainer;
     private CustomDialog customDialog;
     private OptionalMethod method;
     private ObservableList<NoticeBoardDTO> noticeList = FXCollections.observableArrayList();
@@ -64,11 +66,20 @@ public class Notices implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customDialog = new CustomDialog();
         method = new OptionalMethod();
-        callThread(OperationType.START, 0l, null);
+        comboBoxConfig();
     }
 
-    private void callThread(OperationType operationType, Long noticeId, Button button) {
-        MyAsyncTask myAsyncTask = new MyAsyncTask(operationType, noticeId, button);
+    private void comboBoxConfig() {
+        rowSizeCom.setItems(PaginationUtil.rowSize);
+
+        rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) ->
+                callThread(OperationType.START, 0L, null, rowPerPage));
+
+        rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
+    }
+
+    private void callThread(OperationType operationType, Long noticeId, Button button, Integer rowPerPage) {
+        MyAsyncTask myAsyncTask = new MyAsyncTask(operationType, noticeId, button, rowPerPage);
         myAsyncTask.execute();
     }
 
@@ -76,11 +87,13 @@ public class Notices implements Initializable {
         private OperationType operationType;
         private Long noticeId;
         private Button button;
+        private int rowPerPage;
 
-        public MyAsyncTask(OperationType operationType, Long noticeId, Button button) {
+        public MyAsyncTask(OperationType operationType, Long noticeId, Button button, Integer rowPerPage) {
             this.operationType = operationType;
             this.noticeId = noticeId;
             this.button = button;
+            this.rowPerPage = rowPerPage;
         }
 
         @Override
@@ -107,7 +120,7 @@ public class Notices implements Initializable {
         public Boolean doInBackground(Object... params) {
 
             switch (operationType) {
-                case START -> getAllNotice();
+                case START -> getAllNotice(rowPerPage);
                 case DELETE -> deleteNotice(noticeId, button);
             }
             return true;
@@ -131,7 +144,7 @@ public class Notices implements Initializable {
                     int statusCode = response.getStatusLine().getStatusCode();
 
                     if (statusCode == 200) {
-                        callThread(OperationType.START, 0L, null);
+                        callThread(OperationType.START, 0L, null, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
                     }
 
                     customDialog.showAlertBox("", content);
@@ -167,49 +180,51 @@ public class Notices implements Initializable {
         public void progressCallback(Integer... params) {
         }
 
-        private void getAllNotice() {
-
-            if (null != noticeList) {
-                noticeList.clear();
-            }
-            try {
-                Thread.sleep(100);
-                HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec("easy").build()).build();
-                URIBuilder uriBuilder = new URIBuilder(UrlConfig.getKitNoticeUrl());
-                HttpGet httpGet = new HttpGet(uriBuilder.build());
-
-                httpGet.addHeader("Content-Type", "application/json");
-                httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
-                HttpResponse response = httpClient.execute(httpGet);
-                HttpEntity resEntity = response.getEntity();
-
-                if (resEntity != null) {
-                    String content = EntityUtils.toString(resEntity);
-                    NoticePageResponse pageResponse = new Gson().fromJson(content, NoticePageResponse.class);
-                    List<NoticeBoardDTO> noticeBoardDTOs = pageResponse.getNotices();
-                    noticeList = FXCollections.observableArrayList(noticeBoardDTOs);
-                    if (noticeList.size() > 0) {
-                        pagination.setVisible(true);
-                        search_Item();
-                    }
-                }
-            } catch (IOException | URISyntaxException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            Platform.runLater(() -> {
-                refreshBn.setDisable(false);
-            });
-
-        }
     }
 
-    private void search_Item() {
+    private void getAllNotice(int rowPerPage) {
+
+        if (null != noticeList) {
+            noticeList.clear();
+        }
+        try {
+            Thread.sleep(100);
+            HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
+                    .setCookieSpec("easy").build()).build();
+            URIBuilder uriBuilder = new URIBuilder(UrlConfig.getKitNoticeUrl());
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+
+            httpGet.addHeader("Content-Type", "application/json");
+            httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
+            HttpResponse response = httpClient.execute(httpGet);
+            HttpEntity resEntity = response.getEntity();
+
+            if (resEntity != null) {
+                String content = EntityUtils.toString(resEntity);
+                NoticePageResponse pageResponse = new Gson().fromJson(content, NoticePageResponse.class);
+                List<NoticeBoardDTO> noticeBoardDTOs = pageResponse.getNotices();
+                noticeList = FXCollections.observableArrayList(noticeBoardDTOs);
+
+                if (noticeList.size() > 0) {
+                    paginationContainer.setVisible(true);
+
+                    search_Item(rowPerPage);
+                }
+            }
+        } catch (IOException | URISyntaxException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Platform.runLater(() -> {
+            refreshBn.setDisable(false);
+        });
+
+    }
+
+    private void search_Item(int rowPerPage) {
         searchTf.setText("");
 
         filteredData = new FilteredList<>(noticeList, p -> true);
 
-        int rowsPerPage = RowPerPage.NOTICE_ROW_PER_PAGE;
         searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
 
             filteredData.setPredicate(notice -> {
@@ -252,33 +267,30 @@ public class Notices implements Initializable {
                 }*/
             });
 
-            changeTableView(pagination.getCurrentPageIndex(), rowsPerPage);
+            changeTableView(pagination.getCurrentPageIndex(), rowPerPage);
 
         });
 
         pagination.setCurrentPageIndex(0);
-        changeTableView(0, rowsPerPage);
+        changeTableView(0, rowPerPage);
         pagination.currentPageIndexProperty().addListener(
                 (observable1, oldValue1, newValue1) -> {
                     tableview.scrollTo(0);
-                    changeTableView(newValue1.intValue(), rowsPerPage);
+                    changeTableView(newValue1.intValue(), rowPerPage);
                 });
     }
 
-    private void changeTableView(int index, int limit) {
+    private void changeTableView(int index, int rowPerPage) {
 
-        int totalPage = (int) (Math.ceil(filteredData.size() * 1.0 / RowPerPage.NOTICE_ROW_PER_PAGE));
+        int totalPage = (int) (Math.ceil(filteredData.size() * 1.0 / rowPerPage));
         Platform.runLater(() -> pagination.setPageCount(totalPage));
         setOptionalCell();
-
-        int fromIndex = index * limit;
-        int toIndex = Math.min(fromIndex + limit, noticeList.size());
-
+        int fromIndex = index * rowPerPage;
+        int toIndex = Math.min(fromIndex + rowPerPage, noticeList.size());
         int minIndex = Math.min(toIndex, filteredData.size());
         SortedList<NoticeBoardDTO> sortedData = new SortedList<>(
                 FXCollections.observableArrayList(filteredData.subList(Math.min(fromIndex, minIndex), minIndex)));
         sortedData.comparatorProperty().bind(tableview.comparatorProperty());
-
         Platform.runLater(() -> {
             if (sortedData.size() > 0) {
                 tableview.setPlaceholder(method.getProgressBar(40, 40));
@@ -286,13 +298,11 @@ public class Notices implements Initializable {
                 tableview.setPlaceholder(new Label("Notice not found"));
             }
         });
-
         tableview.setItems(sortedData);
         tableview.setRowFactory(tv -> new TableRow<>() {
             @Override
             protected void updateItem(NoticeBoardDTO item, boolean empty) {
                 super.updateItem(item, empty);
-
                 if (null == item) {
                     setStyle("-fx-background-color: white");
                 } else {
@@ -349,9 +359,8 @@ public class Notices implements Initializable {
                     viewBn.setOnAction(event -> {
                         method.selectTable(getIndex(), tableview);
                         NoticeBoardDTO noticeBoardDTO = tableview.getSelectionModel().getSelectedItem();
-                        Main.primaryStage.setUserData(noticeBoardDTO.getId());
-
-                        // customDialog.showFxmlFullDialog("notice/createNotice.fxml", "Profile");
+                        Main.primaryStage.setUserData(noticeBoardDTO);
+                        customDialog.showFxmlDialog2("notice/viewNotice.fxml", "");
                     });
                     editBn.setOnAction((event) -> {
                         method.selectTable(getIndex(), tableview);
@@ -364,7 +373,7 @@ public class Notices implements Initializable {
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-                                callThread(OperationType.START, 0L, null);
+                                callThread(OperationType.START, 0L, null, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
 
                             }
                         }
@@ -387,7 +396,7 @@ public class Notices implements Initializable {
                         ButtonType button = result.orElse(ButtonType.CANCEL);
                         if (button == ButtonType.OK) {
 
-                            callThread(OperationType.DELETE, noticeBoardDTO.getId(), deleteBbn);
+                            callThread(OperationType.DELETE, noticeBoardDTO.getId(), deleteBbn, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
 
                         } else {
                             alert.close();
@@ -398,8 +407,6 @@ public class Notices implements Initializable {
                     managebtn.setStyle("-fx-alignment:center");
 
                     managebtn.setSpacing(15);
-
-                    //  HBox.setMargin(editBn, new Insets(0, 30, 0, 30));
 
                     setGraphic(managebtn);
                     setText(null);
@@ -426,13 +433,16 @@ public class Notices implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;-fx-font-size: 14");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText(CommonUtility.TABLE_EMPTY_LABEL);
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText(CommonUtility.TABLE_EMPTY_LABEL);
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -455,13 +465,16 @@ public class Notices implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;-fx-font-size: 14");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText(CommonUtility.TABLE_EMPTY_LABEL);
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText(CommonUtility.TABLE_EMPTY_LABEL);
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -512,9 +525,11 @@ public class Notices implements Initializable {
                         Text text = new Text(str.replaceFirst(",", ""));
                         text.setStyle("-fx-text-alignment:center;-fx-font-size: 13");
                         text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                        setText(null);
                         setGraphic(text);
                     } else {
-                        setText(CommonUtility.TABLE_EMPTY_LABEL);
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -532,13 +547,15 @@ public class Notices implements Initializable {
                 } else {
                     NoticeBoardDTO noticeBoardDTO = tableview.getItems().get(getIndex());
                     if (null != noticeBoardDTO) {
-                        Text text = new Text(noticeBoardDTO.isScheduled()?"YES":"NO");
+                        Text text = new Text(noticeBoardDTO.isScheduled() ? "YES" : "NO");
                         text.setStyle("-fx-text-alignment:center;-fx-font-size: 14");
                         text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                        setText(null);
                         setGraphic(text);
 
                     } else {
-                        setText(CommonUtility.TABLE_EMPTY_LABEL);
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -561,13 +578,16 @@ public class Notices implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;-fx-font-size: 14");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText(CommonUtility.TABLE_EMPTY_LABEL);
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText(CommonUtility.TABLE_EMPTY_LABEL);
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -587,16 +607,19 @@ public class Notices implements Initializable {
                     if (null != String.valueOf(noticeBoardDTO.getStory())) {
                         String txt = String.valueOf(noticeBoardDTO.getStory());
                         if (!String.valueOf(txt).isEmpty()) {
-                            Text text = new Text(txt);
+                            Text text = new Text(CommonUtility.getCutText(txt));
                             text.setStyle("-fx-text-alignment:center;-fx-font-size: 14");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText(CommonUtility.TABLE_EMPTY_LABEL);
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText(CommonUtility.TABLE_EMPTY_LABEL);
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -609,9 +632,17 @@ public class Notices implements Initializable {
         map.put("operation_type", OperationType.CREATE);
         Main.primaryStage.setUserData(map);
         customDialog.showFxmlFullDialog("notice/createNotice.fxml", "CREATE NOTICE");
+
+        if (Main.primaryStage.getUserData() instanceof Boolean) {
+
+            boolean isUpdated = (boolean) Main.primaryStage.getUserData();
+            if (isUpdated) {
+                refreshClick(null);
+            }
+        }
     }
 
     public void refreshClick(MouseEvent mouseEvent) {
-        callThread(OperationType.START, 0l, null);
+        callThread(OperationType.START, 0L, null, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
     }
 }

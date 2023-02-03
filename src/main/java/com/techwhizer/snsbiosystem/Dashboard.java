@@ -45,7 +45,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        sterilizerBnClick(null);
+        userBnClick(null);
         customDialog = new CustomDialog();
         config();
         startThread();

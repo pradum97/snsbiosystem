@@ -138,7 +138,7 @@ public class DownloadReport {
 
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

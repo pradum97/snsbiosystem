@@ -14,6 +14,11 @@ import java.time.format.DateTimeFormatter;
 
 public class OptionalMethod {
 
+
+    public static void minimizedStage(Stage stage ,boolean bool){
+        stage.setMaximized(bool);
+    }
+
     public void customColumn(TableColumn columnName) {
 
         columnName.setCellFactory(tc -> {

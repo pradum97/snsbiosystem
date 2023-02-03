@@ -88,6 +88,10 @@ public class CreateProfile implements Initializable {
         Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
         userCreateOperationType = (OperationType) map.get("operation_type");
 
+        Platform.runLater(()->{
+            OptionalMethod.minimizedStage((Stage) submitBn.getScene().getWindow(),true);
+        });
+
         if (null == userCreateOperationType) {
             customDialog.showAlertBox("", "Operation type not valid");
             Platform.runLater(() -> {
@@ -162,6 +166,11 @@ public class CreateProfile implements Initializable {
                 }
             }
         }
+
+        if (Objects.equals(userDTO.getOfficeAddress(),userDTO.getHomeAddress())){
+            sameAsOfficeAddress.setSelected(true);
+        }
+
     }
 
     private void addressConfig() {

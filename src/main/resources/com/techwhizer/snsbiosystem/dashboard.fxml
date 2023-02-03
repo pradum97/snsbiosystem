@@ -15,8 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@css/dashboard.css" xmlns="http://javafx.com/javafx/19"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.Dashboard">
+<BorderPane stylesheets="@css/dashboard.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.Dashboard">
    <left>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -38,12 +37,12 @@
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </ImageView>
-                                          <Label fx:id="fullName" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold;" wrapText="true">
+                                          <Label fx:id="fullName"  textFill="WHITE" wrapText="true">
                                              <font>
                                                 <Font name="Arial Black" size="13.0" />
                                              </font>
                                           </Label>
-                                          <Label fx:id="username" layoutX="44.0" layoutY="110.0" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold;" wrapText="true">
+                                          <Label fx:id="username" layoutX="44.0" layoutY="110.0"  textFill="WHITE" wrapText="true">
                                              <font>
                                                 <Font name="Arial" size="14.0" />
                                              </font>
@@ -145,7 +144,7 @@
                         </ScrollPane>
                         <VBox alignment="CENTER">
                            <children>
-                              <Button fx:id="logoutBn" alignment="TOP_CENTER" graphicTextGap="7.0" mnemonicParsing="false" onAction="#logoutBnClick" style="-fx-border-color: red; -fx-border-radius: 5;" styleClass="menuButton" text="LOGOUT" textAlignment="CENTER" textFill="WHITE">
+                              <Button fx:id="logoutBn" alignment="TOP_CENTER" graphicTextGap="7.0" mnemonicParsing="false" onAction="#logoutBnClick" style="-fx-background-color: red; -fx-background-radius: 30; -fx-border-radius: 30;" text="LOGOUT" textAlignment="CENTER" textFill="WHITE">
                                  <graphic>
                                     <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                        <image>

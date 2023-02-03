@@ -29,6 +29,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -59,6 +60,7 @@ public class KitUsages implements Initializable {
     public TableColumn<KitUsageDTO, String> colListNumber;
     public TableColumn<KitUsageDTO, String> colSterilizerType;
     public TableColumn<KitUsageDTO, String> colSterilizerBrand;
+    public TableColumn<KitUsageDTO, String> colResult;
     public TableColumn<KitUsageDTO, String> colSerialNumber;
     public ComboBox<String> orderCom;
     public ComboBox<String> sortingCom;
@@ -80,10 +82,13 @@ public class KitUsages implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
-        method.hideElement(paginationContainer);
         searchByCom.setItems(new LocalDb().getKitUsageSearchType());
         searchByCom.getSelectionModel().select(KitUsageSearchType.KIT_NUMBER);
         searchByCom.valueProperty().addListener((observableValue, s, t1) -> searchTf.setText(""));
+
+        Platform.runLater(()->{
+            OptionalMethod.minimizedStage((Stage) buttonContainer.getScene().getWindow(),true);
+        });
 
         if (Main.primaryStage.getUserData() instanceof Map<?, ?>) {
 
@@ -117,18 +122,17 @@ public class KitUsages implements Initializable {
             orderCom.setItems(CommonUtility.orderList);
             orderCom.getSelectionModel().selectFirst();
             sortingCom.getSelectionModel().selectFirst();
+            rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
+                sortData(0, OperationType.START, 0L, null);
+            });
+            rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
+            pagination.currentPageIndexProperty().addListener(
+                    (observable1, oldValue1, newValue1) -> {
+                        int pageIndex = newValue1.intValue();
+                        sortData(pageIndex, OperationType.START, kitId, null);
+                    });
+            applySorting.setDisable(false);
         });
-
-        rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
-            sortData(0, OperationType.START, 0L, null);
-        });
-        Platform.runLater(()->{rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);});
-        pagination.currentPageIndexProperty().addListener(
-                (observable1, oldValue1, newValue1) -> {
-                    int pageIndex = newValue1.intValue();
-                    sortData(pageIndex, OperationType.START, kitId, null);
-                });
-        applySorting.setDisable(false);
     }
 
     public void applySorting(ActionEvent event) {
@@ -397,15 +401,15 @@ public class KitUsages implements Initializable {
 
                 } else {
 
-                    Button editBn = new Button();
+                    Label editBn = new Label();
                     editBn.setGraphic(getImage("img/icon/update_ic.png"));
 
                     ImageView activeIc = getImage("img/icon/admin_icon.png");
                     activeIc.setFitWidth(30);
                     activeIc.setFitHeight(30);
 
-                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ");
-                    editBn.setOnAction((event) -> {
+                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3;-fx-padding: 2 10 2 10 ");
+                    editBn.setOnMouseClicked((event) -> {
                         method.selectTable(getIndex(), tableview);
                         KitUsageDTO kd = tableview.getSelectionModel().getSelectedItem();
                         Map<String, Object> map = new HashMap<>();
@@ -451,13 +455,16 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -482,13 +489,16 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -515,13 +525,16 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -547,13 +560,16 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -579,13 +595,16 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -611,13 +630,16 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -643,13 +665,51 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
+                    }
+                }
+            }
+
+        });
+
+        colResult.setCellFactory((TableColumn<KitUsageDTO, String> param) -> new TableCell<>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                    setText(null);
+
+                } else {
+                    KitUsageDTO kd = tableview.getItems().get(getIndex());
+
+                    if (null != kd.getTestResult()) {
+
+                        String txt = String.valueOf(kd.getTestResult());
+
+                        if (!txt.isEmpty()) {
+                            Text text = new Text(txt);
+                            text.setStyle("-fx-text-alignment:center;");
+                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
+                            setGraphic(text);
+
+                        } else {
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
+                        }
+                    } else {
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
@@ -674,13 +734,16 @@ public class KitUsages implements Initializable {
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
                             setGraphic(text);
 
                         } else {
-                            setText("-");
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
                     } else {
-                        setText("-");
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                     }
                 }
             }
