@@ -6,6 +6,6 @@ step-2:taskkill /F /PID<PID NUM>
 after update data page scroll to update position
 
 note;
-role control only admin or note
+role control only admin or not
 token expire;
 test_result data type length 15 to 17
