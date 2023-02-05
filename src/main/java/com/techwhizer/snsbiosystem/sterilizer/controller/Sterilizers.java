@@ -328,7 +328,6 @@ public class Sterilizers implements Initializable {
         filteredData = new FilteredList<>(sterilizerList, p -> true);
 
         searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
-
             filteredData.setPredicate(sterilizer -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;

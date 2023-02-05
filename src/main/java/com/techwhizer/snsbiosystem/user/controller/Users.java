@@ -120,7 +120,8 @@ public class Users implements Initializable {
             });
 
             filterByRoleCom.valueProperty().addListener((observableValue, s, t1) ->
-                    sortData(t1, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0));
+                    sortData(t1, OperationType.START, 0L, null, null, 0, 0));
+
             applySorting.setDisable(false);
             searchByCom.valueProperty().addListener((observableValue, s, newValue) -> {
                 searchTf.setPromptText(" Search By : " + newValue.toLowerCase());
@@ -377,7 +378,7 @@ public class Users implements Initializable {
                 }
             });
 
-            changeTableView(totalPage, pageIndex, rowIndex);
+            changeTableView(0, 0, rowIndex);
 
         });
 

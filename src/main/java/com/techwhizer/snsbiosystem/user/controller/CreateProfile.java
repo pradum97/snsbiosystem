@@ -327,7 +327,6 @@ public class CreateProfile implements Initializable {
                 method.show_popup("Can't remove email. but only update it.", workEmailTf);
                 return;
             }
-
         }
 
         if (!sharingMethodCom.getSelectionModel().isEmpty()){

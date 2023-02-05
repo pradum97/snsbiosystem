@@ -391,7 +391,7 @@ public class Kits implements Initializable {
                 }
             });
 
-            changeTableView(totalPage, pageIndex, rowIndex);
+            changeTableView(0, 0, rowIndex);
 
         });
         changeTableView(totalPage, pageIndex, rowIndex);
