@@ -2,27 +2,6 @@ stop previous running server
 step-1:netstat -a -o -n
 step-2:taskkill /F /PID<PID NUM>
 ******************************************************************
-
-after update data page scroll to update position
-In Upload Distributor Csv, Correct Name and N/A Formating.
 In Upload Distributor Csv, When we upload Doctor Csv file then file is Uploading and it's gets Error msg.
-In Upload Distributor Csv and Distributor List, Add "ALL" Filter in Role Filter.
-In Add User, If User has email or Fax then Report Sharing method is mandatory.
-In Upload Sterilizer Csv, It's Uploading is slow.
-When Click On Menu show Hower, but when click On The Page Then Hide Hower.
-When cursur on long Time for Action Button,then show Tool Kit.
-When Select all on Role on User Creating.then all role selected but We Unselect a role or more then Select All is not Unchacked.
-After Distributor update, Close automatic distributor update page.
-
-*******************************************************************************************************************************
-
-When Deleted the user then Pagenation was Failed.
-When Update the User then Page should be automatic Refresh.
-In View User, In name show Only Last Name.
-In Update User, Office Address is requried but WithOut Office Address data is updated.
-In User, If user has a kit and It's updated then Open Kit List Page in User.
-
 note;
-role control only admin or not
 token expire;
-test_result data type length 15 to 17

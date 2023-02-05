@@ -9,11 +9,16 @@
     -fx-cursor: hand;
 }
 
-.menuButton:focused{
+.menuButtonSelected{
     -fx-border-radius: 4;
     -fx-background-color: #006666;
     -fx-text-fill: white;
 }
+
+.menuButtonUnselected{
+    -fx-background-color: transparent;
+}
+
 
 .accountButton:focused{
     -fx-focus-color: transparent;

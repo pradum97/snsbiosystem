@@ -72,7 +72,6 @@ public class Sterilizers implements Initializable {
 
     private ObservableList<SterilizerTableView> sterilizerList = FXCollections.observableArrayList();
     private FilteredList<SterilizerTableView> filteredData;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
@@ -95,43 +94,35 @@ public class Sterilizers implements Initializable {
         });
 
         rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
-            String filedName = SterilizerSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
-            String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
-            int rowSize = rowPerPage;
-            String sort = filedName + "," + order;
-            sortData(sort, rowSize, 0, OperationType.START, 0L);
+            sortData(0, 0, OperationType.START, 0L);
         });
 
         Platform.runLater(() -> rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE));
 
         pagination.currentPageIndexProperty().addListener(
                 (observable1, oldValue1, newValue1) -> {
-                    String filedName = SterilizerSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
-                    String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
-                    int rowSize = rowSizeCom.getSelectionModel().getSelectedItem();
-                    String sort = filedName + "," + order;
                     int pageIndex = newValue1.intValue();
-                    sortData(sort, rowSize, pageIndex, OperationType.START, 0L);
+                    sortData(pageIndex, 0, OperationType.START, 0L);
                 });
         applySorting.setDisable(false);
     }
 
     public void applySorting(ActionEvent event) {
+        sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L);
+    }
+
+    private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long sterilizerId) {
 
         String filedName = SterilizerSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
         String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
         int rowSize = rowSizeCom.getSelectionModel().getSelectedItem();
         String sort = filedName + "," + order;
-        sortData(sort, rowSize, 0, OperationType.START, 0L);
-    }
-
-    private void sortData(String sort, int rowSize, int pageIndex,
-                          OperationType operationType, Long sterilizerId) {
 
         Map<String, Object> map = new HashMap<>();
         map.put("sort", sort);
         map.put("row_size", rowSize);
         map.put("page_index", pageIndex);
+        map.put("row_index", tableRowIndex);
 
         startThread(operationType, sterilizerId, null, map);
     }
@@ -201,7 +192,7 @@ public class Sterilizers implements Initializable {
                     comboBoxConfig();
                 }
                 case START -> getAllSterilizer(sortingMap);
-                case DELETE -> deleteSterilizer(sterilizerId, button);
+                case DELETE -> deleteSterilizer(sterilizerId, button, sortingMap);
             }
             return true;
         }
@@ -262,7 +253,9 @@ public class Sterilizers implements Initializable {
                 if (sterilizerList.size() > 0) {
                     paginationContainer.setDisable(false);
                     int totalPage = pageResponse.getTotalPage();
-                    search_Item(totalPage);
+                    assert sortingMap != null;
+                    search_Item(totalPage, (Integer) sortingMap.get("page_index"),
+                            (Integer) sortingMap.get("row_index"));
                 }
 
             }
@@ -282,7 +275,7 @@ public class Sterilizers implements Initializable {
         myAsyncTask.execute();
     }
 
-    private void deleteSterilizer(Long sterilizerId, Button button) {
+    private void deleteSterilizer(Long sterilizerId, Button button, Map<String, Object> sortingMap) {
 
         try {
             Thread.sleep(100);
@@ -301,7 +294,9 @@ public class Sterilizers implements Initializable {
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == 200) {
-                    applySorting(null);
+                    int pageIndex = (Integer) sortingMap.get("page_index");
+                    int rowIndex = (Integer) sortingMap.get("row_index");
+                    sortData(pageIndex, rowIndex, OperationType.START, 0L);
                 }
 
                 customDialog.showAlertBox("", content);
@@ -327,7 +322,7 @@ public class Sterilizers implements Initializable {
         return iv;
     }
 
-    private void search_Item(int totalPage) {
+    private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
         searchTf.setText(null);
 
         filteredData = new FilteredList<>(sterilizerList, p -> true);
@@ -335,11 +330,9 @@ public class Sterilizers implements Initializable {
         searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
 
             filteredData.setPredicate(sterilizer -> {
-
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
-
                 String lowerCaseFilter = newValue.toLowerCase();
                 String searchBy = searchByCom.getSelectionModel().getSelectedItem();
 
@@ -371,14 +364,14 @@ public class Sterilizers implements Initializable {
                     }
                 }
             });
-            changeTableView(totalPage);
+            changeTableView(totalPage, pageIndex, rowIndex);
         });
 
 
-        changeTableView(totalPage);
+        changeTableView(totalPage, pageIndex, rowIndex);
     }
 
-    private void changeTableView(int totalPage) {
+    private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
 
         Platform.runLater(() -> {
             pagination.setPageCount(totalPage);
@@ -387,6 +380,9 @@ public class Sterilizers implements Initializable {
             } else {
                 tableview.setPlaceholder(new Label("Sterilizer not found"));
             }
+
+            pagination.setCurrentPageIndex(pageIndex);
+            tableview.scrollTo(rowIndex);
         });
 
         colSlNum.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
@@ -434,10 +430,12 @@ public class Sterilizers implements Initializable {
                     Button editBn = new Button();
                     Button deleteBbn = new Button();
 
+                    CommonUtility.onHoverShowTextButton(editBn,"Update sterilizer");
+                    CommonUtility.onHoverShowTextButton(deleteBbn,"Delete Sterilizer");
+
                     ImageView activeIc = getImage("img/icon/admin_icon.png");
                     activeIc.setFitWidth(30);
                     activeIc.setFitHeight(30);
-
 
                     editBn.setGraphic(getImage("img/icon/update_ic.png"));
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));
@@ -456,12 +454,13 @@ public class Sterilizers implements Initializable {
                         Main.primaryStage.setUserData(map);
 
                         customDialog.showFxmlFullDialog("sterilizer/addSterilizer.fxml", "UPDATE STERILIZER");
-
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
 
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-                                applySorting(null);
+                                int rowPosition = getIndex();
+                                int paginationIndex = pagination.getCurrentPageIndex();
+                                sortData(paginationIndex, rowPosition, OperationType.START, stv.getId());
                             }
                         }
 
@@ -484,11 +483,9 @@ public class Sterilizers implements Initializable {
                         ButtonType button = result.orElse(ButtonType.CANCEL);
                         if (button == ButtonType.OK) {
 
-                            String filedName = SterilizerSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
-                            String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
-                            int rowSize = rowSizeCom.getSelectionModel().getSelectedItem();
-                            String sort = filedName + "," + order;
-                            sortData(sort, rowSize, 0, OperationType.DELETE, stv.getId());
+                            int rowPosition = getIndex() - 1;
+                            int paginationIndex = pagination.getCurrentPageIndex();
+                            sortData(paginationIndex, rowPosition, OperationType.DELETE, stv.getId());
 
                         } else {
                             alert.close();

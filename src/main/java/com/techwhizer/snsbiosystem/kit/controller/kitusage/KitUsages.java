@@ -123,23 +123,22 @@ public class KitUsages implements Initializable {
             orderCom.getSelectionModel().selectFirst();
             sortingCom.getSelectionModel().selectFirst();
             rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
-                sortData(0, OperationType.START, 0L, null);
+                sortData(0, 0, OperationType.START, 0L, null);
             });
             rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
             pagination.currentPageIndexProperty().addListener(
                     (observable1, oldValue1, newValue1) -> {
                         int pageIndex = newValue1.intValue();
-                        sortData(pageIndex, OperationType.START, kitId, null);
+                        sortData(pageIndex, 0, OperationType.START, kitId, null);
                     });
             applySorting.setDisable(false);
         });
     }
-
     public void applySorting(ActionEvent event) {
-        sortData(0, OperationType.START, kitId, null);
+        sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, kitId, null);
     }
 
-    private void sortData(int pageIndex, OperationType operationType, Long kitId, Button button) {
+    private void sortData(int pageIndex, int rowIndex, OperationType operationType, Long kitId, Button button) {
 
         String filedName = KitUsageSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
         String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
@@ -150,7 +149,7 @@ public class KitUsages implements Initializable {
         sortedDataMap.put("sort", sort);
         sortedDataMap.put("row_size", rowSize);
         sortedDataMap.put("page_index", pageIndex);
-
+        sortedDataMap.put("row_index", rowIndex);
         startThread(operationType, kitId, button, sortedDataMap);
     }
 
@@ -200,7 +199,6 @@ public class KitUsages implements Initializable {
         public Boolean doInBackground(Object... params) {
 
             if (operationType == OperationType.SORTING_LOADING){
-
                 comboBoxConfig(kitId);
             }else {
                 getAllKitsUsages(sortedDataMap);
@@ -267,9 +265,10 @@ public class KitUsages implements Initializable {
                     List<KitUsageDTO> kds = KkitPageResponse.getKitUsages();
                     kitsUsagesList = FXCollections.observableArrayList(kds);
                     if (kitsUsagesList.size() > 0) {
-                        paginationContainer.setVisible(true);
+                        paginationContainer.setDisable(false);
                         int totalPage = KkitPageResponse.getTotalPage();
-                        search_Item(totalPage);
+                        search_Item(totalPage,(Integer) sortedDataMap.get("page_index"),
+                                (Integer) sortedDataMap.get("row_index"));
                     }
                 } else {
 
@@ -298,7 +297,7 @@ public class KitUsages implements Initializable {
         return iv;
     }
 
-    private void search_Item(int totalPage) {
+    private void search_Item(int totalPage,int pageIndex, Integer rowIndex) {
         searchTf.setText("");
 
         filteredData = new FilteredList<>(kitsUsagesList, p -> true);
@@ -347,14 +346,14 @@ public class KitUsages implements Initializable {
                 }
             });
 
-            changeTableView(totalPage);
+            changeTableView(totalPage, pageIndex, rowIndex);
 
         });
 
-        changeTableView(totalPage);
+        changeTableView(totalPage, pageIndex, rowIndex);
     }
 
-    private void changeTableView(int totalPage) {
+    private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
         Platform.runLater(() -> {
             pagination.setPageCount(totalPage);
 
@@ -363,6 +362,9 @@ public class KitUsages implements Initializable {
             } else {
                 tableview.setPlaceholder(new Label("Kit Usage not found"));
             }
+
+            pagination.setCurrentPageIndex(pageIndex);
+            tableview.scrollTo(rowIndex);
         });
 
         setOptionalCell();
@@ -408,6 +410,8 @@ public class KitUsages implements Initializable {
                     activeIc.setFitWidth(30);
                     activeIc.setFitHeight(30);
 
+                    CommonUtility.onHoverShowTextLabel(editBn,"Click to update kit usage");
+
                     editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3;-fx-padding: 2 10 2 10 ");
                     editBn.setOnMouseClicked((event) -> {
                         method.selectTable(getIndex(), tableview);
@@ -421,8 +425,9 @@ public class KitUsages implements Initializable {
 
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-
-                                applySorting(null);
+                                int rowPosition = getIndex();
+                                int paginationIndex = pagination.getCurrentPageIndex();
+                                sortData(paginationIndex, rowPosition, operationType, kitId, null);
                             }
                         }
 

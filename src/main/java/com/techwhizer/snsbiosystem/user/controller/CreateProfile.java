@@ -6,20 +6,23 @@ import com.google.gson.reflect.TypeToken;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.model.*;
 import com.techwhizer.snsbiosystem.user.util.CheckUsername;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -115,7 +118,6 @@ public class CreateProfile implements Initializable {
         }
 
         roleConfig();
-
         addressConfig();
 
     }
@@ -167,10 +169,11 @@ public class CreateProfile implements Initializable {
             }
         }
 
-        if (Objects.equals(userDTO.getOfficeAddress(),userDTO.getHomeAddress())){
+        if (Objects.equals(userDTO.getOfficeAddress(), userDTO.getHomeAddress())) {
             sameAsOfficeAddress.setSelected(true);
         }
 
+        checkAllRoleSelected();
     }
 
     private void addressConfig() {
@@ -202,38 +205,50 @@ public class CreateProfile implements Initializable {
     }
 
     private void roleConfig() {
-        adminCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> r.setAdmin(t1));
-        doctorCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> r.setDoctor(t1));
-        dealerCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> r.setDealer(t1));
-        patientCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> r.setPatient(t1));
+        adminCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            r.setAdmin(t1);
+            checkAllRoleSelected();
+        });
+        doctorCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            r.setDoctor(t1);
+            checkAllRoleSelected();
+        });
+        dealerCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            r.setDealer(t1);
+            checkAllRoleSelected();
+        });
+        patientCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            r.setPatient(t1);
+            checkAllRoleSelected();
+        });
+        selectAllCb.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
 
-
-        selectAllCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
-            String signedUsername = (String) Login.authInfo.get("username");
-            if (signedUsername.equals(currentUsername)) {
-                adminCb.setDisable(true);
-            }
-
-            if (t1) {
-
-                if (!adminCb.isDisable()){
-                    adminCb.setSelected(true);
+                String signedUsername = (String) Login.authInfo.get("username");
+                if (signedUsername.equals(currentUsername)) {
+                    adminCb.setDisable(true);
                 }
 
-                doctorCb.setSelected(true);
-                dealerCb.setSelected(true);
-                patientCb.setSelected(true);
-            } else {
-                if (!adminCb.isDisable()){
-                    adminCb.setSelected(false);
+                if (selectAllCb.isSelected()) {
 
+                    if (!adminCb.isDisable()) {
+                        adminCb.setSelected(true);
+                    }
+
+                    doctorCb.setSelected(true);
+                    dealerCb.setSelected(true);
+                    patientCb.setSelected(true);
+                } else {
+                    if (!adminCb.isDisable()){
+                        adminCb.setSelected(false);
+
+                    }
+                    doctorCb.setSelected(false);
+                    dealerCb.setSelected(false);
+                    patientCb.setSelected(false);
                 }
-                doctorCb.setSelected(false);
-                dealerCb.setSelected(false);
-                patientCb.setSelected(false);
             }
-
-
         });
         sameAsOfficeAddress.selectedProperty().addListener((observableValue, aBoolean, isTrue) -> {
 
@@ -258,6 +273,16 @@ public class CreateProfile implements Initializable {
             }
 
         });
+    }
+
+    void checkAllRoleSelected() {
+
+        if (adminCb.isSelected() && doctorCb.isSelected() & dealerCb.isSelected() &&
+                patientCb.isSelected()) {
+            selectAllCb.setSelected(true);
+        } else {
+            selectAllCb.setSelected(false);
+        }
     }
 
     public void cancelBnClick(ActionEvent event) {
@@ -302,12 +327,36 @@ public class CreateProfile implements Initializable {
                 return;
             }
 
-        } else if (null != officeFax && !officeFax.isEmpty()) {
+        }
+
+        if (!sharingMethodCom.getSelectionModel().isEmpty()){
+            String sharedMethod = sharingMethodCom.getSelectionModel().getSelectedItem();
+
+            switch (sharedMethod){
+
+                case ReportingMethods.EMAIL -> {
+                    if (null == email){
+                        method.show_popup("Please enter email.", workEmailTf);
+                        return;
+                    }
+                }
+                case ReportingMethods.FAX -> {
+
+                    if (null == officeFax){
+                        method.show_popup("Please enter fax number.", officeFaxNumberTf);
+                        return;
+                    }
+                }
+            }
+
+        }
+
+        if (null != officeFax) {
             if (officeFax.length() < 9) {
                 method.show_popup("Enter fax number more then 8 digit", officeFaxNumberTf);
                 return;
             }
-        } else if (null == officeAddress && officeAddress.isEmpty()) {
+        } else if (null == officeAddress || officeAddress.isEmpty()) {
             method.show_popup("Please Enter Office Address", officeAddressTa);
             return;
         }
@@ -352,7 +401,6 @@ public class CreateProfile implements Initializable {
         if (!sharingMethodCom.getSelectionModel().isEmpty()){
             dm.setPrefaredMethodForReportSharing(sharingMethodCom.getSelectionModel().getSelectedItem());
         }
-
         ImageView image = new ImageView(new ImageLoader().load("img/icon/warning_ic.png"));
         image.setFitWidth(45);
         image.setFitHeight(45);
@@ -371,9 +419,16 @@ public class CreateProfile implements Initializable {
             String dataJson = new Gson().toJson(list, List.class);
             MyAsyncTask myAsyncTask = new MyAsyncTask(userCreateOperationType);
             myAsyncTask.execute(dataJson, username);
-
         } else {
             alert.close();
+        }
+    }
+
+    public void keyPress(KeyEvent keyEvent) {
+
+        if (keyEvent.getCode() == KeyCode.ENTER){
+
+            submitBnClick(null);
         }
     }
 
@@ -492,20 +547,29 @@ public class CreateProfile implements Initializable {
                             }
                             customDialog.showAlertBox("Failed", "Invalid Data : " + invalidsStr);
                         } else {
-                            Main.primaryStage.setUserData(true);
-                            resetAllField();
-                            customDialog.showAlertBox("Success", content);
-                            Platform.runLater(() -> cancelBnClick(null));
-                            String signedUsername = (String) Login.authInfo.get("username");
-                            if (signedUsername.equals(currentUsername)) {
-                                Platform.runLater(()->{
+                            Platform.runLater(() -> {
+                                Main.primaryStage.setUserData(true);
+                                customDialog.showAlertBox("Success", content);
+                                cancelBnClick(null);
+                                String signedUsername = (String) Login.authInfo.get("username");
+                                if (signedUsername.equals(currentUsername)) {
                                     new Main().changeScene("auth/login.fxml", "LOGIN HERE");
                                     Login.authInfo.clear();
-                                });
-                            }
+                                }
+                            });
                         }
                     } catch (JsonSyntaxException e) {
-                        customDialog.showAlertBox("Success",  content);
+
+                        Platform.runLater(() -> {
+                            Main.primaryStage.setUserData(true);
+                            customDialog.showAlertBox("Success", content);
+                            cancelBnClick(null);
+                            String signedUsername = (String) Login.authInfo.get("username");
+                            if (signedUsername.equals(currentUsername)) {
+                                new Main().changeScene("auth/login.fxml", "LOGIN HERE");
+                                Login.authInfo.clear();
+                            }
+                        });
 
                     }
                 }else {

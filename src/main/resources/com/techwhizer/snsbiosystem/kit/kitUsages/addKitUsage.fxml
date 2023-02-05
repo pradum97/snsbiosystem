@@ -45,7 +45,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="kitNumberTf" minHeight="40.0" prefHeight="40.0" promptText="Enter kit number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <TextField fx:id="kitNumberTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter kit number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                     <VBox maxWidth="296.0" minWidth="296.0" prefHeight="62.0" spacing="5.0">
@@ -55,7 +55,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <DatePicker fx:id="testDateDp" editable="false" minHeight="40.0" prefHeight="40.0" prefWidth="350.0" promptText="YYYY / MM / DD" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-focus-traversable: false;" />
+                                          <DatePicker fx:id="testDateDp" editable="false" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="YYYY / MM / DD" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-focus-traversable: false;" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -70,7 +70,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="sterilizerId" alignment="CENTER" editable="false" minHeight="40.0" onMouseClicked="#chooseSterilizerId" prefHeight="40.0" prefWidth="350.0" style="-fx-border-color: grey;-fx-cursor: hand; -fx-border-radius: 3; -fx-background-color: white; -fx-highlight-fill: null; -fx-highlight-text-fill: null;" text="CHOOSE STERILIZER ID" />
+                                          <TextField fx:id="sterilizerId" alignment="CENTER" editable="false" minHeight="40.0" onKeyPressed="#keyPress" onMouseClicked="#chooseSterilizerId" prefHeight="40.0" prefWidth="350.0" style="-fx-border-color: grey;-fx-cursor: hand; -fx-border-radius: 3; -fx-background-color: white; -fx-highlight-fill: null; -fx-highlight-text-fill: null;" text="CHOOSE STERILIZER ID" />
                                        </children>
                                     </VBox>
                                     <VBox layoutX="391.0" layoutY="10.0" maxWidth="296.0" minWidth="296.0" spacing="5.0" HBox.hgrow="ALWAYS">
@@ -80,7 +80,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="sterilizerType" editable="false" minHeight="40.0" minWidth="190.0" prefHeight="40.0" prefWidth="350.0" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-highlight-fill: null; -fx-highlight-text-fill: null;" />
+                                          <TextField fx:id="sterilizerType" editable="false" minHeight="40.0" minWidth="190.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-highlight-fill: null; -fx-highlight-text-fill: null;" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -94,7 +94,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <ComboBox fx:id="testResultCom" minHeight="40.0" prefHeight="40.0" prefWidth="624.0" promptText="SELECT TEST RESULT" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <ComboBox fx:id="testResultCom" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="624.0" promptText="SELECT TEST RESULT" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -110,7 +110,7 @@
                               </Button>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <Button fx:id="submitBn" mnemonicParsing="false" onAction="#submitBnClick" prefHeight="26.0" prefWidth="149.0" styleClass="previewsubmitButton" text="SUBMIT" textFill="WHITE">
+                                    <Button fx:id="submitBn" mnemonicParsing="false" onAction="#submitBnClick" onKeyPressed="#keyPress" prefHeight="26.0" prefWidth="149.0" styleClass="previewsubmitButton" text="SUBMIT" textFill="WHITE">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.ProgressIndicator?>
@@ -15,8 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.kit.controller.PreviewKits">
+<BorderPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.kit.controller.PreviewKits">
    <bottom>
       <VBox prefHeight="90.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
@@ -100,7 +98,7 @@
                               </Label>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <Label fx:id="uploadNowBn" graphicTextGap="10.0"  onMouseClicked="#uploadBnClick" prefHeight="27.0" prefWidth="162.0" styleClass="previewsubmitButton" text="UPLOAD NOW" textFill="WHITE">
+                                    <Label fx:id="uploadNowBn" graphicTextGap="10.0" onKeyPressed="#keyPress" onMouseClicked="#uploadBnClick" prefHeight="27.0" prefWidth="162.0" styleClass="previewsubmitButton" text="UPLOAD NOW" textFill="WHITE">
                                        <font>
                                           <Font name="System Bold" size="13.0" />
                                        </font>
@@ -138,7 +136,7 @@
          <children>
             <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
-                  <TableView fx:id="tableview" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="tableview" onKeyPressed="#keyPress" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="colClientId" maxWidth="170.0" minWidth="160.0" text="CLIENT ID" />
                        <TableColumn fx:id="colDealerId" maxWidth="160.0" minWidth="170.0" text="DEALER ID" />

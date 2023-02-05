@@ -3,15 +3,15 @@ package com.techwhizer.snsbiosystem.user.controller.auth;
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.user.constant.Roles;
 import com.techwhizer.snsbiosystem.user.model.AuthResponse;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -31,7 +31,7 @@ import java.util.*;
 public class Login implements Initializable {
 
     public TextField usernameTf;
-    public PasswordField passwordTf;
+    public TextField passwordTf;
     public Button login_button;
     public ProgressIndicator progressBar;
     private OptionalMethod method ;
@@ -106,16 +106,32 @@ public class Login implements Initializable {
                 String token = headers[0].getValue();
 
                 if(response.getStatusLine().getStatusCode() == 200){
-
-                    authInfo.put("token",token);
-                    authInfo.put("username",userMap.get("username"));
-                    authInfo.put("basic_auth_header",
-                            getBasicAuthenticationHeader(userMap.get("username"), userMap.get("password")));
-
                     AuthResponse authRes = new Gson().fromJson(content, AuthResponse.class);
-                    authInfo.put("auth_response",authRes);
-                    authInfo.put("current_id",authRes.getId());
-                    Platform.runLater(()->new Main().changeScene("dashboard.fxml","DASHBOARD"));
+                    Set<String> roles = authRes.getRoles();
+                    boolean isAdmin = false;
+
+                    for (String role:roles){
+                        isAdmin = role.equals(Roles.ROLE_ADMIN.toString());
+                    }
+
+                    if(isAdmin){
+                        authInfo.put("token",token);
+                        authInfo.put("username",userMap.get("username"));
+                        authInfo.put("basic_auth_header",
+                                getBasicAuthenticationHeader(userMap.get("username"), userMap.get("password")));
+
+                        authInfo.put("auth_response",authRes);
+                        authInfo.put("current_id",authRes.getId());
+
+                        Platform.runLater(()->new Main().changeScene("dashboard.fxml","DASHBOARD"));
+                    }else {
+
+                        String msg = "You do not have permission to access this application";
+                        String contentMsg = "Please login with administrator privileges and try again";
+
+                        customDialog.showAlertBox("",msg,contentMsg);
+                    }
+
                 }else {
                     customDialog.showAlertBox(" Authenticate Failed","Username or Password Incorrect.");
                 }

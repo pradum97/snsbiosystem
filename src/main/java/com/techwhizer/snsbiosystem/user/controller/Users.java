@@ -94,7 +94,8 @@ public class Users implements Initializable {
 
         ObservableList<String> roleList = FXCollections.observableArrayList(CommonUtility.ALL);
         roleList.addAll(FXCollections.observableArrayList(RoleOption.sortingMap.keySet()));
-        filterByRoleCom.setItems(FXCollections.observableArrayList(RoleOption.sortingMap.keySet()));
+
+        filterByRoleCom.setItems(roleList);
         orderCom.setItems(CommonUtility.orderList);
 
         Platform.runLater(() -> {
@@ -108,17 +109,18 @@ public class Users implements Initializable {
                     (observable1, oldValue1, newValue1) -> {
                         int pageIndex = newValue1.intValue();
                         String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                        sortData(role, OperationType.START, 0L, null, null, pageIndex);
+                        sortData(role, OperationType.START, 0L, null, null, pageIndex, 0);
 
 
                     });
 
             rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
                 String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                sortData(role, OperationType.START, 0L, null, null, 0);
+                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0);
             });
 
-            filterByRoleCom.valueProperty().addListener((observableValue, s, t1) -> sortData(t1, OperationType.START, 0L, null, null, 0));
+            filterByRoleCom.valueProperty().addListener((observableValue, s, t1) ->
+                    sortData(t1, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0));
             applySorting.setDisable(false);
             searchByCom.valueProperty().addListener((observableValue, s, newValue) -> {
                 searchTf.setPromptText(" Search By : " + newValue.toLowerCase());
@@ -136,11 +138,11 @@ public class Users implements Initializable {
 
     public void applySorting(ActionEvent event) {
         String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
-        sortData(role, OperationType.START, 0L, null, null, 0);
+        sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0);
     }
 
     private void sortData(String role, OperationType operationType, Long clientId, Button button,
-                          Map<String, Object> reportMap, int pageIndex) {
+                          Map<String, Object> reportMap, int pageIndex, int rowIndex) {
 
         String filedName = UserSortingOption.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
         String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
@@ -151,6 +153,7 @@ public class Users implements Initializable {
         sortedDataMap.put("sort", sort);
         sortedDataMap.put("row_size", rowSize);
         sortedDataMap.put("page_index", pageIndex);
+        sortedDataMap.put("row_index", rowIndex);
 
         startThread(role, operationType, clientId, button, reportMap, sortedDataMap);
     }
@@ -174,8 +177,7 @@ public class Users implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-                String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex());
+                applySorting(null);
             }
         }
     }
@@ -186,9 +188,7 @@ public class Users implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-
-                String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex());
+                applySorting(null);
             }
         }
     }
@@ -245,7 +245,7 @@ public class Users implements Initializable {
             switch (operationType) {
                 case SORTING_LOADING -> comboBoxConfig();
                 case START -> getAllUser(role, sortedDataMap);
-                case DELETE -> deleteUser(clientId, button);
+                case DELETE -> deleteUser(clientId, button, sortedDataMap);
                 case DOWNLOAD_REPORT -> {
                     if (null != reportMap) {
                         new DownloadReport().dialogController(reportMap, OperationType.CUSTOMER_REPORT);
@@ -318,7 +318,8 @@ public class Users implements Initializable {
                 if (userList.size() > 0) {
                     paginationContainer.setDisable(false);
                     int totalPage = pageResponse.getTotalPage();
-                    search_Item(totalPage);
+                    search_Item(totalPage, (Integer) sortedDataMap.get("page_index"),
+                            (Integer) sortedDataMap.get("row_index"));
                 }
 
             }
@@ -329,7 +330,7 @@ public class Users implements Initializable {
         }
     }
 
-    private void search_Item(int totalPage) {
+    private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
         searchTf.setText("");
         filteredData = new FilteredList<>(userList, p -> true);
 
@@ -376,14 +377,14 @@ public class Users implements Initializable {
                 }
             });
 
-            changeTableView(totalPage);
+            changeTableView(totalPage, pageIndex, rowIndex);
 
         });
 
-        changeTableView(totalPage);
+        changeTableView(totalPage, pageIndex, rowIndex);
     }
 
-    private void changeTableView(int totalPage) {
+    private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
 
         Platform.runLater(() -> {
                     pagination.setPageCount(totalPage);
@@ -392,6 +393,9 @@ public class Users implements Initializable {
                     } else {
                         tableview.setPlaceholder(new Label("No user found"));
                     }
+
+                    pagination.setCurrentPageIndex(pageIndex);
+                    tableview.scrollTo(rowIndex);
                 }
         );
 
@@ -460,6 +464,11 @@ public class Users implements Initializable {
                     viewKits.setGraphic(getImage("img/menu_icon/kit_ic.png"));
                     downloadBn.setGraphic(new ImageLoader().getDownloadImage());
 
+                    CommonUtility.onHoverShowTextButton(editBn,"Update user");
+                    CommonUtility.onHoverShowTextButton(deleteBbn,"Delete user");
+                    CommonUtility.onHoverShowTextButton(viewBn,"View user");
+                    CommonUtility.onHoverShowTextButton(viewKits,"View kits");
+                    CommonUtility.onHoverShowTextButton(downloadBn,"Download kit report");
 
                     String signedUsername = (String) Login.authInfo.get("username");
                     String currentUsername = tableview.getItems().get(getIndex()).getRequestedLoginName();
@@ -491,7 +500,7 @@ public class Users implements Initializable {
                         map.put("customer_id", tableview.getItems().get(getIndex()).getClientID());
 
                         String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                        sortData(role, OperationType.DOWNLOAD_REPORT, 0L, null, map, pagination.getCurrentPageIndex());
+                        sortData(role, OperationType.DOWNLOAD_REPORT, 0L, null, map, pagination.getCurrentPageIndex(), getIndex());
 
                     }));
 
@@ -509,11 +518,12 @@ public class Users implements Initializable {
                         map.put("client_id", icm.getClientID());
                         Main.primaryStage.setUserData(map);
                         customDialog.showFxmlFullDialog("profile/createProfile.fxml", "UPDATE PROFILE");
+
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
                                 String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex());
+                                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), getIndex());
                             }
                         }
 
@@ -536,7 +546,7 @@ public class Users implements Initializable {
                         if (button == ButtonType.OK) {
 
                             String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                            sortData(role, OperationType.DELETE, icm.getClientID(), deleteBbn, null, pagination.getCurrentPageIndex());
+                            sortData(role, OperationType.DELETE, icm.getClientID(), deleteBbn, null, pagination.getCurrentPageIndex(), getIndex());
 
                         } else {
                             alert.close();
@@ -706,7 +716,7 @@ public class Users implements Initializable {
         });
     }
 
-    private void deleteUser(Long id, Button button) {
+    private void deleteUser(Long id, Button button, Map<String, Object> sortedDataMap) {
         try {
             Thread.sleep(100);
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
@@ -724,6 +734,11 @@ public class Users implements Initializable {
                 customDialog.showAlertBox("", content);
 
                 if (statusCode == 200) {
+
+                    int pageIndex = (Integer) sortedDataMap.get("page_index");
+                    int rowIndex = (Integer) sortedDataMap.get("row_index");
+                    String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
+                    sortData(role, OperationType.START, 0L, null, null, pageIndex, rowIndex);
 
                     applySorting(null);
                 }

@@ -37,12 +37,12 @@
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </ImageView>
-                                          <Label fx:id="fullName"  textFill="WHITE" wrapText="true">
+                                          <Label fx:id="fullName" textFill="WHITE" wrapText="true">
                                              <font>
                                                 <Font name="Arial Black" size="13.0" />
                                              </font>
                                           </Label>
-                                          <Label fx:id="username" layoutX="44.0" layoutY="110.0"  textFill="WHITE" wrapText="true">
+                                          <Label fx:id="username" layoutX="44.0" layoutY="110.0" textFill="WHITE" wrapText="true">
                                              <font>
                                                 <Font name="Arial" size="14.0" />
                                              </font>
@@ -98,7 +98,7 @@
                                              <graphic>
                                                 <ImageView fitHeight="19.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@img/menu_icon/user_ic.png" />
+                                                      <Image url="@img/menu_icon/account_ic.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>
@@ -122,7 +122,7 @@
                                              <graphic>
                                                 <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@img/menu_icon/account_ic.png" />
+                                                      <Image url="@img/menu_icon/user_ic.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>

@@ -145,7 +145,7 @@
         </VBox>
     </center>
    <bottom>
-      <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" visible="false" BorderPane.alignment="CENTER">
+      <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" disable="true" BorderPane.alignment="CENTER">
          <children>
             <VBox>
                <children>

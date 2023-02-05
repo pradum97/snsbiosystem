@@ -1,3 +1,34 @@
+.check-box .box {
+
+    -fx-background-color: white;
+    -fx-border-color:grey;
+    -fx-border-radius:3px;
+
+}
+
+.check-box:selected .mark {
+
+    -fx-background-color: white;
+
+}
+
+.check-box:selected .box {
+
+    -fx-background-color: #28a3f4;
+}
+
+.tooltip {
+    -fx-background: rgba(30,30,30);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-color: #006666;
+    -fx-background-radius: 6px;
+    -fx-background-insets: 0;
+    -fx-padding: 1em; /* 10px */
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );
+    -fx-font-size: 0.85em;
+}
+
 #roleLv .list-cell{
     -fx-focus-traversable: false;
     -fx-font-weight: bold;

@@ -98,7 +98,7 @@
                               </Label>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <Label fx:id="uploadNowBn" graphicTextGap="10.0" onMouseClicked="#uploadBnClick" prefHeight="27.0" prefWidth="162.0" styleClass="previewsubmitButton" text="UPLOAD NOW" textFill="WHITE">
+                                    <Label fx:id="uploadNowBn" graphicTextGap="10.0" onKeyPressed="#keyPress" onMouseClicked="#uploadBnClick" prefHeight="27.0" prefWidth="162.0" styleClass="previewsubmitButton" text="UPLOAD NOW" textFill="WHITE">
                                        <font>
                                           <Font name="System Bold" size="13.0" />
                                        </font>
@@ -136,7 +136,7 @@
          <children>
             <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
-                  <TableView fx:id="tableview" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="tableview" onKeyPressed="#keyPress" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="colClientId" maxWidth="75.0" minWidth="75.0" text="CLIENT ID" />
                        <TableColumn fx:id="colSterilizerId" maxWidth="160.0" minWidth="140.0" text="STERILIZER ID" />

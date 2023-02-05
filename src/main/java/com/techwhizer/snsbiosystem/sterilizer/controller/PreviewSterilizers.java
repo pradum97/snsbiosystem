@@ -23,6 +23,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -210,6 +212,12 @@ public class PreviewSterilizers implements Initializable {
             uploadNowBn.setVisible(true);
             customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
             e.printStackTrace();
+        }
+    }
+
+    public void keyPress(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER){
+            uploadBnClick(null);
         }
     }
 

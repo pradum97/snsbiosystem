@@ -23,6 +23,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -162,9 +164,6 @@ public class AddKitUsage implements Initializable {
         if (null == sterilizerData && null == sterilizerData.get("sterilizer_id")){
             method.show_popup("Please select sterilizer", sterilizerId);
             return;
-        }else if (sterilizerType.getText().isEmpty()){
-            method.show_popup("Please select sterilizer", sterilizerId);
-            return;
         }
 
         KitUsageDTO kitDTO = new KitUsageDTO();
@@ -223,6 +222,13 @@ public class AddKitUsage implements Initializable {
                 sterilizerId.setText(String.valueOf(sterilizerData.get("sterilizer_id")));
                 sterilizerType.setText(String.valueOf(sterilizerData.get("sterilizer_type")));
             }
+        }
+    }
+
+    public void keyPress(KeyEvent keyEvent) {
+
+        if (keyEvent.getCode() == KeyCode.ENTER){
+            submitBnClick(null);
         }
     }
 

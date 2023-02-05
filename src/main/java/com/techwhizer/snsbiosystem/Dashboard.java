@@ -3,6 +3,7 @@ package com.techwhizer.snsbiosystem;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.AuthResponse;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
@@ -11,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -45,7 +47,8 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        userBnClick(null);
+        dashboardBnClick(null);
+
         customDialog = new CustomDialog();
         config();
         startThread();
@@ -58,21 +61,14 @@ public class Dashboard extends OptionalMethod implements Initializable {
     }
 
     private void setToolTip() {
-        set(dashboardBn, "HOME");
-        set(manageKitBn, "MANAGE KITS");
-        set(manageSterilizerBn, "MANAGE STERILIZER");
-        set(userBn, "USERS");
-        set(noticeBn, "NOTICE");
-        set(logoutBn, "LOGOUT");
+        CommonUtility.onHoverShowTextButton(dashboardBn, "DASHBOARD");
+        CommonUtility.onHoverShowTextButton(manageKitBn, "KITS");
+        CommonUtility.onHoverShowTextButton(manageSterilizerBn, "STERILIZERS");
+        CommonUtility.onHoverShowTextButton(userBn, "USERS");
+        CommonUtility.onHoverShowTextButton(noticeBn, "NOTICE");
+        CommonUtility.onHoverShowTextButton(logoutBn, "LOGOUT");
     }
 
-    private void set(Button button, String text) {
-
-        if (showIv.isVisible()) {
-            Tooltip t = new Tooltip(text);
-            button.setTooltip(t);
-        }
-    }
 
     public void hideMenu(MouseEvent mouseEvent) {
         dashboardBn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -156,10 +152,6 @@ public class Dashboard extends OptionalMethod implements Initializable {
         }
     }
 
-    public void noticeBnClick(ActionEvent event) {
-        replaceScene("notice/notices.fxml");
-    }
-
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
         @Override
         public void onPreExecute() {
@@ -186,12 +178,28 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
     private void setUserData() {
 
-        AuthResponse authResponse =(AuthResponse) Login.authInfo.get("auth_response");
-        fullName.setText(authResponse.getFirstName()+" "+authResponse.getLastName());
+        AuthResponse authResponse = (AuthResponse) Login.authInfo.get("auth_response");
+        fullName.setText(authResponse.getFirstName() + " " + authResponse.getLastName());
         username.setText(authResponse.getUserName());
     }
 
+    void unselectedBg(Node... nodes) {
+        for (Node node : nodes) {
+            node.setStyle("-fx-background-color: transparent");
+        }
+    }
+
+    void selectedBg(Node node) {
+        node.setStyle("""
+                 -fx-border-radius: 4;
+                    -fx-background-color: #006666;
+                    -fx-text-fill: white;
+                """);
+    }
+
     public void accountBnClick(ActionEvent event) {
+
+
         Main.primaryStage.setUserData(null);
         ToggleButton profileBn = new ToggleButton("PROFILE");
         ToggleButton editProfileBn = new ToggleButton("EDIT PROFILE");
@@ -217,7 +225,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
         Scene scene = new Scene(pane);
         stage2.setScene(scene);
         stage2.setResizable(false);
-        Long id =(Long) Login.authInfo.get("current_id");
+        Long id = (Long) Login.authInfo.get("current_id");
 
         changePassword.setOnAction(event1 -> customDialog.showFxmlDialog2("auth/changePassword.fxml", ""));
         editProfileBn.setOnAction(event1 -> {
@@ -236,24 +244,45 @@ public class Dashboard extends OptionalMethod implements Initializable {
     }
 
     public void userBnClick(ActionEvent event) {
+
+        unselectedBg(dashboardBn, manageKitBn, manageSterilizerBn, accountBn, noticeBn);
+        selectedBg(userBn);
+
         Main.primaryStage.setUserData(null);
         replaceScene("profile/users.fxml");
     }
 
     public void sterilizerBnClick(ActionEvent event) {
+
+        unselectedBg(dashboardBn, manageKitBn, userBn, accountBn, noticeBn);
+        selectedBg(manageSterilizerBn);
         Main.primaryStage.setUserData(null);
         replaceScene("sterilizer/sterilizers.fxml");
     }
 
     public void dashboardBnClick(ActionEvent event) {
+
+        unselectedBg(userBn, manageKitBn, manageSterilizerBn, accountBn, noticeBn);
+        selectedBg(dashboardBn);
+
         Main.primaryStage.setUserData(null);
         replaceScene("dashboard/home.fxml");
     }
 
     public void manageKitBnClick(ActionEvent event) {
+        unselectedBg(dashboardBn, userBn, manageSterilizerBn, accountBn, noticeBn);
+        selectedBg(manageKitBn);
         Main.primaryStage.setUserData(null);
         replaceScene("kit/kits.fxml");
     }
+
+    public void noticeBnClick(ActionEvent event) {
+
+        unselectedBg(dashboardBn, manageKitBn, manageSterilizerBn, accountBn, userBn);
+        selectedBg(noticeBn);
+        replaceScene("notice/notices.fxml");
+    }
+
 
     private void replaceScene(String fxml_file_name) {
         try {

@@ -23,6 +23,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -79,6 +81,9 @@ public class PreviewKits implements Initializable {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
         method.hideElement(progressbar);
+        Platform.runLater(()->{
+            OptionalMethod.minimizedStage((Stage) uploadNowBn.getScene().getWindow(),true);
+        });
         if (null != Main.primaryStage.getUserData() &&
                 Main.primaryStage.getUserData() instanceof File) {
             file = (File) Main.primaryStage.getUserData();
@@ -205,6 +210,13 @@ public class PreviewKits implements Initializable {
             uploadNowBn.setVisible(true);
             customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
             e.printStackTrace();
+        }
+    }
+
+    public void keyPress(KeyEvent keyEvent) {
+
+        if (keyEvent.getCode() == KeyCode.ENTER){
+            uploadBnClick(null);
         }
     }
 

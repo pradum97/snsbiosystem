@@ -2,6 +2,11 @@ package com.techwhizer.snsbiosystem.util;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.text.Text;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
@@ -16,6 +21,24 @@ public class CommonUtility {
 
     public final static String ORDER_ASC = "ASCENDING";
     public final static String ORDER_DESC = "DESCENDING";
+
+    public static void onHoverShowTextButton(Button node, String text){
+
+        if (node.isVisible()) {
+            Tooltip t = new Tooltip(text);
+            node.setTooltip(t);
+        }
+    }
+
+    public static void onHoverShowTextLabel(Label node, String text){
+
+        if (node.isVisible()) {
+            Tooltip t = new Tooltip(text);
+            node.setTooltip(t);
+        }
+    }
+
+    public final static String SUBMIT_CONFIRMATION = "Are you sure, you want to submit?";
 
     public static String getCutText(String text){
 

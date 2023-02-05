@@ -117,23 +117,22 @@ public class Kits implements Initializable {
             sortingCom.getSelectionModel().selectFirst();
 
             rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
-                sortData(0, OperationType.START, 0L, null, null);
+                sortData(0, 0, OperationType.START, 0L, null, null);
             });
             rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
             pagination.currentPageIndexProperty().addListener(
                     (observable1, oldValue1, newValue1) -> {
                         int pageIndex = newValue1.intValue();
-                        sortData(pageIndex, OperationType.START, 0L, null, null);
+                        sortData(pageIndex, 0, OperationType.START, 0L, null, null);
                     });
             applySorting.setDisable(false);
         });
     }
     public void applySorting(ActionEvent event) {
-
-        sortData(0, OperationType.START, 0L, null, null);
+        sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null, null);
     }
 
-    private void sortData(int pageIndex, OperationType operationType, Long kitId, Button button,
+    private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long kitId, Button button,
                           Map<String, Object> reportMap) {
 
         String filedName = KitSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
@@ -145,6 +144,7 @@ public class Kits implements Initializable {
         sortedDataMap.put("sort", sort);
         sortedDataMap.put("row_size", rowSize);
         sortedDataMap.put("page_index", pageIndex);
+        sortedDataMap.put("row_index", tableRowIndex);
 
         startThread(operationType, kitId, button, reportMap, sortedDataMap);
     }
@@ -205,7 +205,7 @@ public class Kits implements Initializable {
             switch (operationType) {
                 case SORTING_LOADING -> comboBoxConfig();
                 case START -> getAllKits(sortedDataMap);
-                case DELETE -> deleteSterilizer(kitId, button);
+                case DELETE -> deleteKit(kitId, button, sortedDataMap);
                 case DOWNLOAD_REPORT -> {
                     if (null != reportMap) {
                         new DownloadReport().dialogController(reportMap, OperationType.KIT_REPORT);
@@ -241,37 +241,41 @@ public class Kits implements Initializable {
         public void progressCallback(Integer... params) {
         }
 
-        private void deleteSterilizer(Long kitsId, Button button) {
+    }
 
-            try {
-                Thread.sleep(100);
-                HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec("easy").build()).build();
+    private void deleteKit(Long kitsId, Button button, Map<String, Object> sortingMap) {
 
-                HttpDelete httpMethod = new HttpDelete(UrlConfig.getDeleteKitUrl().concat(String.valueOf(kitsId)));
-                httpMethod.addHeader("Content-Type", "application/json");
-                httpMethod.addHeader("Cookie", (String) Login.authInfo.get("token"));
-                HttpResponse response = httpClient.execute(httpMethod);
-                HttpEntity resEntity = response.getEntity();
-                if (resEntity != null) {
-                    String content = EntityUtils.toString(resEntity);
-                    int statusCode = response.getStatusLine().getStatusCode();
-                    if (statusCode == 200) {
-                        applySorting(null);
-                    }
+        try {
+            Thread.sleep(100);
+            HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
+                    .setCookieSpec("easy").build()).build();
 
-                    customDialog.showAlertBox("", content);
+            HttpDelete httpMethod = new HttpDelete(UrlConfig.getDeleteKitUrl().concat(String.valueOf(kitsId)));
+            httpMethod.addHeader("Content-Type", "application/json");
+            httpMethod.addHeader("Cookie", (String) Login.authInfo.get("token"));
+            HttpResponse response = httpClient.execute(httpMethod);
+            HttpEntity resEntity = response.getEntity();
+            if (resEntity != null) {
+                String content = EntityUtils.toString(resEntity);
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == 200) {
+                    int pageIndex = (Integer) sortingMap.get("page_index");
+                    int rowIndex = (Integer) sortingMap.get("row_index");
+                    sortData(pageIndex, rowIndex, OperationType.START, 0L, null, null);
+
                 }
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            } finally {
-                Platform.runLater(() -> {
-                    if (null != button) {
-                        button.setGraphic(getImage("img/icon/delete_ic_white.png"));
-                    }
-                    refreshBn.setDisable(false);
-                });
+
+                customDialog.showAlertBox("", content);
             }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            Platform.runLater(() -> {
+                if (null != button) {
+                    button.setGraphic(getImage("img/icon/delete_ic_white.png"));
+                }
+                refreshBn.setDisable(false);
+            });
         }
     }
 
@@ -321,7 +325,10 @@ public class Kits implements Initializable {
                 if (kitsList.size() > 0) {
                     paginationContainer.setVisible(true);
                     int totalPage = KkitPageResponse.getTotalPage();
-                    search_Item(totalPage);
+
+                    assert sortedDataMap != null;
+                    search_Item(totalPage, (Integer) sortedDataMap.get("page_index"), (Integer) sortedDataMap.get("row_index"));
+
                 }
 
             }
@@ -343,7 +350,7 @@ public class Kits implements Initializable {
         return iv;
     }
 
-    private void search_Item(int totalPage) {
+    private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
         searchTf.setText("");
 
         filteredData = new FilteredList<>(kitsList, p -> true);
@@ -384,21 +391,26 @@ public class Kits implements Initializable {
                 }
             });
 
-            changeTableView(totalPage);
+            changeTableView(totalPage, pageIndex, rowIndex);
 
         });
-        changeTableView(totalPage);
+        changeTableView(totalPage, pageIndex, rowIndex);
     }
 
-    private void changeTableView(int totalPage) {
+    private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
 
         Platform.runLater(() -> {
             pagination.setPageCount(totalPage);
+
             if (filteredData.size() > 0) {
                 tableview.setPlaceholder(method.getProgressBar(40, 40));
             } else {
                 tableview.setPlaceholder(new Label("Kit not found"));
             }
+
+            pagination.setCurrentPageIndex(pageIndex);
+            tableview.scrollTo(rowIndex);
+
         });
 
         colSlNum.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
@@ -456,6 +468,10 @@ public class Kits implements Initializable {
                     activeIc.setFitWidth(30);
                     activeIc.setFitHeight(30);
 
+                    CommonUtility.onHoverShowTextButton(editBn,"Update kit");
+                    CommonUtility.onHoverShowTextButton(deleteBbn,"Delete kit");
+                    CommonUtility.onHoverShowTextButton(viewUsageBn,"View kit");
+                    CommonUtility.onHoverShowTextButton(downloadBn,"Download kit report");
 
                     editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ");
                     deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3 ");
@@ -469,7 +485,9 @@ public class Kits implements Initializable {
                         map.put("button", downloadBn);
                         map.put("kit", tableview.getItems().get(getIndex()).getId());
 
-                        sortData(pagination.getCurrentPageIndex(), OperationType.DOWNLOAD_REPORT, 0L, null, map);
+                        int rowPosition = getIndex();
+                        int paginationIndex = pagination.getCurrentPageIndex();
+                        sortData(paginationIndex, rowPosition, OperationType.DOWNLOAD_REPORT, 0L, null, map);
                     }));
                     viewUsageBn.setOnAction(event -> {
                         method.selectTable(getIndex(), tableview);
@@ -498,7 +516,9 @@ public class Kits implements Initializable {
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-                                sortData(pagination.getCurrentPageIndex(), OperationType.START, 0L, null, null);
+                                int rowPosition = getIndex();
+                                int paginationIndex = pagination.getCurrentPageIndex();
+                                sortData(paginationIndex, rowPosition, OperationType.START, 0L, null, null);
                             }
                         }
 
@@ -520,8 +540,9 @@ public class Kits implements Initializable {
                         Optional<ButtonType> result = alert.showAndWait();
                         ButtonType button = result.orElse(ButtonType.CANCEL);
                         if (button == ButtonType.OK) {
-
-                            sortData(0, OperationType.DELETE, kd.getId(), deleteBbn, null);
+                            int rowPosition = getIndex() - 1;
+                            int paginationIndex = pagination.getCurrentPageIndex();
+                            sortData(paginationIndex, rowPosition, OperationType.DELETE, kd.getId(), deleteBbn, null);
 
                         } else {
                             alert.close();

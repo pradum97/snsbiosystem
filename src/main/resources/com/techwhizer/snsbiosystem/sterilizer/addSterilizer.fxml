@@ -46,7 +46,7 @@
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="listNumberTf" prefHeight="40.0" promptText="Enter sterilizer list number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                    <TextField fx:id="listNumberTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter sterilizer list number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                  </children>
                               </VBox>
                               <VBox layoutX="10.0" layoutY="10.0" minWidth="350.0" spacing="5.0">
@@ -56,7 +56,7 @@
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox fx:id="typeCom" editable="true" minWidth="350.0" prefHeight="40.0" prefWidth="350.0" promptText="Choose sterilizer type" style="-fx-border-color: grey; -fx-border-radius: 5;" />
+                                    <ComboBox fx:id="typeCom" editable="true" minHeight="40.0" minWidth="350.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="Choose sterilizer type" style="-fx-border-color: grey; -fx-border-radius: 5;" />
                                  </children>
                               </VBox>
                            </children>
@@ -73,7 +73,7 @@
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="brandTf" prefHeight="40.0" prefWidth="350.0" promptText="Enter brand name" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                    <TextField fx:id="brandTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="Enter brand name" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                  </children>
                               </VBox>
                               <VBox layoutX="213.0" layoutY="10.0" minWidth="350.0" spacing="5.0">
@@ -83,7 +83,7 @@
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="serialNumTf" prefHeight="40.0" prefWidth="350.0" promptText="Enter sterilizer serial number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                    <TextField fx:id="serialNumTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="Enter sterilizer serial number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                  </children>
                               </VBox>
                            </children>
@@ -97,7 +97,7 @@
                               </Button>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <Button fx:id="submitBn" mnemonicParsing="false" onAction="#submitBnClick" prefHeight="26.0" prefWidth="149.0" style="-fx-background-color: #006666; -fx-background-radius: 3;" text="SUBMIT" textFill="WHITE">
+                                    <Button fx:id="submitBn" mnemonicParsing="false" onAction="#submitBnClick" onKeyPressed="#keyPress" prefHeight="26.0" prefWidth="149.0" style="-fx-background-color: #006666; -fx-background-radius: 3;" text="SUBMIT" textFill="WHITE">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>

@@ -42,7 +42,7 @@
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <TextArea fx:id="messageTa" minHeight="30.0" minWidth="602.0" prefHeight="130.0" prefWidth="602.0" promptText="Write message..." wrapText="true">
+                                    <TextArea fx:id="messageTa" minHeight="30.0" minWidth="602.0" onKeyPressed="#keyPress" prefHeight="130.0" prefWidth="602.0" promptText="Write message..." wrapText="true">
                                        <padding>
                                           <Insets left="2.0" right="2.0" />
                                        </padding>
@@ -77,7 +77,7 @@
                                           <Insets />
                                        </VBox.margin>
                                        <children>
-                                          <CheckBox fx:id="selectAllCb" alignment="CENTER" layoutX="11.0" layoutY="24.0" mnemonicParsing="false" text="SELECT ALL" textAlignment="CENTER">
+                                          <CheckBox fx:id="selectAllCb" alignment="CENTER" layoutX="11.0" layoutY="24.0" mnemonicParsing="false" onKeyPressed="#keyPress" text="SELECT ALL" textAlignment="CENTER">
                                              <HBox.margin>
                                                 <Insets left="20.0" />
                                              </HBox.margin>
@@ -88,27 +88,27 @@
                                           <Separator orientation="VERTICAL" prefHeight="200.0" />
                                           <HBox alignment="CENTER_LEFT" spacing="20.0" HBox.hgrow="ALWAYS">
                                              <children>
-                                                <CheckBox fx:id="adminCb" alignment="CENTER" mnemonicParsing="false" text="ADMIN" textAlignment="CENTER">
+                                                <CheckBox fx:id="adminCb" alignment="CENTER" mnemonicParsing="false" onKeyPressed="#keyPress" text="ADMIN" textAlignment="CENTER">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </CheckBox>
-                                                <CheckBox fx:id="doctorCb" alignment="CENTER" mnemonicParsing="false" text="DOCTOR" textAlignment="CENTER">
+                                                <CheckBox fx:id="doctorCb" alignment="CENTER" mnemonicParsing="false" onKeyPressed="#keyPress" text="DOCTOR" textAlignment="CENTER">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </CheckBox>
-                                                <CheckBox fx:id="dealerCb" alignment="CENTER" mnemonicParsing="false" text="DEALER" textAlignment="CENTER">
+                                                <CheckBox fx:id="dealerCb" alignment="CENTER" mnemonicParsing="false" onKeyPressed="#keyPress" text="DEALER" textAlignment="CENTER">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </CheckBox>
-                                                <CheckBox fx:id="patientCb" alignment="CENTER" mnemonicParsing="false" text="PATIENT" textAlignment="CENTER">
+                                                <CheckBox fx:id="patientCb" alignment="CENTER" mnemonicParsing="false" onKeyPressed="#keyPress" text="PATIENT" textAlignment="CENTER">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
                                                 </CheckBox>
-                                                <CheckBox fx:id="guestCb" alignment="CENTER" layoutX="326.0" layoutY="24.0" mnemonicParsing="false" text="GUEST">
+                                                <CheckBox fx:id="guestCb" alignment="CENTER" layoutX="326.0" layoutY="24.0" mnemonicParsing="false" onKeyPressed="#keyPress" text="GUEST">
                                                    <font>
                                                       <Font name="System Bold" size="12.0" />
                                                    </font>
@@ -143,7 +143,7 @@
                                                       <Insets left="3.0" />
                                                    </VBox.margin>
                                                 </Label>
-                                                <ComboBox fx:id="scheduledCom" minHeight="35.0" prefHeight="35.0" prefWidth="162.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                                <ComboBox fx:id="scheduledCom" minHeight="35.0" onKeyPressed="#keyPress" prefHeight="35.0" prefWidth="162.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                              </children>
                                           </VBox>
                                        </children>
@@ -169,7 +169,7 @@
                                                       </ImageView>
                                                    </children>
                                                 </HBox>
-                                                <Button fx:id="publishBn" mnemonicParsing="false" prefHeight="35.0" prefWidth="260.0" style="-fx-border-color: grey; -fx-border-radius: 0 3 3 0; -fx-background-color: white;" />
+                                                <Button fx:id="publishBn" mnemonicParsing="false" onKeyPressed="#keyPress" prefHeight="35.0" prefWidth="260.0" style="-fx-border-color: grey; -fx-border-radius: 0 3 3 0; -fx-background-color: white;" />
                                              </children>
                                           </HBox>
                                        </children>
@@ -197,7 +197,7 @@
                                                 </ImageView>
                                              </children>
                                           </HBox>
-                                          <Button fx:id="expiryBn" mnemonicParsing="false" prefHeight="35.0" prefWidth="260.0" style="-fx-border-color: grey; -fx-border-radius: 0 3 3 0; -fx-background-color: white;" />
+                                          <Button fx:id="expiryBn" mnemonicParsing="false" onKeyPressed="#keyPress" prefHeight="35.0" prefWidth="260.0" style="-fx-border-color: grey; -fx-border-radius: 0 3 3 0; -fx-background-color: white;" />
                                        </children>
                                     </HBox>
                                  </children>

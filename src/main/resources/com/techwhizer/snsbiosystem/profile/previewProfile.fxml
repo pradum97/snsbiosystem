@@ -53,7 +53,7 @@
                                     <Font name="Arial Bold" size="13.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="totalValidRecordL" minWidth="20.0" textFill="#e44210">
+                              <Label fx:id="totalValidRecordL" minWidth="20.0" textFill="#04561a">
                                  <font>
                                     <Font name="Arial Bold" size="13.0" />
                                  </font>
@@ -99,7 +99,7 @@
                               </Label>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <Label fx:id="uploadNowBn" graphicTextGap="10.0" onMouseClicked="#uploadBnClick" prefHeight="27.0" prefWidth="162.0" styleClass="previewsubmitButton" text="UPLOAD NOW" textFill="WHITE">
+                                    <Label fx:id="uploadNowBn" graphicTextGap="10.0" onKeyPressed="#keyPress" onMouseClicked="#uploadBnClick" prefHeight="27.0" prefWidth="162.0" styleClass="previewsubmitButton" text="UPLOAD NOW" textFill="WHITE">
                                        <font>
                                           <Font name="System Bold" size="13.0" />
                                        </font>
@@ -143,7 +143,7 @@
                            <children>
                               <HBox alignment="CENTER" prefHeight="57.0" prefWidth="358.0" style="-fx-border-color: grey; -fx-border-style: dashed;">
                                  <children>
-                                    <VBox alignment="CENTER" onMouseClicked="#chooseFileBnClick" prefWidth="100.0" spacing="5.0" style="-fx-cursor: hand" HBox.hgrow="ALWAYS">
+                                    <VBox alignment="CENTER" onKeyPressed="#keyPress" onMouseClicked="#chooseFileBnClick" prefWidth="100.0" spacing="5.0" style="-fx-cursor: hand" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label fx:id="fileNameL" text="Choose CSV File" textFill="#0c00b4">
                                              <font>
@@ -164,7 +164,7 @@
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox fx:id="roleCom" minHeight="35.0" prefHeight="35.0" prefWidth="276.0" promptText="SELECT ROLE" style="-fx-border-color: GREY; -fx-border-radius: 3;" />
+                                    <ComboBox fx:id="roleCom" minHeight="35.0" onKeyPressed="#keyPress" prefHeight="35.0" prefWidth="276.0" promptText="SELECT ROLE" style="-fx-border-color: GREY; -fx-border-radius: 3;" />
                                  </children>
                                  <VBox.margin>
                                     <Insets top="20.0" />
@@ -179,7 +179,7 @@
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Label>
-                                    <Label layoutX="10.0" layoutY="10.0" onMouseClicked="#submitBnClick" prefHeight="26.0" prefWidth="145.0" styleClass="previewsubmitButton" text="SUBMIT" textFill="WHITE">
+                                    <Label layoutX="10.0" layoutY="10.0" onKeyPressed="#keyPress" onMouseClicked="#submitBnClick" prefHeight="26.0" prefWidth="145.0" styleClass="previewsubmitButton" text="SUBMIT" textFill="WHITE">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>
@@ -197,7 +197,7 @@
             </VBox>
             <VBox fx:id="tableContainer" alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
-                  <TableView fx:id="tableview" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="tableview" onKeyPressed="#keyPress" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="colClientId" maxWidth="75.0" minWidth="75.0" text="CLIENT ID" />
                        <TableColumn fx:id="colUsername" maxWidth="180.0" minWidth="180.0" text="USERNAME" />

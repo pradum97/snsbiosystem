@@ -10,7 +10,10 @@ import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.RoleOption;
 import com.techwhizer.snsbiosystem.user.model.CreateUsersResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
-import com.techwhizer.snsbiosystem.util.*;
+import com.techwhizer.snsbiosystem.util.ChooseFile;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
+import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.RowPerPage;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -23,6 +26,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -34,6 +38,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -45,10 +50,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public class PreviewProfile implements Initializable {
 
@@ -116,7 +123,7 @@ public class PreviewProfile implements Initializable {
         alert.setAlertType(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Warning ");
         alert.setGraphic(image);
-        alert.setHeaderText("Are you sure you want to submit?");
+        alert.setHeaderText(CommonUtility.SUBMIT_CONFIRMATION);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(Main.primaryStage);
         Optional<ButtonType> result = alert.showAndWait();
@@ -176,7 +183,7 @@ public class PreviewProfile implements Initializable {
         alert.setAlertType(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Warning ");
         alert.setGraphic(image);
-        alert.setHeaderText("are you sure, you want to upload the file?");
+        alert.setHeaderText("Are you sure, you want to upload the file?");
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(Main.primaryStage);
         Optional<ButtonType> result = alert.showAndWait();
@@ -191,7 +198,12 @@ public class PreviewProfile implements Initializable {
     }
 
     private void createMultipleProfile(String json) {
-        Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
+        try {
+            Files.writeString(Path.of("out.txt"), json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
@@ -208,15 +220,18 @@ public class PreviewProfile implements Initializable {
                 String content = EntityUtils.toString(resEntity);
                 int statusCode = response.getStatusLine().getStatusCode();
 
+                System.out.println(statusCode);
+                System.out.println(content);
+
                 if (statusCode == 200) {
                     method.hideElement(progressbar);
                     uploadNowBn.setVisible(true);
                     CreateUsersResponse cur = new Gson().fromJson(content, CreateUsersResponse.class);
-                    customDialog.showAlertBox("Success", cur.getMessage()+"\n\nTotal User Added : "+cur.getTotalUserAdded());
+                    customDialog.showAlertBox("Success", cur.getMessage() + "\n\nTotal User Added : " + cur.getTotalUserAdded());
                     Main.primaryStage.setUserData(true);
-                    Platform.runLater(()->{
+                    Platform.runLater(() -> {
                         Stage stage = (Stage) uploadNowBn.getScene().getWindow();
-                        if (null != stage && stage.isShowing()){
+                        if (null != stage && stage.isShowing()) {
                             stage.close();
                         }
                     });
@@ -227,7 +242,6 @@ public class PreviewProfile implements Initializable {
             }
 
         } catch (Exception e) {
-
             method.hideElement(progressbar);
             uploadNowBn.setVisible(true);
             customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
@@ -242,6 +256,10 @@ public class PreviewProfile implements Initializable {
         if (null != stage && stage.isShowing()){
             stage.close();
         }
+    }
+
+    public void keyPress(KeyEvent keyEvent) {
+
     }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
@@ -321,10 +339,11 @@ public class PreviewProfile implements Initializable {
             HttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(UrlConfig.getPreviewProfileCsvUrl());
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setContentType(ContentType.create("multipart/form-data", Charset.forName("UTF-8")));
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             FileBody fileBody = new FileBody(selectedFile);
             builder.addPart("file", fileBody);
-            builder.addTextBody("role", role);
+            builder.addTextBody("role", role.toLowerCase());
             HttpEntity entity = builder.build();
             httpPost.setEntity(entity);
             HttpResponse response = httpClient.execute(httpPost);
@@ -333,7 +352,7 @@ public class PreviewProfile implements Initializable {
             statusCode = response.getStatusLine().getStatusCode();
 
             if (resEntity != null && response.getStatusLine().getStatusCode() == 200) {
-                String content = EntityUtils.toString(resEntity);
+                String content = EntityUtils.toString(resEntity, "UTF-8");
                 Type userListType = new TypeToken<Set<UserDTO>>() {
                 }.getType();
                 Set<UserDTO> userArray = new Gson().fromJson(content, userListType);
@@ -469,9 +488,10 @@ public class PreviewProfile implements Initializable {
                     HBox managebtn = new HBox(button, info);
                     managebtn.setStyle("-fx-alignment:center");
                     HBox.setMargin(button, new Insets(0, 30, 0, 30));
+                    setText(null);
                     setGraphic(managebtn);
                 }
-                setText(null);
+
             }
 
         });
@@ -490,7 +510,7 @@ public class PreviewProfile implements Initializable {
                     if (null != user.getFirstName()) {
                         if (!user.getFirstName().isEmpty()) {
                             Text text = new Text(user.getFirstName());
-                            text.setStyle("-fx-text-alignment:justify;");
+                            text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
                             setText(null);
                             setGraphic(text);
@@ -521,7 +541,7 @@ public class PreviewProfile implements Initializable {
                     if (null != user.getLastName()) {
                         if (!user.getLastName().isEmpty()) {
                             Text text = new Text(user.getLastName());
-                            text.setStyle("-fx-text-alignment:justify;");
+                            text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
                             setText(null);
                             setGraphic(text);

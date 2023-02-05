@@ -19,6 +19,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.http.HttpEntity;
@@ -161,6 +163,12 @@ public class AddSterilizer implements Initializable {
 
         MyAsyncTask myAsyncTask = new MyAsyncTask(map);
         myAsyncTask.execute();
+    }
+
+    public void keyPress(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER){
+            submitBnClick(null);
+        }
     }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {

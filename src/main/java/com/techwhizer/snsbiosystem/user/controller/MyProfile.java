@@ -94,8 +94,6 @@ public class MyProfile implements Initializable {
 
     private void getUserProfile(Long id) {
 
-
-
        String token = (String) Login.authInfo.get("token");
 
         try {
@@ -124,18 +122,9 @@ public class MyProfile implements Initializable {
     private void setUserDetails(User user) {
 
         String name;
-
-        /*if (null == user.getFirstName()  user.getFirstName().isEmpty() && user.getLastName().isEmpty()){
-            name = "";
-        }else {
-
-        }
-*/
-
-        name = null == user.getFirstName()?"": (user.getFirstName() + " " + null).equals(user.getLastName()) ?"":user.getLastName();
-
+        name = (null == user.getFirstName() || user.getFirstName().isEmpty()?"":user.getFirstName())+" "+
+                (null == user.getLastName() || user.getLastName().isEmpty()?"":user.getLastName());
         fullNameL.setText(name);
-
 
         clientIdL.setText(String.valueOf(user.getClientID()));
         usernameL.setText(user.getRequestedLoginName());

@@ -21,6 +21,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -127,10 +129,18 @@ public class CreateNotice implements Initializable {
         publishDate = noticeBoardDTO.getPublishOn();
         expiryDate = noticeBoardDTO.getExpiresOn();
 
-        if (adminCb.isSelected()&&doctorCb.isSelected()&dealerCb.isSelected()&&
-                patientCb.isSelected()&&guestCb.isSelected()){
+        checkAllRoleSelected();
+    }
+
+    void checkAllRoleSelected() {
+
+        if (adminCb.isSelected() && doctorCb.isSelected() & dealerCb.isSelected() &&
+                patientCb.isSelected() && guestCb.isSelected()) {
             selectAllCb.setSelected(true);
+        } else {
+            selectAllCb.setSelected(false);
         }
+
     }
 
     private void buttonConfig() {
@@ -175,13 +185,28 @@ public class CreateNotice implements Initializable {
 
     private void checkBocConfig() {
 
-        adminCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> role.setAdmin(t1));
-        doctorCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> role.setDoctor(t1));
-        dealerCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> role.setDealer(t1));
-        patientCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> role.setPatient(t1));
-        guestCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> role.setGuest(t1));
-        selectAllCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (t1) {
+        adminCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            role.setAdmin(t1);
+            checkAllRoleSelected();
+        });
+        doctorCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            role.setDoctor(t1);
+            checkAllRoleSelected();
+        });
+        dealerCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            role.setDealer(t1);
+            checkAllRoleSelected();
+        });
+        patientCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            role.setPatient(t1);
+            checkAllRoleSelected();
+        });
+        guestCb.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            role.setGuest(t1);
+            checkAllRoleSelected();
+        });
+        selectAllCb.setOnAction(event -> {
+            if (selectAllCb.isSelected()) {
                 adminCb.setSelected(true);
                 doctorCb.setSelected(true);
                 dealerCb.setSelected(true);
@@ -194,8 +219,8 @@ public class CreateNotice implements Initializable {
                 patientCb.setSelected(false);
                 guestCb.setSelected(false);
             }
-
         });
+
     }
 
     public void cancelBn(ActionEvent event) {
@@ -287,6 +312,13 @@ public class CreateNotice implements Initializable {
         MyAsyncTask myAsyncTask = new MyAsyncTask();
         myAsyncTask.execute(json);
     }
+
+    public void keyPress(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER){
+            submitClick(null);
+        }
+    }
+
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
         @Override
         public void onPreExecute() {

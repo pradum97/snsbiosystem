@@ -23,6 +23,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -210,6 +212,13 @@ public class PreviewKitUsages implements Initializable {
             e.printStackTrace();
         }
     }
+
+    public void keyPress(KeyEvent keyEvent) {
+
+        if (keyEvent.getCode() == KeyCode.ENTER){
+            uploadBnClick(null);
+
+        }    }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
         OperationType operationType;
@@ -460,7 +469,6 @@ public class PreviewKitUsages implements Initializable {
                     KitUsageDTO kd = tableview.getItems().get(getIndex());
                     String txt = String.valueOf(kd.getKitNumber());
 
-                    System.out.println(txt.getClass().getName());
                     if (null != txt && !txt.isEmpty()&& !txt.isBlank() && !txt.equals("null")) {
 
                         Text text = new Text(txt);

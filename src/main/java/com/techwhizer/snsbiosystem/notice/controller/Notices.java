@@ -82,7 +82,6 @@ public class Notices implements Initializable {
         MyAsyncTask myAsyncTask = new MyAsyncTask(operationType, noticeId, button, rowPerPage);
         myAsyncTask.execute();
     }
-
     private class MyAsyncTask extends AsyncTask<Object, Integer, Boolean> {
         private OperationType operationType;
         private Long noticeId;
@@ -181,7 +180,6 @@ public class Notices implements Initializable {
         }
 
     }
-
     private void getAllNotice(int rowPerPage) {
 
         if (null != noticeList) {
@@ -219,7 +217,6 @@ public class Notices implements Initializable {
         });
 
     }
-
     private void search_Item(int rowPerPage) {
         searchTf.setText("");
 
@@ -346,6 +343,10 @@ public class Notices implements Initializable {
                     ImageView activeIc = getImage("img/icon/admin_icon.png");
                     activeIc.setFitWidth(30);
                     activeIc.setFitHeight(30);
+
+                    CommonUtility.onHoverShowTextButton(editBn,"Update notice");
+                    CommonUtility.onHoverShowTextButton(deleteBbn,"Delete notice");
+                    CommonUtility.onHoverShowTextButton(viewBn,"View notice");
 
                     editBn.setGraphic(getImage("img/icon/update_ic.png"));
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));
@@ -610,9 +611,12 @@ public class Notices implements Initializable {
                             Text text = new Text(CommonUtility.getCutText(txt));
                             text.setStyle("-fx-text-alignment:center;-fx-font-size: 14");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                           if ( text.isHover()){
+                            new OptionalMethod().show_popup(txt,text);
+                           }
+
                             setText(null);
                             setGraphic(text);
-
                         } else {
                             setGraphic(null);
                             setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);

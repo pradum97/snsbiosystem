@@ -1,2 +1,0 @@
-*******GSON*****
-Type type = new TypeToken<Set<SterilizerDTO>>() {}.getType();
