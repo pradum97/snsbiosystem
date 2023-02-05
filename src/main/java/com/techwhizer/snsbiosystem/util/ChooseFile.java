@@ -10,8 +10,8 @@ public class ChooseFile {
     public File chooseCSVFile(){
 
         FileChooser fileChooser = new FileChooser();
-        File file = new File("D:\\sns\\sample_data");
-        fileChooser.setInitialDirectory(file);
+   /*     File file = new File("D:\\sns\\sample_data");
+        fileChooser.setInitialDirectory(file);*/
         //   fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
         return fileChooser.showOpenDialog(Main.primaryStage);
     }
