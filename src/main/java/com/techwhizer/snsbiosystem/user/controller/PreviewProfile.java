@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -200,18 +201,12 @@ public class PreviewProfile implements Initializable {
     private void createMultipleProfile(String json) {
 
         try {
-            Files.writeString(Path.of("out.txt"), json);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
                     .setCookieSpec("easy").build()).build();
 
             HttpPost httpPut = new HttpPost(UrlConfig.getProfileCreateUrl());
             httpPut.addHeader("Content-Type", "application/json");
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPut);

@@ -34,6 +34,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class AddSterilizer implements Initializable {
@@ -223,7 +224,7 @@ public class AddSterilizer implements Initializable {
             HttpPut httpPut = new HttpPut(UrlConfig.getAddSterilizerUrl());
             httpPut.addHeader("Content-Type", "application/json");
             httpPut.addHeader("Cookie", token);
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPut);
@@ -261,9 +262,8 @@ public class AddSterilizer implements Initializable {
             HttpPost httpPost = new HttpPost(UrlConfig.getAddSterilizerUrl());
             httpPost.addHeader("Content-Type", "application/json");
             httpPost.addHeader("Cookie",  (String) Login.authInfo.get("token"));
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json,StandardCharsets.UTF_8);
             httpPost.setEntity(se);
-
             HttpResponse response = httpClient.execute(httpPost);
             HttpEntity resEntity = response.getEntity();
             if (resEntity != null) {

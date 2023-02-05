@@ -2,20 +2,27 @@ package com.techwhizer.snsbiosystem.user.controller.auth;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.user.constant.Roles;
 import com.techwhizer.snsbiosystem.user.model.AuthResponse;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -34,6 +41,7 @@ public class Login implements Initializable {
     public TextField passwordTf;
     public Button login_button;
     public ProgressIndicator progressBar;
+    public HBox passwordContainer;
     private OptionalMethod method ;
     private CustomDialog customDialog;
 
@@ -43,6 +51,49 @@ public class Login implements Initializable {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
         method.hideElement(progressBar);
+
+      //  CommonUtility.passwordMaskFiled(passwordTf,maskImage);
+
+        passwordMaskFiled();
+    }
+
+    public  void passwordMaskFiled() {
+
+        passwordTf = new TextField();
+
+        passwordTf.setManaged(false);
+        passwordTf.setVisible(false);
+        final PasswordField passwordField = new PasswordField();
+        ImageView icon = new ImageView(new ImageLoader().load("img/icon/showPassword.png"));
+        icon.setFitHeight(26);
+        icon.setFitWidth(26);
+        icon.setStyle("-fx-cursor: hand");
+
+        passwordField.prefHeight(passwordTf.getPrefHeight());
+        passwordField.prefWidth(passwordTf.getPrefWidth());
+
+        passwordField.setPromptText("Enter password");
+        passwordTf.setPromptText("Enter password");
+
+        passwordField.setMinWidth(385);
+        passwordField.setMinHeight(46);
+
+        passwordTf.setMinWidth(385);
+        passwordTf.setMinHeight(46);
+
+        passwordTf.managedProperty().bind(icon.pressedProperty());
+        passwordTf.visibleProperty().bind(icon.pressedProperty());
+
+        HBox.setMargin(icon,new Insets(0,8,0,0));
+        passwordField.setStyle("-fx-background-radius: 4;-fx-border-radius:4;-fx-border-color: white;-fx-background-color: white;-fx-font-size: 14;-fx-font-family: Arial");
+        passwordTf.setStyle("-fx-background-radius: 4;-fx-border-radius:4;-fx-border-color: white;-fx-background-color: white;-fx-font-size: 14;-fx-font-family: Arial");
+
+        passwordField.managedProperty().bind(icon.pressedProperty().not());
+        passwordField.visibleProperty().bind(icon.pressedProperty().not());
+        passwordTf.textProperty().bindBidirectional(passwordField.textProperty());
+
+        passwordContainer.getChildren().addAll(passwordTf,passwordField,icon);
+
     }
 
     public void forget_password_bn(ActionEvent event) {
@@ -69,7 +120,7 @@ public class Login implements Initializable {
             method.show_popup("Please enter username",usernameTf);
             return;
         }else if (password.isEmpty()){
-            method.show_popup("Please enter password",passwordTf);
+            method.show_popup("Please enter password",passwordContainer);
             return;
         }
 

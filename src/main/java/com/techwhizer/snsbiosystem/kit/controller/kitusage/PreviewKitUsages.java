@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -147,14 +148,14 @@ public class PreviewKitUsages implements Initializable {
         }
     }
 
-    private void createMultipleKIts(String json) {
+    private void createMultipleKItsUsage(String json) {
 
         try {
             HttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(UrlConfig.getKitsUsagesUrl());
             httpPost.addHeader("Content-Type", "application/json");
             httpPost.addHeader("Cookie", (String) Login.authInfo.get("token"));
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPost.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPost);
@@ -256,7 +257,7 @@ public class PreviewKitUsages implements Initializable {
         public Boolean doInBackground(String... params) {
 
             if (operationType == OperationType.CREATE) {
-                createMultipleKIts(json);
+                createMultipleKItsUsage(json);
             } else if (operationType == OperationType.PREVIEW) {
                 sendRequest();
             }

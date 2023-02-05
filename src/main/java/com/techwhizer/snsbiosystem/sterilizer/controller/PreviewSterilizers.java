@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -156,7 +157,7 @@ public class PreviewSterilizers implements Initializable {
             HttpPost httpPost = new HttpPost(UrlConfig.getAddSterilizerUrl());
             httpPost.addHeader("Content-Type", "application/json");
             httpPost.addHeader("Cookie",  (String) Login.authInfo.get("token"));
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPost.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPost);

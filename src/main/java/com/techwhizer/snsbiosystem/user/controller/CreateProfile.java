@@ -40,6 +40,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -526,7 +527,7 @@ public class CreateProfile implements Initializable {
             HttpPut httpPut = new HttpPut(UrlConfig.getUserprofileUrl().concat(String.valueOf(clientId)));
             httpPut.addHeader("Content-Type", "application/json");
             httpPut.addHeader("Cookie", token);
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPut);
@@ -616,7 +617,7 @@ public class CreateProfile implements Initializable {
 
             HttpPost httpPut = new HttpPost(UrlConfig.getProfileCreateUrl());
             httpPut.addHeader("Content-Type", "application/json");
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json,StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPut);

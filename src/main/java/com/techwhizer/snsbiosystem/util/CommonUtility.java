@@ -3,9 +3,8 @@ package com.techwhizer.snsbiosystem.util;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -21,6 +20,22 @@ public class CommonUtility {
 
     public final static String ORDER_ASC = "ASCENDING";
     public final static String ORDER_DESC = "DESCENDING";
+    public static void passwordMaskFiled(TextField textField, ImageView icon) {
+        textField.setManaged(false);
+        textField.setVisible(false);
+        final PasswordField passwordField = new PasswordField();
+
+        passwordField.prefHeight(textField.getPrefHeight());
+        passwordField.prefWidth(textField.getPrefWidth());
+
+        textField.managedProperty().bind(icon.pressedProperty());
+        textField.visibleProperty().bind(icon.pressedProperty());
+
+        passwordField.managedProperty().bind(icon.pressedProperty().not());
+        passwordField.visibleProperty().bind(icon.pressedProperty().not());
+        textField.textProperty().bindBidirectional(passwordField.textProperty());
+    }
+
 
     public static void onHoverShowTextButton(Button node, String text){
 

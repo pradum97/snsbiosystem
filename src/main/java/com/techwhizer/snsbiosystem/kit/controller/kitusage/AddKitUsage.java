@@ -39,6 +39,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -295,7 +296,7 @@ public class AddKitUsage implements Initializable {
             HttpPut httpPut = new HttpPut(UrlConfig.getKitsUsagesUrl());
             httpPut.addHeader("Content-Type", "application/json");
             httpPut.addHeader("Cookie", token);
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPut);
@@ -341,7 +342,7 @@ public class AddKitUsage implements Initializable {
             HttpPost httpPost = new HttpPost(UrlConfig.getKitsUsagesUrl());
             httpPost.addHeader("Content-Type", "application/json");
             httpPost.addHeader("Cookie", (String) Login.authInfo.get("token"));
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json,StandardCharsets.UTF_8);
             httpPost.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPost);

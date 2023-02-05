@@ -36,6 +36,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -361,7 +362,7 @@ public class CreateNotice implements Initializable {
             HttpPut httpPut = new HttpPut(UrlConfig.getKitNoticeUrl());
             httpPut.addHeader("Content-Type", "application/json");
             httpPut.addHeader("Cookie", token);
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
             HttpResponse response = CommonUtility.httpClient.execute(httpPut);
@@ -396,16 +397,13 @@ public class CreateNotice implements Initializable {
 
     private void createNotice(String json) {
 
+
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        try {
             HttpPost httpPost = new HttpPost(UrlConfig.getKitNoticeUrl());
             httpPost.addHeader("Content-Type", "application/json");
             httpPost.addHeader("Cookie", (String) Login.authInfo.get("token"));
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity(json,StandardCharsets.UTF_8);
             httpPost.setEntity(se);
             HttpResponse response = CommonUtility.httpClient.execute(httpPost);
             HttpEntity resEntity = response.getEntity();
