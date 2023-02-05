@@ -192,10 +192,12 @@ public class Dashboard extends OptionalMethod implements Initializable {
     void unselectedBg(Node... nodes) {
         for (Node node : nodes) {
             node.setStyle("-fx-background-color: transparent");
+            node.setDisable(false);
         }
     }
 
     void selectedBg(Node node) {
+        node.setDisable(true);
         node.setStyle("""
                  -fx-border-radius: 4;
                     -fx-background-color: #006666;

@@ -5,6 +5,10 @@
     -fx-font-weight: bold;
 }
 
+.menuButton:disabled {
+    -fx-opacity: 1;
+}
+
 .button {
     -fx-cursor: hand;
 }
