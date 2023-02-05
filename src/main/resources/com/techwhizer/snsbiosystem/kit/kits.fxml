@@ -143,6 +143,7 @@
                         <TableColumn fx:id="colKitNumber" editable="false" maxWidth="270.0" minWidth="230.0" text="KIT NUMBER" />
                         <TableColumn fx:id="colExpiryDate" editable="false" maxWidth="150.0" minWidth="150.0" text="EXPIRY DATE" />
                   <TableColumn fx:id="colLotNumber" editable="false" maxWidth="150.0" minWidth="130.0" text="LOT NUMBER" />
+                  <TableColumn fx:id="colTestUsed" editable="false" maxWidth="120.0" minWidth="90.0" text="TEST USED" />
                         <TableColumn fx:id="colAction" editable="false" minWidth="240.0" text="ACTION" />
                     </columns>
                     <columnResizePolicy>
@@ -153,7 +154,7 @@
         </VBox>
     </center>
    <bottom>
-      <HBox fx:id="paginationContainer" visible="false" alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+      <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" visible="false" BorderPane.alignment="CENTER">
          <children>
             <VBox>
                <children>

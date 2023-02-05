@@ -60,6 +60,7 @@ public class Kits implements Initializable {
     public TableColumn<KitDTO, String> colDealerId;
     public TableColumn<KitDTO, String> colKitNumber;
     public TableColumn<KitDTO, String> colExpiryDate;
+    public TableColumn<KitDTO, String> colTestUsed;
     public TableColumn<KitDTO, String> colLotNumber;
     public TableColumn<KitDTO, String> colAction;
     public Pagination pagination;
@@ -675,6 +676,40 @@ public class Kits implements Initializable {
                     if (null != kd.getKitNumber()) {
 
                         String txt = String.valueOf(kd.getKitNumber());
+
+                        if (!txt.isEmpty()) {
+                            Text text = new Text(txt);
+                            text.setStyle("-fx-text-alignment:center;");
+                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
+                            setText(null);
+                            setGraphic(text);
+
+                        } else {
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
+                        }
+                    } else {
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
+                    }
+                }
+            }
+
+        });
+        colTestUsed.setCellFactory((TableColumn<KitDTO, String> param) -> new TableCell<>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                    setText(null);
+
+                } else {
+                    KitDTO kd = tableview.getItems().get(getIndex());
+
+                    if (null != kd.getTestUsed()) {
+
+                        String txt = String.valueOf(kd.getTestUsed());
 
                         if (!txt.isEmpty()) {
                             Text text = new Text(txt);

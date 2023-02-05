@@ -313,10 +313,10 @@ public class CreateProfile implements Initializable {
         String billingZip = billingZipTf.getText();
         String billingAddress = billingAddressTa.getText();
 
-        if (null == username && username.isEmpty()) {
+        if (username.isEmpty()) {
             method.show_popup("Please Enter Username", usernameTf);
             return;
-        } else if (null == telephoneNumber && telephoneNumber.isEmpty()) {
+        } else if (telephoneNumber.isEmpty()) {
             method.show_popup("Please Enter Telephone Number", workPhoneNumberTf);
             return;
         } else if (telephoneNumber.length() < 9) {
@@ -351,7 +351,7 @@ public class CreateProfile implements Initializable {
 
         }
 
-        if (!officeFax.isEmpty()) {
+        if (null != officeFax) {
             if (officeFax.length() < 9) {
                 method.show_popup("Enter fax number more then 8 digit", officeFaxNumberTf);
                 return;
