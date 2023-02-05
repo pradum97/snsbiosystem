@@ -2,10 +2,13 @@ package com.techwhizer.snsbiosystem.user.controller.auth;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.user.model.UserCredentials;
 import com.techwhizer.snsbiosystem.user.util.CheckUsername;
+import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -173,6 +176,8 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
                     Platform.runLater(()->{
                         cancelClick(null);
                     });
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 }else {
                     customDialog.showAlertBox("Failed",content);
                 }
@@ -180,6 +185,8 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
         } catch (Exception e) {
             hideElement(progressBar);
             submit_bn.setVisible(true);
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
+
         }
 
     }
@@ -224,6 +231,10 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
                        phoneContainer.setVisible(true);
                        usernameTf.setFocusTraversable(false);
                        phoneTf.setFocusTraversable(true);
+                   }
+
+                   case 401->{
+                       new HttpStatusHandler(StatusCode.UNAUTHORISED);
                    }
                }
             }

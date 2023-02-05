@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.notice.model.NoticeBoardDTO;
@@ -11,13 +12,16 @@ import com.techwhizer.snsbiosystem.notice.model.NoticePageResponse;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.util.CommonUtility;
+import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -72,27 +76,47 @@ public class Notices implements Initializable {
     private void comboBoxConfig() {
         rowSizeCom.setItems(PaginationUtil.rowSize);
 
-        rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) ->
-                callThread(OperationType.START, 0L, null, rowPerPage));
+        rowSizeCom.valueProperty().addListener(new ChangeListener<Integer>() {
+            @Override
+            public void changed(ObservableValue<? extends Integer> observableValue, Integer integer, Integer t1) {
+
+                sortData(0, 0, OperationType.START, 0L);
+            }
+        });
+
 
         rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
     }
 
-    private void callThread(OperationType operationType, Long noticeId, Button button, Integer rowPerPage) {
-        MyAsyncTask myAsyncTask = new MyAsyncTask(operationType, noticeId, button, rowPerPage);
+    private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long noticeId) {
+
+
+        int rowSize = rowSizeCom.getSelectionModel().getSelectedItem();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("row_size", rowSize);
+        map.put("page_index", pageIndex);
+        map.put("row_index", tableRowIndex);
+        callThread(operationType, noticeId, null, map);
+    }
+
+    private void callThread(OperationType operationType, Long noticeId, Button button, Map<String, Object> sortingMap) {
+        MyAsyncTask myAsyncTask = new MyAsyncTask(operationType, noticeId, button, sortingMap);
         myAsyncTask.execute();
     }
+
     private class MyAsyncTask extends AsyncTask<Object, Integer, Boolean> {
         private OperationType operationType;
         private Long noticeId;
         private Button button;
-        private int rowPerPage;
+        private Map<String, Object> sortingMap;
 
-        public MyAsyncTask(OperationType operationType, Long noticeId, Button button, Integer rowPerPage) {
+        public MyAsyncTask(OperationType operationType, Long noticeId, Button button,
+                           Map<String, Object> sortingMap) {
             this.operationType = operationType;
             this.noticeId = noticeId;
             this.button = button;
-            this.rowPerPage = rowPerPage;
+            this.sortingMap = sortingMap;
         }
 
         @Override
@@ -117,15 +141,14 @@ public class Notices implements Initializable {
 
         @Override
         public Boolean doInBackground(Object... params) {
-
             switch (operationType) {
-                case START -> getAllNotice(rowPerPage);
-                case DELETE -> deleteNotice(noticeId, button);
+                case START -> getAllNotice(sortingMap);
+                case DELETE -> deleteNotice(noticeId, button, sortingMap);
             }
             return true;
         }
 
-        private void deleteNotice(Long noticeId, Button button) {
+        private void deleteNotice(Long noticeId, Button button, Map<String, Object> sortingMap) {
             try {
                 Thread.sleep(100);
                 HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
@@ -143,12 +166,22 @@ public class Notices implements Initializable {
                     int statusCode = response.getStatusLine().getStatusCode();
 
                     if (statusCode == 200) {
-                        callThread(OperationType.START, 0L, null, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
+
+                        int pageIndex = (Integer) sortingMap.get("page_index");
+                        int rowIndex = (Integer) sortingMap.get("row_index");
+
+                        sortData(pageIndex, rowIndex, OperationType.START, 0L);
+
+                    } else if (statusCode == StatusCode.UNAUTHORISED) {
+                        new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                    } else {
+                        new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                     }
 
                     customDialog.showAlertBox("", content);
                 }
             } catch (IOException | InterruptedException e) {
+                new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 throw new RuntimeException(e);
             } finally {
                 Platform.runLater(() -> {
@@ -180,7 +213,8 @@ public class Notices implements Initializable {
         }
 
     }
-    private void getAllNotice(int rowPerPage) {
+
+    private void getAllNotice(Map<String, Object> sortingMap) {
 
         if (null != noticeList) {
             noticeList.clear();
@@ -189,8 +223,16 @@ public class Notices implements Initializable {
             Thread.sleep(100);
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
                     .setCookieSpec("easy").build()).build();
-            URIBuilder uriBuilder = new URIBuilder(UrlConfig.getKitNoticeUrl());
-            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            URIBuilder param = new URIBuilder(UrlConfig.getKitNoticeUrl());
+
+            if (null != sortingMap) {
+                int rowSize = (Integer) sortingMap.get("row_size");
+                int pageIndex = (Integer) sortingMap.get("page_index");
+                param.setParameter("size", String.valueOf(rowSize));
+                param.setParameter("page", String.valueOf(pageIndex));
+            }
+
+            HttpGet httpGet = new HttpGet(param.build());
 
             httpGet.addHeader("Content-Type", "application/json");
             httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
@@ -199,17 +241,30 @@ public class Notices implements Initializable {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
-                NoticePageResponse pageResponse = new Gson().fromJson(content, NoticePageResponse.class);
-                List<NoticeBoardDTO> noticeBoardDTOs = pageResponse.getNotices();
-                noticeList = FXCollections.observableArrayList(noticeBoardDTOs);
+                int statusCode = response.getStatusLine().getStatusCode();
 
-                if (noticeList.size() > 0) {
-                    paginationContainer.setVisible(true);
+                if (statusCode == StatusCode.OK) {
 
-                    search_Item(rowPerPage);
+                    NoticePageResponse pageResponse = new Gson().fromJson(content, NoticePageResponse.class);
+                    List<NoticeBoardDTO> noticeBoardDTOs = pageResponse.getNotices();
+                    noticeList = FXCollections.observableArrayList(noticeBoardDTOs);
+
+                    if (noticeList.size() > 0) {
+                        paginationContainer.setVisible(true);
+                        int totalPage = pageResponse.getTotalPage();
+                        search_Item(totalPage, (Integer) sortingMap.get("page_index"),
+                                (Integer) sortingMap.get("row_index"));
+                    }
+
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
+
             }
         } catch (IOException | URISyntaxException | InterruptedException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         }
         Platform.runLater(() -> {
@@ -217,7 +272,8 @@ public class Notices implements Initializable {
         });
 
     }
-    private void search_Item(int rowPerPage) {
+
+    private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
         searchTf.setText("");
 
         filteredData = new FilteredList<>(noticeList, p -> true);
@@ -231,71 +287,51 @@ public class Notices implements Initializable {
                 }
 
                 String lowerCaseFilter = newValue.toLowerCase();
-                String searchBy = searchByCom.getSelectionModel().getSelectedItem();
 
-                return false;
+                LocalDateTime localDateTimePublish = CommonUtility.getLocalDateTimeObject(notice.getPublishOn());
+                LocalDateTime localDateTimeExpiry = CommonUtility.getLocalDateTimeObject(notice.getExpiresOn());
+                String publishDate = localDateTimePublish.format(CommonUtility.dateTimeFormator);
+                String expiryDate = localDateTimeExpiry.format(CommonUtility.dateTimeFormator);
 
-               /* switch (searchBy) {
+                if (notice.getStatus().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (expiryDate.toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else {
+                    return (publishDate.toLowerCase().contains(lowerCaseFilter));
+                }
 
-                    case SterilizerSearchType.STERILIZER_ID -> {
-
-                        return null != sterilizer.getId() &&
-                                String.valueOf(sterilizer.getId()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-                    case SterilizerSearchType.STERILIZER_BRAND -> {
-                        return null != sterilizer.getBrand() &&
-                                String.valueOf(sterilizer.getBrand()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-                    case SterilizerSearchType.STERILIZER_SERIAL_NUMBER -> {
-                        return null != sterilizer.getSerialNumber() &&
-                                String.valueOf(sterilizer.getSerialNumber()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-
-                    case SterilizerSearchType.STERILIZER_LIST_NUMBER -> {
-                        sterilizer.getListNumber();
-                        return String.valueOf(sterilizer.getListNumber()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-
-                    default -> {
-
-                        return null != sterilizer.getType() &&
-                                sterilizer.getType().toLowerCase().contains(lowerCaseFilter);
-                    }
-                }*/
             });
 
-            changeTableView(pagination.getCurrentPageIndex(), rowPerPage);
-
-        });
-
-        pagination.setCurrentPageIndex(0);
-        changeTableView(0, rowPerPage);
-        pagination.currentPageIndexProperty().addListener(
-                (observable1, oldValue1, newValue1) -> {
-                    tableview.scrollTo(0);
-                    changeTableView(newValue1.intValue(), rowPerPage);
-                });
-    }
-
-    private void changeTableView(int index, int rowPerPage) {
-
-        int totalPage = (int) (Math.ceil(filteredData.size() * 1.0 / rowPerPage));
-        Platform.runLater(() -> pagination.setPageCount(totalPage));
-        setOptionalCell();
-        int fromIndex = index * rowPerPage;
-        int toIndex = Math.min(fromIndex + rowPerPage, noticeList.size());
-        int minIndex = Math.min(toIndex, filteredData.size());
-        SortedList<NoticeBoardDTO> sortedData = new SortedList<>(
-                FXCollections.observableArrayList(filteredData.subList(Math.min(fromIndex, minIndex), minIndex)));
-        sortedData.comparatorProperty().bind(tableview.comparatorProperty());
-        Platform.runLater(() -> {
-            if (sortedData.size() > 0) {
+            if (filteredData.size() > 0) {
                 tableview.setPlaceholder(method.getProgressBar(40, 40));
             } else {
                 tableview.setPlaceholder(new Label("Notice not found"));
             }
+
         });
-        tableview.setItems(sortedData);
+
+        changeTableView(totalPage, pageIndex, rowIndex);
+    }
+
+    private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
+
+        Platform.runLater(() -> {
+            pagination.setPageCount(totalPage);
+
+            pagination.setCurrentPageIndex(pageIndex);
+            tableview.scrollTo(rowIndex);
+        });
+
+        Platform.runLater(() -> {
+
+        });
+
+        Platform.runLater(() -> pagination.setPageCount(totalPage));
+        setOptionalCell();
+
+
+        tableview.setItems(filteredData);
         tableview.setRowFactory(tv -> new TableRow<>() {
             @Override
             protected void updateItem(NoticeBoardDTO item, boolean empty) {
@@ -374,8 +410,7 @@ public class Notices implements Initializable {
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-                                callThread(OperationType.START, 0L, null, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
-
+                                sortData(pagination.getCurrentPageIndex(), getIndex(), OperationType.START, 0L);
                             }
                         }
 
@@ -396,8 +431,7 @@ public class Notices implements Initializable {
                         Optional<ButtonType> result = alert.showAndWait();
                         ButtonType button = result.orElse(ButtonType.CANCEL);
                         if (button == ButtonType.OK) {
-
-                            callThread(OperationType.DELETE, noticeBoardDTO.getId(), deleteBbn, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
+                            sortData(pagination.getCurrentPageIndex(), getIndex(), OperationType.DELETE, noticeBoardDTO.getId());
 
                         } else {
                             alert.close();
@@ -647,6 +681,7 @@ public class Notices implements Initializable {
     }
 
     public void refreshClick(MouseEvent mouseEvent) {
-        callThread(OperationType.START, 0L, null, rowSizeCom.getSelectionModel().getSelectedItem().intValue());
+
+        sortData(0, 0, OperationType.START, 0L);
     }
 }

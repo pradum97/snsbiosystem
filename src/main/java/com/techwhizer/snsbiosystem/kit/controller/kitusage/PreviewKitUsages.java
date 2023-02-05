@@ -5,14 +5,13 @@ import com.google.gson.reflect.TypeToken;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.model.AddKitUsagesResponse;
 import com.techwhizer.snsbiosystem.kit.model.KitUsageDTO;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.util.RowPerPage;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -200,8 +199,10 @@ public class PreviewKitUsages implements Initializable {
                         method.hideElement(progressbar);
                         uploadNowBn.setVisible(true);
 
+                    } else if (statusCode == StatusCode.UNAUTHORISED) {
+                        new HttpStatusHandler(StatusCode.UNAUTHORISED);
                     } else {
-                        customDialog.showAlertBox("Failed.", "Something went wrong. Please try again");
+                        new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                     }
                 });
             }
@@ -305,41 +306,54 @@ public class PreviewKitUsages implements Initializable {
 
             statusCode = response.getStatusLine().getStatusCode();
 
-            if (resEntity != null && response.getStatusLine().getStatusCode() == 200) {
+            if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
 
-                Type type = new TypeToken<Set<KitUsageDTO>>() {
-                }.getType();
-                Set<KitUsageDTO> kitsArray = new Gson().fromJson(content, type);
-                kitsList = FXCollections.observableArrayList(kitsArray);
-                long totalRecord = 0, totalInvalid = 0, totalValid = 0;
 
-                totalRecord = kitsArray.size();
-                for (KitUsageDTO u : kitsArray) {
-                    if (u.isValid()) {
-                        totalValid += 1;
-                    } else {
-                        totalInvalid += 1;
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == StatusCode.OK){
+
+                    Type type = new TypeToken<Set<KitUsageDTO>>() {
+                    }.getType();
+                    Set<KitUsageDTO> kitsArray = new Gson().fromJson(content, type);
+                    kitsList = FXCollections.observableArrayList(kitsArray);
+                    long totalRecord = 0, totalInvalid = 0, totalValid = 0;
+
+                    totalRecord = kitsArray.size();
+                    for (KitUsageDTO u : kitsArray) {
+                        if (u.isValid()) {
+                            totalValid += 1;
+                        } else {
+                            totalInvalid += 1;
+                        }
                     }
+
+                    long finalTotalRecord = totalRecord;
+                    long finalTotalInvalid = totalInvalid;
+                    long finalTotalValid = totalValid;
+                    Platform.runLater(() -> {
+                        totalRecordL.setText(String.valueOf(finalTotalRecord));
+                        totalValidRecordL.setText(String.valueOf(finalTotalValid));
+                        totalInvalidRecordL.setText(String.valueOf(finalTotalInvalid));
+                    });
+
+                    if (kitsList.size() > 0) {
+                        paginationContainer.setDisable(false);
+                        search_Item();
+                    }
+
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
-                long finalTotalRecord = totalRecord;
-                long finalTotalInvalid = totalInvalid;
-                long finalTotalValid = totalValid;
-                Platform.runLater(() -> {
-                    totalRecordL.setText(String.valueOf(finalTotalRecord));
-                    totalValidRecordL.setText(String.valueOf(finalTotalValid));
-                    totalInvalidRecordL.setText(String.valueOf(finalTotalInvalid));
-                });
-
-                if (kitsList.size() > 0) {
-                    paginationContainer.setDisable(false);
-                    search_Item();
-                }
             } else {
-                customDialog.showAlertBox("Failed", "Something went wrong!");
+                new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             }
         } catch (IOException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         }
     }

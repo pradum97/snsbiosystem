@@ -12,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -40,6 +39,8 @@ public class Dashboard extends OptionalMethod implements Initializable {
     public Label fullName;
     public Label username;
     public StackPane mainContainer;
+    public ImageView topProfileImg;
+    public Separator topSeparator;
     @FXML
     ImageView hideIv, showIv;
     public VBox menuContainer, topUserContainer;
@@ -79,7 +80,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
         logoutBn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         accountBn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         showIv.setVisible(true);
-        hideElement(topUserContainer, hideIv);
+        hideElement(topProfileImg,fullName,username, topSeparator,hideIv);
         menuContainer.setStyle("-fx-padding:0 10 0 10");
     }
 
@@ -91,7 +92,12 @@ public class Dashboard extends OptionalMethod implements Initializable {
         noticeBn.setContentDisplay(ContentDisplay.LEFT);
         logoutBn.setContentDisplay(ContentDisplay.LEFT);
         accountBn.setContentDisplay(ContentDisplay.LEFT);
-        topUserContainer.setVisible(true);
+
+        topProfileImg.setVisible(true);
+        fullName.setVisible(true);
+        username.setVisible(true);
+        topSeparator.setVisible(true);
+
         hideIv.setVisible(true);
         menuContainer.setStyle("-fx-padding: 0 10 0 10");
         hideElement(showIv);
@@ -179,7 +185,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
     private void setUserData() {
 
         AuthResponse authResponse = (AuthResponse) Login.authInfo.get("auth_response");
-        fullName.setText(authResponse.getFirstName() + " " + authResponse.getLastName());
+        fullName.setText((authResponse.getFirstName() + " " + authResponse.getLastName()).toUpperCase());
         username.setText(authResponse.getUserName());
     }
 

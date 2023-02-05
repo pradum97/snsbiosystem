@@ -2,8 +2,11 @@ package com.techwhizer.snsbiosystem.user.controller.auth;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
+import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -117,6 +120,8 @@ public class ChangePassword implements Initializable {
                             customDialog.showAlertBox("Success","Password successfully changed.");
                             cancelBnClick(null);
 
+                        }else if (statusCode == StatusCode.UNAUTHORISED) {
+                            new HttpStatusHandler(StatusCode.UNAUTHORISED);
                         }else {
                             customDialog.showAlertBox("Changing Failed.",content);
                         }
@@ -126,7 +131,7 @@ public class ChangePassword implements Initializable {
             } catch (Exception e) {
                 method.hideElement(progressBar);
                 changeBn.setVisible(true);
-                customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
+                new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 e.printStackTrace();
             }
 

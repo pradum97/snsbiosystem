@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
@@ -14,6 +15,7 @@ import com.techwhizer.snsbiosystem.user.model.*;
 import com.techwhizer.snsbiosystem.user.util.CheckUsername;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -572,8 +574,10 @@ public class CreateProfile implements Initializable {
                         });
 
                     }
-                }else {
-                    customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
             }
@@ -596,16 +600,25 @@ public class CreateProfile implements Initializable {
             HttpEntity resEntity = response.getEntity();
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
-                User user = new Gson().fromJson(content, User.class);
-                Platform.runLater(() -> {
-                    setTextFieldData(user);
-                });
+
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == 200) {
+                    User user = new Gson().fromJson(content, User.class);
+                    Platform.runLater(() -> {
+                        setTextFieldData(user);
+                    });
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
+                }
             }
 
         } catch (Exception e) {
             method.hideElement(progressBar, progressContainer);
             contentContainer.setDisable(false);
-            customDialog.showAlertBox("Failed", "Something went wrong. Please try again");
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         }
 
@@ -649,6 +662,8 @@ public class CreateProfile implements Initializable {
                         method.hideElement(progressBar);
                         submitBn.setVisible(true);
 
+                    } else if (statusCode == StatusCode.UNAUTHORISED) {
+                        new HttpStatusHandler(StatusCode.UNAUTHORISED);
                     } else {
                         Main.primaryStage.setUserData(true);
                         customDialog.showAlertBox("Failed.", content);
@@ -659,7 +674,7 @@ public class CreateProfile implements Initializable {
         } catch (Exception e) {
             method.hideElement(progressBar);
             submitBn.setVisible(true);
-            customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             e.printStackTrace();
         }
     }

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.constants.KitUsageSearchType;
@@ -12,10 +13,7 @@ import com.techwhizer.snsbiosystem.kit.model.KitPageResponse;
 import com.techwhizer.snsbiosystem.kit.model.KitUsageDTO;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.util.ChooseFile;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.LocalDb;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -259,7 +257,9 @@ public class KitUsages implements Initializable {
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
 
-                if (response.getStatusLine().getStatusCode() == 200) {
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if ( statusCode == 200) {
 
                     KitPageResponse KkitPageResponse = new Gson().fromJson(content, KitPageResponse.class);
                     List<KitUsageDTO> kds = KkitPageResponse.getKitUsages();
@@ -270,6 +270,8 @@ public class KitUsages implements Initializable {
                         search_Item(totalPage,(Integer) sortedDataMap.get("page_index"),
                                 (Integer) sortedDataMap.get("row_index"));
                     }
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
 
                     Platform.runLater(() -> {
@@ -346,7 +348,11 @@ public class KitUsages implements Initializable {
                 }
             });
 
-            changeTableView(totalPage, pageIndex, rowIndex);
+            if (filteredData.size() > 0) {
+                tableview.setPlaceholder(method.getProgressBar(40, 40));
+            } else {
+                tableview.setPlaceholder(new Label("Kit Usage not found"));
+            }
 
         });
 
@@ -356,12 +362,6 @@ public class KitUsages implements Initializable {
     private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
         Platform.runLater(() -> {
             pagination.setPageCount(totalPage);
-
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("Kit Usage not found"));
-            }
 
             pagination.setCurrentPageIndex(pageIndex);
             tableview.scrollTo(rowIndex);

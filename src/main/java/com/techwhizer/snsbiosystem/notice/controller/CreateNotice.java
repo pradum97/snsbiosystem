@@ -4,15 +4,13 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.notice.model.NoticeBoardDTO;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.RoleConfigModel;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.DateAndTimePicker;
-import com.techwhizer.snsbiosystem.util.Message;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -382,7 +380,9 @@ public class CreateNotice implements Initializable {
                         Main.primaryStage.setUserData(true);
                         cancelBn(null);
                     });
-                }else {
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
                     customDialog.showAlertBox("Failed", content);
                 }
 
@@ -418,6 +418,8 @@ public class CreateNotice implements Initializable {
                     if (statusCode == 200) {
                         customDialog.showAlertBox("Success", "Notice successfully created");
                         resetAllField();
+                    } else if (statusCode == StatusCode.UNAUTHORISED) {
+                        new HttpStatusHandler(StatusCode.UNAUTHORISED);
                     } else {
                         customDialog.showAlertBox("Failed.", content);
                     }

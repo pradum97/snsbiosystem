@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.constants.TestResultOptions;
@@ -12,10 +13,7 @@ import com.techwhizer.snsbiosystem.kit.model.AddKitUsagesResponse;
 import com.techwhizer.snsbiosystem.kit.model.KitDTO;
 import com.techwhizer.snsbiosystem.kit.model.KitUsageDTO;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.LocalDb;
-import com.techwhizer.snsbiosystem.util.Message;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -324,14 +322,16 @@ public class AddKitUsage implements Initializable {
                         Platform.runLater(() -> cancelBnClick(null));
                     }
 
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
-                    customDialog.showAlertBox("Failed.", "Something went wrong. Please try again.");
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
             }
         } catch (Exception e) {
             method.hideElement(progressbar);
             submitBn.setVisible(true);
-            customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             e.printStackTrace();
         }
 
@@ -367,6 +367,8 @@ public class AddKitUsage implements Initializable {
                         customDialog.showAlertBox("Success", "Successfully added");
                     }
 
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
                     customDialog.showAlertBox("Failed.", content);
                 }

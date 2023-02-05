@@ -4,12 +4,14 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.sterilizer.constants.SterilizerSearchType;
 import com.techwhizer.snsbiosystem.sterilizer.model.SterilizerPageResponse;
 import com.techwhizer.snsbiosystem.sterilizer.model.SterilizerTableView;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.util.LocalDb;
+import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.RowPerPage;
 import com.victorlaerte.asynctask.AsyncTask;
@@ -22,9 +24,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -118,16 +118,24 @@ public class SterilizerChooser implements Initializable {
             HttpEntity resEntity = response.getEntity();
 
             if (resEntity != null) {
+                int statusCode = response.getStatusLine().getStatusCode();
                 String content = EntityUtils.toString(resEntity);
-                SterilizerPageResponse pageResponse = new Gson().fromJson(content, SterilizerPageResponse.class);
-                List<SterilizerTableView> stvs = pageResponse.getSterilizers();
-                sterilizerList = FXCollections.observableArrayList(stvs);
 
-                System.out.println(sterilizerList.size());
+                if (statusCode == 200){
+                    SterilizerPageResponse pageResponse = new Gson().fromJson(content, SterilizerPageResponse.class);
+                    List<SterilizerTableView> stvs = pageResponse.getSterilizers();
+                    sterilizerList = FXCollections.observableArrayList(stvs);
 
-                if (sterilizerList.size() > 0) {
-                    pagination.setVisible(true);
-                    search_Item();
+                    System.out.println(sterilizerList.size());
+
+                    if (sterilizerList.size() > 0) {
+                        pagination.setVisible(true);
+                        search_Item();
+                    }
+                } else if (statusCode == 401) {
+                    new HttpStatusHandler(401);
+                }else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
             }

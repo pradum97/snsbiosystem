@@ -3,11 +3,14 @@ package com.techwhizer.snsbiosystem.report;
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.report.constent.ReportDownloadPath;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
+import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -216,8 +219,10 @@ public class DownloadReport {
                             customDialog.showAlertBox("success", "Something went wrong!");
                         }
                     }
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
-                    customDialog.showAlertBox("Failed", "Something Went wrong.");
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
                 if (null != downloadButton) {
@@ -232,7 +237,7 @@ public class DownloadReport {
                     downloadButton.setGraphic(new ImageLoader().getDownloadImage());
                 });
             }
-            customDialog.showAlertBox("success", "Something Went wrong.");
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         }finally {
             if (null != downloadButton) {

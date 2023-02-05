@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
@@ -12,10 +13,7 @@ import com.techwhizer.snsbiosystem.sterilizer.constants.SterilizerSortingOptions
 import com.techwhizer.snsbiosystem.sterilizer.model.SterilizerPageResponse;
 import com.techwhizer.snsbiosystem.sterilizer.model.SterilizerTableView;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.util.ChooseFile;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.LocalDb;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -247,19 +245,30 @@ public class Sterilizers implements Initializable {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
-                SterilizerPageResponse pageResponse = new Gson().fromJson(content, SterilizerPageResponse.class);
-                List<SterilizerTableView> stvs = pageResponse.getSterilizers();
-                sterilizerList = FXCollections.observableArrayList(stvs);
-                if (sterilizerList.size() > 0) {
-                    paginationContainer.setDisable(false);
-                    int totalPage = pageResponse.getTotalPage();
-                    assert sortingMap != null;
-                    search_Item(totalPage, (Integer) sortingMap.get("page_index"),
-                            (Integer) sortingMap.get("row_index"));
+
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == 200) {
+
+                    SterilizerPageResponse pageResponse = new Gson().fromJson(content, SterilizerPageResponse.class);
+                    List<SterilizerTableView> stvs = pageResponse.getSterilizers();
+                    sterilizerList = FXCollections.observableArrayList(stvs);
+                    if (sterilizerList.size() > 0) {
+                        paginationContainer.setDisable(false);
+                        int totalPage = pageResponse.getTotalPage();
+                        assert sortingMap != null;
+                        search_Item(totalPage, (Integer) sortingMap.get("page_index"),
+                                (Integer) sortingMap.get("row_index"));
+                    }
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
             }
         } catch (IOException | URISyntaxException | InterruptedException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         } finally {
             Platform.runLater(() -> {
@@ -290,18 +299,20 @@ public class Sterilizers implements Initializable {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
-
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == 200) {
                     int pageIndex = (Integer) sortingMap.get("page_index");
                     int rowIndex = (Integer) sortingMap.get("row_index");
                     sortData(pageIndex, rowIndex, OperationType.START, 0L);
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    customDialog.showAlertBox("", content);
                 }
-
-                customDialog.showAlertBox("", content);
             }
         } catch (IOException | InterruptedException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         } finally {
             Platform.runLater(() -> {
@@ -328,8 +339,10 @@ public class Sterilizers implements Initializable {
         filteredData = new FilteredList<>(sterilizerList, p -> true);
 
         searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
+
             filteredData.setPredicate(sterilizer -> {
                 if (newValue == null || newValue.isEmpty()) {
+
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
@@ -363,7 +376,12 @@ public class Sterilizers implements Initializable {
                     }
                 }
             });
-            changeTableView(totalPage, pageIndex, rowIndex);
+
+            if (filteredData.size() > 0) {
+                tableview.setPlaceholder(method.getProgressBar(40, 40));
+            } else {
+                tableview.setPlaceholder(new Label("Sterilizer not found"));
+            }
         });
 
 
@@ -374,11 +392,6 @@ public class Sterilizers implements Initializable {
 
         Platform.runLater(() -> {
             pagination.setPageCount(totalPage);
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("Sterilizer not found"));
-            }
 
             pagination.setCurrentPageIndex(pageIndex);
             tableview.scrollTo(rowIndex);

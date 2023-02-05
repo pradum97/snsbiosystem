@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.constants.KitOperationType;
@@ -15,9 +16,7 @@ import com.techwhizer.snsbiosystem.user.constant.UserSortingOption;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.PageResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.LocalDb;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -313,18 +312,31 @@ public class Users implements Initializable {
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
 
-                PageResponse pageResponse = new Gson().fromJson(content, PageResponse.class);
-                List<UserDTO> users = pageResponse.getUsers();
-                userList = FXCollections.observableArrayList(users);
-                if (userList.size() > 0) {
-                    paginationContainer.setDisable(false);
-                    int totalPage = pageResponse.getTotalPage();
-                    search_Item(totalPage, (Integer) sortedDataMap.get("page_index"),
-                            (Integer) sortedDataMap.get("row_index"));
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == 200){
+
+                    PageResponse pageResponse = new Gson().fromJson(content, PageResponse.class);
+                    List<UserDTO> users = pageResponse.getUsers();
+                    userList = FXCollections.observableArrayList(users);
+                    if (userList.size() > 0) {
+                        paginationContainer.setDisable(false);
+                        int totalPage = pageResponse.getTotalPage();
+                        search_Item(totalPage, (Integer) sortedDataMap.get("page_index"),
+                                (Integer) sortedDataMap.get("row_index"));
+                    }
+
+
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
+
 
             }
         } catch (IOException | URISyntaxException | InterruptedException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         } finally {
             Platform.runLater(() -> refreshBn.setDisable(false));
@@ -378,7 +390,11 @@ public class Users implements Initializable {
                 }
             });
 
-            changeTableView(0, 0, rowIndex);
+            if (filteredData.size() > 0) {
+                tableview.setPlaceholder(method.getProgressBar(40, 40));
+            } else {
+                tableview.setPlaceholder(new Label("User not found"));
+            }
 
         });
 
@@ -389,12 +405,6 @@ public class Users implements Initializable {
 
         Platform.runLater(() -> {
                     pagination.setPageCount(totalPage);
-                    if (filteredData.size() > 0) {
-                        tableview.setPlaceholder(method.getProgressBar(40, 40));
-                    } else {
-                        tableview.setPlaceholder(new Label("No user found"));
-                    }
-
                     pagination.setCurrentPageIndex(pageIndex);
                     tableview.scrollTo(rowIndex);
                 }
@@ -742,10 +752,15 @@ public class Users implements Initializable {
                     sortData(role, OperationType.START, 0L, null, null, pageIndex, rowIndex);
 
                     applySorting(null);
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
             }
         } catch (IOException | InterruptedException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         } finally {
             Platform.runLater(() -> {

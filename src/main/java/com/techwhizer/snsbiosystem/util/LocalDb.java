@@ -4,7 +4,7 @@ import com.techwhizer.snsbiosystem.kit.constants.KitSearchFilters;
 import com.techwhizer.snsbiosystem.kit.constants.KitUsageSearchType;
 import com.techwhizer.snsbiosystem.sterilizer.constants.SterilizerSearchType;
 import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
-import com.techwhizer.snsbiosystem.user.constant.SterilizerType;
+import com.techwhizer.snsbiosystem.sterilizer.constants.SterilizerType;
 import com.techwhizer.snsbiosystem.user.constant.UserSearchFilters;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

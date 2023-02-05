@@ -1,4 +1,4 @@
-package com.techwhizer.snsbiosystem.user.constant;
+package com.techwhizer.snsbiosystem.sterilizer.constants;
 
 public class SterilizerType {
 

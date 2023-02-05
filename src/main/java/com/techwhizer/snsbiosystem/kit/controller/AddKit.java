@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.model.AddKitResponse;
@@ -324,7 +325,8 @@ public class AddKit implements Initializable {
 
                         Platform.runLater(() -> cancelBnClick(null));
                     }
-
+                } else if (statusCode == 401) {
+                    new HttpStatusHandler(401);
                 } else {
                     customDialog.showAlertBox("Failed.", content);
                 }
@@ -357,7 +359,6 @@ public class AddKit implements Initializable {
                 List<KitDTO> failedData = asr.getInvalidKits();
 
                 if (statusCode == 200) {
-
                     if (failedData.size() > 0) {
                         for (KitDTO kit : failedData) {
                             String errorMsg = kit.getErrorMessage();
@@ -369,13 +370,11 @@ public class AddKit implements Initializable {
                         customDialog.showAlertBox("Success", "Kit successfully added");
                     }
 
+                } else if (statusCode == 401) {
+                    new HttpStatusHandler(401);
                 } else {
                     customDialog.showAlertBox("Failed.", content);
                 }
-
-                Platform.runLater(() -> {
-
-                });
             }
 
         } catch (Exception e) {

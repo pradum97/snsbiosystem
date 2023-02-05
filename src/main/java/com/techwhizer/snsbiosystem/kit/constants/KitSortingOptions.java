@@ -1,8 +1,12 @@
 package com.techwhizer.snsbiosystem.kit.constants;
 
 import com.google.gson.Gson;
+import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
+import com.techwhizer.snsbiosystem.util.Message;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -39,10 +43,18 @@ public class KitSortingOptions {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
+                int statusCode = response.getStatusLine().getStatusCode();
 
-                Map<String, String> option = new Gson().fromJson(content, Map.class);
-                return option;
-
+                if (statusCode == 200){
+                    Map<String, String> option = new Gson().fromJson(content, Map.class);
+                    return option;
+                } else if (statusCode == 401) {
+                    new HttpStatusHandler(401);
+                    return null;
+                }else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
+                    return null;
+                }
             } else {
                 return null;
             }

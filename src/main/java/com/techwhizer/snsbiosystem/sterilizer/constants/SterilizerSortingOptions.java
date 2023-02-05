@@ -1,11 +1,12 @@
 package com.techwhizer.snsbiosystem.sterilizer.constants;
 
 import com.google.gson.Gson;
+import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.victorlaerte.asynctask.AsyncTask;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import com.techwhizer.snsbiosystem.util.Message;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -17,7 +18,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SterilizerSortingOptions {
@@ -42,13 +43,25 @@ public class SterilizerSortingOptions {
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
 
-                Map<String, String> option = new Gson().fromJson(content, Map.class);
-                return option;
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == StatusCode.OK) {
+                    Map<String, String> option = new Gson().fromJson(content, Map.class);
+                    return option;
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                    return new HashMap<>();
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
+                    return new HashMap<>();
+                }
+
 
             } else {
+                new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 return null;
             }
         } catch (IOException | URISyntaxException | InterruptedException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         }
 

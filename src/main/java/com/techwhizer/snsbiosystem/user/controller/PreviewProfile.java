@@ -5,15 +5,13 @@ import com.google.gson.reflect.TypeToken;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.RoleOption;
 import com.techwhizer.snsbiosystem.user.model.CreateUsersResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
-import com.techwhizer.snsbiosystem.util.ChooseFile;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.util.RowPerPage;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -231,8 +229,10 @@ public class PreviewProfile implements Initializable {
                         }
                     });
 
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
-                    customDialog.showAlertBox("Failed.", "Something went wrong. Please try again.");
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
             }
 
@@ -377,8 +377,10 @@ public class PreviewProfile implements Initializable {
                     paginationContainer.setDisable(false);
                     search_Item();
                 }
-            }else {
-                customDialog.showAlertBox("Failed","Something went wrong!");
+            }else if (statusCode == StatusCode.UNAUTHORISED) {
+                new HttpStatusHandler(StatusCode.UNAUTHORISED);
+            } else {
+                new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());

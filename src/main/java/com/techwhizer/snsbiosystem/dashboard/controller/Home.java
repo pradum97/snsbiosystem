@@ -2,10 +2,9 @@ package com.techwhizer.snsbiosystem.dashboard.controller;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
-import com.techwhizer.snsbiosystem.Dashboard;
 import com.techwhizer.snsbiosystem.Main;
-import com.techwhizer.snsbiosystem.dashboard.model.DashboardModel;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.dashboard.model.DashboardModel;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
@@ -13,7 +12,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -45,8 +43,7 @@ public class Home implements Initializable {
     }
 
     public void totalSterilizerCardClick(MouseEvent mouseEvent) {
-
-        customDialog.showFxmlFullDialog("sterilizer/sterilizers.fxml","ALL STERILIZERS");
+        customDialog.showFxmlFullDialog("sterilizer/sterilizers.fxml", "ALL STERILIZERS");
     }
 
     public void totalKitsCardClick(MouseEvent mouseEvent) {

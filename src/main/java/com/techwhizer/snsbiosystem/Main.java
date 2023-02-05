@@ -6,21 +6,15 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Objects;
 
 public class Main extends Application {
     public static Stage primaryStage;
-
     @Override
-    public void start(Stage stage) throws IOException {
-
+    public void start(Stage stage) throws Exception {
         primaryStage = stage;
         Parent root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("auth/login.fxml")));
         //    stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream(AppConfig.APPLICATION_ICON))));
@@ -32,6 +26,12 @@ public class Main extends Application {
         stage.show();
     }
 
+    public static void main(String[] args) {
+
+        launch(args);
+
+
+    }
     public void changeScene(String fxml, String title) {
 
         try {
@@ -48,7 +48,4 @@ public class Main extends Application {
         }
     }
 
-    public static void main(String[] args) throws ParseException, IOException {
-        launch(args);
-    }
 }

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.constants.KitOperationType;
@@ -14,10 +15,7 @@ import com.techwhizer.snsbiosystem.kit.model.KitPageResponse;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.report.DownloadReport;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.util.ChooseFile;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.LocalDb;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -264,6 +262,8 @@ public class Kits implements Initializable {
                     int rowIndex = (Integer) sortingMap.get("row_index");
                     sortData(pageIndex, rowIndex, OperationType.START, 0L, null, null);
 
+                } else if (statusCode == 401) {
+                    new HttpStatusHandler(401);
                 }
 
                 customDialog.showAlertBox("", content);
@@ -318,18 +318,26 @@ public class Kits implements Initializable {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == 200) {
 
-                KitPageResponse KkitPageResponse = new Gson().fromJson(content, KitPageResponse.class);
-                List<KitDTO> kds = KkitPageResponse.getKits();
+                    KitPageResponse KkitPageResponse = new Gson().fromJson(content, KitPageResponse.class);
+                    List<KitDTO> kds = KkitPageResponse.getKits();
 
-                kitsList = FXCollections.observableArrayList(kds);
-                if (kitsList.size() > 0) {
-                    paginationContainer.setVisible(true);
-                    int totalPage = KkitPageResponse.getTotalPage();
+                    kitsList = FXCollections.observableArrayList(kds);
+                    if (kitsList.size() > 0) {
+                        paginationContainer.setVisible(true);
+                        int totalPage = KkitPageResponse.getTotalPage();
 
-                    assert sortedDataMap != null;
-                    search_Item(totalPage, (Integer) sortedDataMap.get("page_index"), (Integer) sortedDataMap.get("row_index"));
+                        assert sortedDataMap != null;
+                        search_Item(totalPage, (Integer) sortedDataMap.get("page_index"), (Integer) sortedDataMap.get("row_index"));
 
+                    }
+
+                } else if (statusCode == 401) {
+                    new HttpStatusHandler(401);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
             }
@@ -386,13 +394,16 @@ public class Kits implements Initializable {
 
                     default -> {
 
-                        return null != kit.getKitNumber() &&
-                                String.valueOf(kit.getKitNumber()).toLowerCase().contains(lowerCaseFilter);
+                        return null != kit.getKitNumber() && String.valueOf(kit.getKitNumber()).toLowerCase().contains(lowerCaseFilter);
                     }
                 }
             });
 
-            changeTableView(0, 0, rowIndex);
+            if (filteredData.size() > 0) {
+                tableview.setPlaceholder(method.getProgressBar(40, 40));
+            } else {
+                tableview.setPlaceholder(new Label("Kit not found"));
+            }
 
         });
         changeTableView(totalPage, pageIndex, rowIndex);
@@ -402,12 +413,6 @@ public class Kits implements Initializable {
 
         Platform.runLater(() -> {
             pagination.setPageCount(totalPage);
-
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("Kit not found"));
-            }
 
             pagination.setCurrentPageIndex(pageIndex);
             tableview.scrollTo(rowIndex);

@@ -5,14 +5,13 @@ import com.google.gson.reflect.TypeToken;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.sterilizer.model.AddSterilizerResponse;
 import com.techwhizer.snsbiosystem.sterilizer.model.SterilizerDTO;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
-import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.util.RowPerPage;
+import com.techwhizer.snsbiosystem.util.*;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -195,15 +194,17 @@ public class PreviewSterilizers implements Initializable {
                         } else {
                             Main.primaryStage.setUserData(true);
                             cancelBnClick(null);
-                            customDialog.showAlertBox("Success","Sterilizer successfully created");
+                            customDialog.showAlertBox("Success", "Sterilizer successfully created");
 
                         }
 
                         method.hideElement(progressbar);
                         uploadNowBn.setVisible(true);
 
+                    } else if (statusCode == StatusCode.UNAUTHORISED) {
+                        new HttpStatusHandler(StatusCode.UNAUTHORISED);
                     } else {
-                        customDialog.showAlertBox("Failed.", "Something went wrong. Please try again");
+                        new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                     }
                 });
             }
@@ -211,7 +212,7 @@ public class PreviewSterilizers implements Initializable {
         } catch (Exception e) {
             method.hideElement(progressbar);
             uploadNowBn.setVisible(true);
-            customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             e.printStackTrace();
         }
     }
@@ -306,6 +307,7 @@ public class PreviewSterilizers implements Initializable {
 
             if (resEntity != null && response.getStatusLine().getStatusCode() == 200) {
                 String content = EntityUtils.toString(resEntity);
+
                 Type type = new TypeToken<Set<SterilizerDTO>>() {}.getType();
                 Set<SterilizerDTO> sterilizerArray = new Gson().fromJson(content, type);
 
@@ -324,7 +326,7 @@ public class PreviewSterilizers implements Initializable {
                 long finalTotalRecord = totalRecord;
                 long finalTotalInvalid = totalInvalid;
                 long finalTotalValid = totalValid;
-                Platform.runLater(()->{
+                Platform.runLater(() -> {
                     totalRecordL.setText(String.valueOf(finalTotalRecord));
                     totalValidRecordL.setText(String.valueOf(finalTotalValid));
                     totalInvalidRecordL.setText(String.valueOf(finalTotalInvalid));
@@ -334,10 +336,13 @@ public class PreviewSterilizers implements Initializable {
                     paginationContainer.setDisable(false);
                     search_Item();
                 }
-            }else {
-                customDialog.showAlertBox("Failed","Something went wrong!");
+            } else if (statusCode == StatusCode.UNAUTHORISED) {
+                new HttpStatusHandler(StatusCode.UNAUTHORISED);
+            } else {
+                new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             }
         } catch (IOException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         }
     }

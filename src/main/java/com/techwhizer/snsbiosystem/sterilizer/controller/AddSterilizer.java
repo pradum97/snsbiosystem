@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.sterilizer.model.AddSterilizerResponse;
@@ -13,6 +14,7 @@ import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.util.LocalDb;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -245,12 +247,16 @@ public class AddSterilizer implements Initializable {
 
                     });
 
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
             }
         } catch (Exception e) {
             method.hideElement(progressbar);
             submitBn.setVisible(true);
-            customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             e.printStackTrace();
         }
 
@@ -275,18 +281,20 @@ public class AddSterilizer implements Initializable {
                         List<SterilizerDTO> failedUsers = asr.getInvalidData();
                         if (failedUsers.size() > 0) {
                             for (SterilizerDTO u : failedUsers) {
-                               String errorMsg = u.getErrorMessage();
+                                String errorMsg = u.getErrorMessage();
                                 customDialog.showAlertBox("Failed", errorMsg);
                             }
                         } else {
                             resetAllField();
                             Main.primaryStage.setUserData(true);
-                            customDialog.showAlertBox("Success","Sterilizer successfully created");
+                            customDialog.showAlertBox("Success", "Sterilizer successfully created");
                         }
 
                         method.hideElement(progressbar);
                         submitBn.setVisible(true);
 
+                    } else if (statusCode == StatusCode.UNAUTHORISED) {
+                        new HttpStatusHandler(StatusCode.UNAUTHORISED);
                     } else {
                         customDialog.showAlertBox("Failed.", content);
                     }

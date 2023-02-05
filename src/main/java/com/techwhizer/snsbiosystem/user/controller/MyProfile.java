@@ -3,10 +3,13 @@ package com.techwhizer.snsbiosystem.user.controller;
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.User;
+import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
@@ -107,8 +110,17 @@ public class MyProfile implements Initializable {
             HttpEntity resEntity = response.getEntity();
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
-                User user = new Gson().fromJson(content, User.class);
-                Platform.runLater(()-> setUserDetails(user));
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == 200){
+                    User user = new Gson().fromJson(content, User.class);
+                    Platform.runLater(()-> setUserDetails(user));
+                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
+                }
+
             }
 
         } catch (Exception e) {
