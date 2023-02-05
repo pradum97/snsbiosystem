@@ -2,6 +2,7 @@ stop previous running server
 step-1:netstat -a -o -n
 step-2:taskkill /F /PID<PID NUM>
 ******************************************************************
-In Upload Distributor Csv, When we upload Doctor Csv file then file is Uploading and it's gets Error msg.
+
+
 note;
 token expire;

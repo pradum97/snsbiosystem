@@ -59,11 +59,12 @@ public class Login implements Initializable {
 
     public  void passwordMaskFiled() {
 
+        usernameTf.setFocusTraversable(true);
         passwordTf = new TextField();
-
         passwordTf.setManaged(false);
         passwordTf.setVisible(false);
         final PasswordField passwordField = new PasswordField();
+        passwordField.setText("snsadmin");
         ImageView icon = new ImageView(new ImageLoader().load("img/icon/showPassword.png"));
         icon.setFitHeight(26);
         icon.setFitWidth(26);
@@ -91,7 +92,6 @@ public class Login implements Initializable {
         passwordField.managedProperty().bind(icon.pressedProperty().not());
         passwordField.visibleProperty().bind(icon.pressedProperty().not());
         passwordTf.textProperty().bindBidirectional(passwordField.textProperty());
-
         passwordContainer.getChildren().addAll(passwordTf,passwordField,icon);
 
     }

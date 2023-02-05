@@ -352,7 +352,7 @@ public class CreateProfile implements Initializable {
 
         }
 
-        if (null != officeFax) {
+        if (!officeFax.isEmpty()) {
             if (officeFax.length() < 9) {
                 method.show_popup("Enter fax number more then 8 digit", officeFaxNumberTf);
                 return;

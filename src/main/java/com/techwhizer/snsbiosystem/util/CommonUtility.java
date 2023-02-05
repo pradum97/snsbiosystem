@@ -17,25 +17,8 @@ public class CommonUtility {
     public final static String COMMON_DATE_PATTERN = "yyyy/MM/dd";
     public static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
     public static final String DATEPICKER_DATE_FORMAT = "yyyy/MM/dd";
-
     public final static String ORDER_ASC = "ASCENDING";
     public final static String ORDER_DESC = "DESCENDING";
-    public static void passwordMaskFiled(TextField textField, ImageView icon) {
-        textField.setManaged(false);
-        textField.setVisible(false);
-        final PasswordField passwordField = new PasswordField();
-
-        passwordField.prefHeight(textField.getPrefHeight());
-        passwordField.prefWidth(textField.getPrefWidth());
-
-        textField.managedProperty().bind(icon.pressedProperty());
-        textField.visibleProperty().bind(icon.pressedProperty());
-
-        passwordField.managedProperty().bind(icon.pressedProperty().not());
-        passwordField.visibleProperty().bind(icon.pressedProperty().not());
-        textField.textProperty().bindBidirectional(passwordField.textProperty());
-    }
-
 
     public static void onHoverShowTextButton(Button node, String text){
 
