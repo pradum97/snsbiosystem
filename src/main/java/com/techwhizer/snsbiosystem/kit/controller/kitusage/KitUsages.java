@@ -300,7 +300,7 @@ public class KitUsages implements Initializable {
     }
 
     private void search_Item(int totalPage,int pageIndex, Integer rowIndex) {
-        searchTf.setText("");
+        Platform.runLater(()->{searchTf.setText("");});
 
         filteredData = new FilteredList<>(kitsUsagesList, p -> true);
 
@@ -348,11 +348,13 @@ public class KitUsages implements Initializable {
                 }
             });
 
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("Kit Usage not found"));
-            }
+           Platform.runLater(()->{
+               if (filteredData.size() > 0) {
+                   tableview.setPlaceholder(method.getProgressBar(40, 40));
+               } else {
+                   tableview.setPlaceholder(new Label("Kit Usage not found"));
+               }
+           });
 
         });
 

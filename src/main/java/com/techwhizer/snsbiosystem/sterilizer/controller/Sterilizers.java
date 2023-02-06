@@ -70,6 +70,7 @@ public class Sterilizers implements Initializable {
 
     private ObservableList<SterilizerTableView> sterilizerList = FXCollections.observableArrayList();
     private FilteredList<SterilizerTableView> filteredData;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
@@ -305,7 +306,7 @@ public class Sterilizers implements Initializable {
                     int pageIndex = (Integer) sortingMap.get("page_index");
                     int rowIndex = (Integer) sortingMap.get("row_index");
                     sortData(pageIndex, rowIndex, OperationType.START, 0L);
-                }else if (statusCode == StatusCode.UNAUTHORISED) {
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
                     customDialog.showAlertBox("", content);
@@ -334,7 +335,9 @@ public class Sterilizers implements Initializable {
     }
 
     private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
-        searchTf.setText(null);
+        Platform.runLater(() -> {
+            searchTf.setText(null);
+        });
 
         filteredData = new FilteredList<>(sterilizerList, p -> true);
 
@@ -377,11 +380,13 @@ public class Sterilizers implements Initializable {
                 }
             });
 
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("Sterilizer not found"));
-            }
+            Platform.runLater(() -> {
+                if (filteredData.size() > 0) {
+                    tableview.setPlaceholder(method.getProgressBar(40, 40));
+                } else {
+                    tableview.setPlaceholder(new Label("Sterilizer not found"));
+                }
+            });
         });
 
 
@@ -442,8 +447,8 @@ public class Sterilizers implements Initializable {
                     Button editBn = new Button();
                     Button deleteBbn = new Button();
 
-                    CommonUtility.onHoverShowTextButton(editBn,"Update sterilizer");
-                    CommonUtility.onHoverShowTextButton(deleteBbn,"Delete Sterilizer");
+                    CommonUtility.onHoverShowTextButton(editBn, "Update sterilizer");
+                    CommonUtility.onHoverShowTextButton(deleteBbn, "Delete Sterilizer");
 
                     ImageView activeIc = getImage("img/icon/admin_icon.png");
                     activeIc.setFitWidth(30);

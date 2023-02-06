@@ -344,7 +344,7 @@ public class Users implements Initializable {
     }
 
     private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
-        searchTf.setText("");
+        Platform.runLater(()->{searchTf.setText("");});
         filteredData = new FilteredList<>(userList, p -> true);
 
         searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -390,11 +390,13 @@ public class Users implements Initializable {
                 }
             });
 
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("User not found"));
-            }
+            Platform.runLater(()->{
+                if (filteredData.size() > 0) {
+                    tableview.setPlaceholder(method.getProgressBar(40, 40));
+                } else {
+                    tableview.setPlaceholder(new Label("User not found"));
+                }
+            });
 
         });
 
@@ -549,7 +551,7 @@ public class Users implements Initializable {
                         alert.setAlertType(Alert.AlertType.CONFIRMATION);
                         alert.setTitle("Warning ");
                         alert.setGraphic(image);
-                        alert.setHeaderText("Are you sure you want to delete this item?");
+                        alert.setHeaderText("Are you sure you want to delete this User?");
                         alert.initModality(Modality.APPLICATION_MODAL);
                         alert.initOwner(Main.primaryStage);
                         Optional<ButtonType> result = alert.showAndWait();

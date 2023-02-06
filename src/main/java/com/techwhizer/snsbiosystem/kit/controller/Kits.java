@@ -360,7 +360,7 @@ public class Kits implements Initializable {
     }
 
     private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
-        searchTf.setText("");
+       Platform.runLater(()->{searchTf.setText("");} );
 
         filteredData = new FilteredList<>(kitsList, p -> true);
 
@@ -399,11 +399,13 @@ public class Kits implements Initializable {
                 }
             });
 
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("Kit not found"));
-            }
+           Platform.runLater(()->{
+               if (filteredData.size() > 0) {
+                   tableview.setPlaceholder(method.getProgressBar(40, 40));
+               } else {
+                   tableview.setPlaceholder(new Label("Kit not found"));
+               }
+           });
 
         });
         changeTableView(totalPage, pageIndex, rowIndex);
@@ -540,7 +542,7 @@ public class Kits implements Initializable {
                         alert.setAlertType(Alert.AlertType.CONFIRMATION);
                         alert.setTitle("Warning ");
                         alert.setGraphic(image);
-                        alert.setHeaderText("Are you sure you want to delete this sterilizer?");
+                        alert.setHeaderText("Are you sure you want to delete this Kit?");
                         alert.initModality(Modality.APPLICATION_MODAL);
                         alert.initOwner(Main.primaryStage);
                         Optional<ButtonType> result = alert.showAndWait();

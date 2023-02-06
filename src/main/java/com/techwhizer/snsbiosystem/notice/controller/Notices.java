@@ -274,7 +274,7 @@ public class Notices implements Initializable {
     }
 
     private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
-        searchTf.setText("");
+        Platform.runLater(()->{searchTf.setText("");});
 
         filteredData = new FilteredList<>(noticeList, p -> true);
 
@@ -303,11 +303,13 @@ public class Notices implements Initializable {
 
             });
 
-            if (filteredData.size() > 0) {
-                tableview.setPlaceholder(method.getProgressBar(40, 40));
-            } else {
-                tableview.setPlaceholder(new Label("Notice not found"));
-            }
+          Platform.runLater(()->{
+              if (filteredData.size() > 0) {
+                  tableview.setPlaceholder(method.getProgressBar(40, 40));
+              } else {
+                  tableview.setPlaceholder(new Label("Notice not found"));
+              }
+          });
 
         });
 
