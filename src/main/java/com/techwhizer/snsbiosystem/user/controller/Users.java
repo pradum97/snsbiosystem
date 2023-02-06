@@ -11,18 +11,19 @@ import com.techwhizer.snsbiosystem.kit.constants.KitOperationType;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.report.DownloadReport;
 import com.techwhizer.snsbiosystem.user.constant.RoleOption;
-import com.techwhizer.snsbiosystem.user.constant.UserSearchFilters;
 import com.techwhizer.snsbiosystem.user.constant.UserSortingOption;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.PageResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
-import com.techwhizer.snsbiosystem.util.*;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
+import com.techwhizer.snsbiosystem.util.Message;
+import com.techwhizer.snsbiosystem.util.OptionalMethod;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -30,6 +31,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -70,20 +73,38 @@ public class Users implements Initializable {
     public Button applySorting;
     private CustomDialog customDialog;
     private OptionalMethod method;
-    private LocalDb localDb;
     public Pagination pagination;
-    public ComboBox<String> searchByCom;
     private ObservableList<UserDTO> userList = FXCollections.observableArrayList();
-    private FilteredList<UserDTO> filteredData;
+    private boolean isSearchPress = false, isSearchTfClear = false;
+    private int paginationIndex;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customDialog = new CustomDialog();
         method = new OptionalMethod();
-        localDb = new LocalDb();
-        searchByCom.valueProperty().addListener((observableValue, s, t1) -> searchTf.setText(""));
 
-        startThread(null, OperationType.SORTING_LOADING, 0L, null, null, null);
+        startThread(null, OperationType.SORTING_LOADING, 0L, null, null, null, null);
+
+        searchConfig();
+    }
+
+    private void searchConfig() {
+
+        searchTf.textProperty().addListener((observableValue, s, t1) -> {
+
+            if (!isSearchTfClear) {
+                if (t1.isEmpty()) {
+                    if (isSearchPress) {
+                        String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
+                        sortData(role, OperationType.START, 0L, null, null, paginationIndex, 0, null);
+                        paginationIndex = 0;
+                        isSearchPress = false;
+                    }
+                }
+            } else {
+                isSearchTfClear = false;
+            }
+        });
     }
 
     private void comboBoxConfig() {
@@ -106,43 +127,40 @@ public class Users implements Initializable {
 
             pagination.currentPageIndexProperty().addListener(
                     (observable1, oldValue1, newValue1) -> {
+
+                        if (!isSearchTfClear) {
+                            isSearchPress = false;
+                            searchTf.setText("");
+                        }
+
                         int pageIndex = newValue1.intValue();
                         String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                        sortData(role, OperationType.START, 0L, null, null, pageIndex, 0);
-
-
+                        sortData(role, OperationType.START, 0L, null, null, pageIndex, 0, null);
                     });
 
             rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
                 String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0);
+                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0, null);
             });
 
             filterByRoleCom.valueProperty().addListener((observableValue, s, t1) ->
-                    sortData(t1, OperationType.START, 0L, null, null, 0, 0));
+                    sortData(t1, OperationType.START, 0L, null, null, 0, 0, null));
 
             applySorting.setDisable(false);
-            searchByCom.valueProperty().addListener((observableValue, s, newValue) -> {
-                searchTf.setPromptText(" Search By : " + newValue.toLowerCase());
-            });
-
-            searchByCom.setItems(localDb.getUserSearchType());
             filterByRoleCom.getSelectionModel().select(CommonUtility.ALL);
-            searchByCom.getSelectionModel().selectFirst();
 
             comboboxSetting(filterByRoleCom);
             comboboxSetting(sortByCom);
-            comboboxSetting(searchByCom);
         });
     }
 
     public void applySorting(ActionEvent event) {
         String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
-        sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0);
+        sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0, null);
     }
 
     private void sortData(String role, OperationType operationType, Long clientId, Button button,
-                          Map<String, Object> reportMap, int pageIndex, int rowIndex) {
+                          Map<String, Object> reportMap, int pageIndex, int rowIndex, String username) {
 
         String filedName = UserSortingOption.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
         String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
@@ -155,14 +173,14 @@ public class Users implements Initializable {
         sortedDataMap.put("page_index", pageIndex);
         sortedDataMap.put("row_index", rowIndex);
 
-        startThread(role, operationType, clientId, button, reportMap, sortedDataMap);
+        startThread(role, operationType, clientId, button, reportMap, sortedDataMap, username);
     }
 
     public void startThread(String role, OperationType operationType,
                             Long clientId, Button button, Map<String, Object> reportMap,
-                            Map<String, Object> sortedDataMap) {
+                            Map<String, Object> sortedDataMap, String username) {
 
-        MyAsyncTask myAsyncTask = new MyAsyncTask(role, operationType, clientId, button, reportMap, sortedDataMap);
+        MyAsyncTask myAsyncTask = new MyAsyncTask(role, operationType, clientId, button, reportMap, sortedDataMap, username);
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();
     }
@@ -194,8 +212,27 @@ public class Users implements Initializable {
     }
 
     public void refreshClick(MouseEvent mouseEvent) {
-
         applySorting(null);
+    }
+
+    public void searchImgClick(MouseEvent event) {
+
+        String username = searchTf.getText();
+
+        if (null != username) {
+            if (!username.isEmpty()) {
+                String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
+                sortData(role, OperationType.START, 0L, null, null, 0, 0, username);
+            }
+        }
+    }
+
+    public void keyPress(KeyEvent keyEvent) {
+
+        if (keyEvent.getCode() == KeyCode.ENTER) {
+            searchImgClick(null);
+        }
+
     }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
@@ -206,15 +243,17 @@ public class Users implements Initializable {
         private Map<String, Object> reportMap;
         private Button downloadButton;
         private Map<String, Object> sortedDataMap;
+        private String username;
 
         public MyAsyncTask(String role, OperationType operationType,
-                           Long clientId, Button button, Map<String, Object> reportMap, Map<String, Object> sortedDataMap) {
+                           Long clientId, Button button, Map<String, Object> reportMap, Map<String, Object> sortedDataMap, String username) {
             this.role = role;
             this.operationType = operationType;
             this.clientId = clientId;
             this.button = button;
             this.reportMap = reportMap;
             this.sortedDataMap = sortedDataMap;
+            this.username = username;
             if (null != reportMap) {
                 downloadButton = (Button) reportMap.get("button");
             }
@@ -244,7 +283,7 @@ public class Users implements Initializable {
 
             switch (operationType) {
                 case SORTING_LOADING -> comboBoxConfig();
-                case START -> getAllUser(role, sortedDataMap);
+                case START -> getAllUser(role, sortedDataMap, username);
                 case DELETE -> deleteUser(clientId, button, sortedDataMap);
                 case DOWNLOAD_REPORT -> {
                     if (null != reportMap) {
@@ -278,7 +317,7 @@ public class Users implements Initializable {
         }
     }
 
-    private void getAllUser(String role, Map<String, Object> sortedDataMap) {
+    private void getAllUser(String role, Map<String, Object> sortedDataMap, String username) {
         if (null != userList) {
             userList.clear();
         }
@@ -288,6 +327,14 @@ public class Users implements Initializable {
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
                     .setCookieSpec("easy").build()).build();
             URIBuilder param = new URIBuilder(UrlConfig.getAllUsersUrl());
+
+            if (null != username) {
+                if (!username.isEmpty()) {
+                    isSearchPress = true;
+                    paginationIndex = pagination.getCurrentPageIndex();
+                    param.setParameter("q[user_name]", username);
+                }
+            }
 
             if (null != sortedDataMap) {
                 String sort = (String) sortedDataMap.get("sort");
@@ -319,12 +366,15 @@ public class Users implements Initializable {
                     PageResponse pageResponse = new Gson().fromJson(content, PageResponse.class);
                     List<UserDTO> users = pageResponse.getUsers();
                     userList = FXCollections.observableArrayList(users);
+                    int totalPage = pageResponse.getTotalPage();
                     if (userList.size() > 0) {
-                        paginationContainer.setDisable(false);
-                        int totalPage = pageResponse.getTotalPage();
-                        search_Item(totalPage, (Integer) sortedDataMap.get("page_index"),
-                                (Integer) sortedDataMap.get("row_index"));
+                        int pageIndex = (Integer) sortedDataMap.get("page_index");
+                        int rowIndex = (Integer) sortedDataMap.get("row_index");
+                        changeTableView(totalPage, pageIndex, rowIndex);
                     }
+
+                    pagination.setVisible(totalPage > 0);
+                    paginationContainer.setDisable(!(totalPage > 0));
 
 
                 }else if (statusCode == StatusCode.UNAUTHORISED) {
@@ -332,8 +382,6 @@ public class Users implements Initializable {
                 } else {
                     new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
-
-
             }
         } catch (IOException | URISyntaxException | InterruptedException e) {
             new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
@@ -343,74 +391,15 @@ public class Users implements Initializable {
         }
     }
 
-    private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
-        Platform.runLater(()->{searchTf.setText("");});
-        filteredData = new FilteredList<>(userList, p -> true);
-
-        searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
-
-            filteredData.setPredicate(user -> {
-
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-
-                String lowerCaseFilter = newValue.toLowerCase();
-
-                String searchBy = searchByCom.getSelectionModel().getSelectedItem();
-                switch (searchBy) {
-
-
-                    case UserSearchFilters.CLIENT_ID -> {
-
-                        return null != user.getClientID() &&
-                                String.valueOf(user.getClientID()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-                    case UserSearchFilters.NAME -> {
-                        return (null != user.getFirstName() || null != user.getLastName()) &&
-                                (user.getFirstName() + user.getLastName()).toLowerCase().contains(lowerCaseFilter);
-                    }
-                    case UserSearchFilters.EMAIL -> {
-                        return null != user.getWorkEmail() &&
-                                String.valueOf(user.getWorkEmail()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-                    case UserSearchFilters.PHONE -> {
-                        return null != user.getWorkPhoneNumber() &&
-                                String.valueOf(user.getWorkPhoneNumber()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-                    case UserSearchFilters.USERNAME -> {
-                        return null != user.getRequestedLoginName() &&
-                                String.valueOf(user.getRequestedLoginName()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-                    default -> {
-
-                        return (null != user.getOfficeAddress() || null != user.getHomeAddress()) &&
-                                (user.getOfficeAddress() + user.getHomeAddress()).toLowerCase().contains(lowerCaseFilter);
-                    }
-                }
-            });
-
-            Platform.runLater(()->{
-                if (filteredData.size() > 0) {
-                    tableview.setPlaceholder(method.getProgressBar(40, 40));
-                } else {
-                    tableview.setPlaceholder(new Label("User not found"));
-                }
-            });
-
-        });
-
-        changeTableView(totalPage, pageIndex, rowIndex);
-    }
 
     private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
+        isSearchTfClear = true;
 
         Platform.runLater(() -> {
-                    pagination.setPageCount(totalPage);
-                    pagination.setCurrentPageIndex(pageIndex);
-                    tableview.scrollTo(rowIndex);
-                }
-        );
+            pagination.setPageCount(totalPage);
+            pagination.setCurrentPageIndex(pageIndex);
+            tableview.scrollTo(rowIndex);
+        });
 
         colSlNum.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
                 tableview.getItems().indexOf(cellData.getValue()) + 1));
@@ -418,7 +407,7 @@ public class Users implements Initializable {
         colClientId.setCellValueFactory(new PropertyValueFactory<>("clientID"));
 
         setOptionalCell();
-        tableview.setItems(filteredData);
+        tableview.setItems(userList);
         tableview.setRowFactory(tv -> new TableRow<>() {
             @Override
             protected void updateItem(UserDTO item, boolean empty) {
@@ -513,7 +502,7 @@ public class Users implements Initializable {
                         map.put("customer_id", tableview.getItems().get(getIndex()).getClientID());
 
                         String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                        sortData(role, OperationType.DOWNLOAD_REPORT, 0L, null, map, pagination.getCurrentPageIndex(), getIndex());
+                        sortData(role, OperationType.DOWNLOAD_REPORT, 0L, null, map, pagination.getCurrentPageIndex(), getIndex(), null);
 
                     }));
 
@@ -536,7 +525,7 @@ public class Users implements Initializable {
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
                                 String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), getIndex());
+                                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), getIndex(), null);
                             }
                         }
 
@@ -559,7 +548,7 @@ public class Users implements Initializable {
                         if (button == ButtonType.OK) {
 
                             String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                            sortData(role, OperationType.DELETE, icm.getClientID(), deleteBbn, null, pagination.getCurrentPageIndex(), getIndex());
+                            sortData(role, OperationType.DELETE, icm.getClientID(), deleteBbn, null, pagination.getCurrentPageIndex(), getIndex(), null);
 
                         } else {
                             alert.close();
@@ -750,7 +739,7 @@ public class Users implements Initializable {
                     int pageIndex = (Integer) sortedDataMap.get("page_index");
                     int rowIndex = (Integer) sortedDataMap.get("row_index");
                     String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
-                    sortData(role, OperationType.START, 0L, null, null, pageIndex, rowIndex);
+                    sortData(role, OperationType.START, 0L, null, null, pageIndex, rowIndex, null);
 
                     applySorting(null);
                 }else if (statusCode == StatusCode.UNAUTHORISED) {

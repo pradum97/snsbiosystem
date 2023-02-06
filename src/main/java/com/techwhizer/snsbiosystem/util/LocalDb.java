@@ -5,7 +5,6 @@ import com.techwhizer.snsbiosystem.kit.constants.KitUsageSearchType;
 import com.techwhizer.snsbiosystem.sterilizer.constants.SterilizerSearchType;
 import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
 import com.techwhizer.snsbiosystem.sterilizer.constants.SterilizerType;
-import com.techwhizer.snsbiosystem.user.constant.UserSearchFilters;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.util.HashSet;
@@ -27,11 +26,6 @@ public class LocalDb {
     }public ObservableList<String> getKitUsageSearchType() {
         return FXCollections.observableArrayList(KitUsageSearchType.ID,KitUsageSearchType.KIT_NUMBER,KitUsageSearchType.STERILIZER_ID,
                 KitUsageSearchType.STERILIZER_LIST_NUMBER,KitUsageSearchType.STERILIZER_TYPE,KitUsageSearchType.STERILIZER_SERIAL_NUMBER);
-    }
-
-    public ObservableList<String> getUserSearchType() {
-        return FXCollections.observableArrayList(UserSearchFilters.CLIENT_ID,UserSearchFilters.NAME,
-                UserSearchFilters.EMAIL,UserSearchFilters.PHONE,UserSearchFilters.ADDRESS,UserSearchFilters.USERNAME);
     }
 
     public ObservableList<String> getSterilizerType() {

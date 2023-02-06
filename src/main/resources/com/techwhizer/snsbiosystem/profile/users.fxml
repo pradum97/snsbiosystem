@@ -107,12 +107,15 @@
                         <Insets right="50.0" />
                      </HBox.margin>
                      <children>
-                        <ComboBox fx:id="searchByCom" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: white; -fx-border-color: white; -fx-border-radius: 14; -fx-background-radius: 14;">
+                        <TextField onKeyPressed="#keyPress" fx:id="searchTf" alignment="CENTER" minWidth="161.0" prefHeight="35.0" prefWidth="221.0" promptText="Enter username" style="-fx-border-color: white grey white white; -fx-background-radius: 14 0 0 14; -fx-border-radius: 14 0 0 14;" />
+                        <ImageView onMouseClicked="#searchImgClick" fitHeight="20.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                           <image>
+                              <Image url="@../img/icon/search_ic.png" />
+                           </image>
                            <HBox.margin>
-                              <Insets />
+                              <Insets left="5.0" right="10.0" top="2.0" />
                            </HBox.margin>
-                        </ComboBox>
-                        <TextField fx:id="searchTf" alignment="CENTER" minWidth="161.0" prefHeight="35.0" prefWidth="161.0" promptText="Search By" style="-fx-border-color: white; -fx-background-radius: 14; -fx-border-radius: 14;" />
+                        </ImageView>
                      </children>
                   </HBox>
                </children>
@@ -186,7 +189,7 @@
                </children>
             </HBox>
             <Separator orientation="VERTICAL" />
-            <Pagination fx:id="pagination" focusTraversable="false" />
+            <Pagination fx:id="pagination" visible="false" />
          </children>
       </HBox>
    </bottom>

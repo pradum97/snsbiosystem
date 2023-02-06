@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Dashboard extends OptionalMethod implements Initializable {
-
     @FXML
     public Button dashboardBn, manageKitBn, manageSterilizerBn, userBn,noticeBn , accountBn;
     public Button logoutBn;
@@ -46,7 +45,6 @@ public class Dashboard extends OptionalMethod implements Initializable {
     ImageView hideIv, showIv;
     public VBox menuContainer, topUserContainer;
     private CustomDialog customDialog;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dashboardBnClick(null);
@@ -303,9 +301,6 @@ public class Dashboard extends OptionalMethod implements Initializable {
     }
 
     private void changeTitle(String str) {
-
-        String previousTitle =   Main.primaryStage.getTitle();
-
         Main.primaryStage.setTitle(AppConfig.APPLICATION_NAME+"( "+"DASHBOARD->"+str+" )");
     }
 
