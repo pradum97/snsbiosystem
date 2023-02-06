@@ -1,5 +1,6 @@
 package com.techwhizer.snsbiosystem;
 
+import com.techwhizer.snsbiosystem.app.AppConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.AuthResponse;
@@ -258,6 +259,8 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
     public void userBnClick(ActionEvent event) {
 
+        changeTitle("USERS");
+
         unselectedBg(dashboardBn, manageKitBn, manageSterilizerBn, accountBn, noticeBn);
         selectedBg(userBn);
 
@@ -267,6 +270,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
     public void sterilizerBnClick(ActionEvent event) {
 
+        changeTitle("STERILIZERS");
         unselectedBg(dashboardBn, manageKitBn, userBn, accountBn, noticeBn);
         selectedBg(manageSterilizerBn);
         Main.primaryStage.setUserData(null);
@@ -274,6 +278,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
     }
 
     public void dashboardBnClick(ActionEvent event) {
+        changeTitle("HOME");
 
         unselectedBg(userBn, manageKitBn, manageSterilizerBn, accountBn, noticeBn);
         selectedBg(dashboardBn);
@@ -283,6 +288,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
     }
 
     public void manageKitBnClick(ActionEvent event) {
+        changeTitle("KITS");
         unselectedBg(dashboardBn, userBn, manageSterilizerBn, accountBn, noticeBn);
         selectedBg(manageKitBn);
         Main.primaryStage.setUserData(null);
@@ -290,10 +296,17 @@ public class Dashboard extends OptionalMethod implements Initializable {
     }
 
     public void noticeBnClick(ActionEvent event) {
-
+        changeTitle("NOTICES");
         unselectedBg(dashboardBn, manageKitBn, manageSterilizerBn, accountBn, userBn);
         selectedBg(noticeBn);
         replaceScene("notice/notices.fxml");
+    }
+
+    private void changeTitle(String str) {
+
+        String previousTitle =   Main.primaryStage.getTitle();
+
+        Main.primaryStage.setTitle(AppConfig.APPLICATION_NAME+"( "+"DASHBOARD->"+str+" )");
     }
 
     private void replaceScene(String fxml_file_name) {

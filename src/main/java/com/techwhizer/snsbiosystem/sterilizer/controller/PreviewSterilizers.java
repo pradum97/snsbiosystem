@@ -295,6 +295,7 @@ public class PreviewSterilizers implements Initializable {
             HttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(UrlConfig.getSterilizerPreviewUrl());
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            httpPost.addHeader("Cookie", (String) Login.authInfo.get("token"));
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             FileBody fileBody = new FileBody(file);
             builder.addPart("file", fileBody);

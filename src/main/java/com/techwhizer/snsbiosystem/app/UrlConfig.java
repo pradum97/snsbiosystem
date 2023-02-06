@@ -1,7 +1,7 @@
 package com.techwhizer.snsbiosystem.app;
 
 public class UrlConfig {
-   public static String getRootUrl(){return "http://localhost:8081";};
+   public static String getRootUrl(){return "http://localhost:8080";};
 
    public static  String getLoginUrl(){ return getRootUrl()+"/v1/auth/authenticate"; }
    public static  String getPasswordResetLinkUrl(){ return getRootUrl()+"/v1/auth/password-reset-link"; }

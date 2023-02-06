@@ -1,10 +1,14 @@
 package com.techwhizer.snsbiosystem.dashboard.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.dashboard.model.DashboardModel;
+import com.techwhizer.snsbiosystem.user.controller.auth.Login;
+import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
@@ -89,17 +93,28 @@ public class Home implements Initializable {
 
             HttpGet httpPut = new HttpGet(UrlConfig.getDashboardUrl());
             httpPut.addHeader("Content-Type", "application/json");
+            httpPut.addHeader("Cookie", (String) Login.authInfo.get("token"));
             HttpResponse response = httpClient.execute(httpPut);
             HttpEntity resEntity = response.getEntity();
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
                 int statusCode = response.getStatusLine().getStatusCode();
 
-                DashboardModel dash = new Gson().fromJson(content, DashboardModel.class);
-
-                totalUsersL.setText(String.valueOf(dash.getTotalUsers()));
-                totalKitsL.setText(String.valueOf(dash.getTotalKits()));
-                totalSterilizerL.setText(String.valueOf(dash.getTotalSterilizers()));
+                if (statusCode == 200) {
+                    DashboardModel dash = null;
+                    try {
+                        dash = new Gson().fromJson(content, DashboardModel.class);
+                        totalUsersL.setText(null == dash.getTotalUsers() ? "0" : String.valueOf(dash.getTotalUsers()));
+                        totalKitsL.setText(null == dash.getTotalKits() ? "0" : String.valueOf(dash.getTotalKits()));
+                        totalSterilizerL.setText(null == dash.getTotalSterilizers() ? "0" : String.valueOf(dash.getTotalSterilizers()));
+                    } catch (JsonSyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    customDialog.showAlertBox("", content);
+                }
             }
 
         } catch (Exception e) {

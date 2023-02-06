@@ -298,6 +298,8 @@ public class PreviewKits implements Initializable {
         try {
             HttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(UrlConfig.getPreviewKitsUrl());
+            httpPost.addHeader("Cookie", (String) Login.authInfo.get("token"));
+
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             FileBody fileBody = new FileBody(file);

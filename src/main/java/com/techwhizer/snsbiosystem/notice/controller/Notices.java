@@ -325,13 +325,8 @@ public class Notices implements Initializable {
             tableview.scrollTo(rowIndex);
         });
 
-        Platform.runLater(() -> {
-
-        });
-
         Platform.runLater(() -> pagination.setPageCount(totalPage));
         setOptionalCell();
-
 
         tableview.setItems(filteredData);
         tableview.setRowFactory(tv -> new TableRow<>() {
@@ -427,7 +422,7 @@ public class Notices implements Initializable {
                         alert.setAlertType(Alert.AlertType.CONFIRMATION);
                         alert.setTitle("Warning ");
                         alert.setGraphic(image);
-                        alert.setHeaderText("Are you sure you want to delete this item?");
+                        alert.setHeaderText("Are you sure you want to delete this notice?");
                         alert.initModality(Modality.APPLICATION_MODAL);
                         alert.initOwner(Main.primaryStage);
                         Optional<ButtonType> result = alert.showAndWait();

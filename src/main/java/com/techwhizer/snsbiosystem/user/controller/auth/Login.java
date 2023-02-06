@@ -172,7 +172,7 @@ public class Login implements Initializable {
                         authInfo.put("auth_response",authRes);
                         authInfo.put("current_id",authRes.getId());
 
-                        Platform.runLater(()->new Main().changeScene("dashboard.fxml","DASHBOARD"));
+                        Platform.runLater(() -> new Main().changeScene("dashboard.fxml", "DASHBOARD->HOME"));
                     }else {
 
                         String msg = "You do not have permission to access this application";

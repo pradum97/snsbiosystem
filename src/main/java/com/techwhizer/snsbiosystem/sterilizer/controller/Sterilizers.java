@@ -306,6 +306,7 @@ public class Sterilizers implements Initializable {
                     int pageIndex = (Integer) sortingMap.get("page_index");
                     int rowIndex = (Integer) sortingMap.get("row_index");
                     sortData(pageIndex, rowIndex, OperationType.START, 0L);
+                    customDialog.showAlertBox("", content);
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {

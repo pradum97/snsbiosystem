@@ -9,6 +9,7 @@ import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.RoleOption;
+import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.CreateUsersResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
 import com.techwhizer.snsbiosystem.util.*;
@@ -50,8 +51,6 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -204,6 +203,7 @@ public class PreviewProfile implements Initializable {
 
             HttpPost httpPut = new HttpPost(UrlConfig.getProfileCreateUrl());
             httpPut.addHeader("Content-Type", "application/json");
+            httpPut.addHeader("Cookie", (String) Login.authInfo.get("token"));
             StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
@@ -334,6 +334,7 @@ public class PreviewProfile implements Initializable {
             HttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(UrlConfig.getPreviewProfileCsvUrl());
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            httpPost.addHeader("Cookie", (String) Login.authInfo.get("token"));
             builder.setContentType(ContentType.create("multipart/form-data", Charset.forName("UTF-8")));
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             FileBody fileBody = new FileBody(selectedFile);
