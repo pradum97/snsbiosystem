@@ -476,7 +476,7 @@ public class Kits implements Initializable {
 
                     CommonUtility.onHoverShowTextButton(editBn,"Update kit");
                     CommonUtility.onHoverShowTextButton(deleteBbn,"Delete kit");
-                    CommonUtility.onHoverShowTextButton(viewUsageBn,"View kit");
+                    CommonUtility.onHoverShowTextButton(viewUsageBn,"View kit usage");
                     CommonUtility.onHoverShowTextButton(downloadBn,"Download kit report");
 
                     editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ");

@@ -592,19 +592,18 @@ public class Users implements Initializable {
                 } else {
                     UserDTO user = tableview.getItems().get(getIndex());
 
-                    if (null != user.getFirstName() && null != user.getLastName()) {
-                        if (!user.getFirstName().isEmpty() && !user.getLastName().isEmpty()) {
+                    if (null != user.getFirstName() || null != user.getLastName()) {
 
-                            Text text = new Text(user.getFirstName() + " " + user.getLastName());
-                            text.setStyle("-fx-text-alignment:center;");
-                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(2));
-                            setText(null);
-                            setGraphic(text);
+                        String name;
+                        name = (null == user.getFirstName() || user.getFirstName().isEmpty()?"":user.getFirstName())+" "+
+                                (null == user.getLastName() || user.getLastName().isEmpty()?"":user.getLastName());
 
-                        } else {
-                            setGraphic(null);
-                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
-                        }
+                        Text text = new Text(name);
+                        text.setStyle("-fx-text-alignment:center;");
+                        text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(2));
+                        setText(null);
+                        setGraphic(text);
+
                     } else {
                         setGraphic(null);
                         setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);

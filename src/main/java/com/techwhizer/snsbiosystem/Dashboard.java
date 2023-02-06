@@ -70,7 +70,6 @@ public class Dashboard extends OptionalMethod implements Initializable {
         CommonUtility.onHoverShowTextButton(logoutBn, "LOGOUT");
     }
 
-
     public void hideMenu(MouseEvent mouseEvent) {
         dashboardBn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         manageKitBn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -227,28 +226,34 @@ public class Dashboard extends OptionalMethod implements Initializable {
         pane.setStyle("-fx-padding: 80 80 80 80");
 
         stage2.initOwner(Main.primaryStage);
-        stage2.initStyle(StageStyle.UTILITY);
+        stage2.initStyle(StageStyle.DECORATED);
         stage2.setTitle("ACCOUNT SETTING");
         stage2.initModality(Modality.APPLICATION_MODAL);
         Scene scene = new Scene(pane);
         stage2.setScene(scene);
         stage2.setResizable(false);
         Long id = (Long) Login.authInfo.get("current_id");
+        OptionalMethod method = new OptionalMethod();
 
-        changePassword.setOnAction(event1 -> customDialog.showFxmlDialog2("auth/changePassword.fxml", ""));
+        changePassword.setOnAction(event1 -> {
+            method.closeStage(changePassword);
+            customDialog.showFxmlDialog2("auth/changePassword.fxml", "");
+        });
         editProfileBn.setOnAction(event1 -> {
             Map<String, Object> map = new HashMap<>();
             map.put("operation_type", OperationType.UPDATE);
             map.put("client_id", id);
             Main.primaryStage.setUserData(map);
+            method.closeStage(editProfileBn);
             customDialog.showFxmlFullDialog("profile/createProfile.fxml", "");
         });
         profileBn.setOnAction(event12 -> {
             Main.primaryStage.setUserData(id);
+            method.closeStage(profileBn);
             customDialog.showFxmlFullDialog("profile/my_profile.fxml", "PROFILE");
         });
 
-        stage2.showAndWait();
+        stage2.show();
     }
 
     public void userBnClick(ActionEvent event) {
@@ -290,7 +295,6 @@ public class Dashboard extends OptionalMethod implements Initializable {
         selectedBg(noticeBn);
         replaceScene("notice/notices.fxml");
     }
-
 
     private void replaceScene(String fxml_file_name) {
         try {

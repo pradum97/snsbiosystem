@@ -127,21 +127,21 @@ public class CreateProfile implements Initializable {
 
     private void setTextFieldData(User userDTO) {
 
-        usernameTf.setText(userDTO.getRequestedLoginName());
-        firstNameTf.setText(userDTO.getFirstName());
-        lastNameTf.setText(userDTO.getLastName());
+        usernameTf.setText(userDTO.getRequestedLoginName() == null ?"":userDTO.getRequestedLoginName());
+        firstNameTf.setText(null == userDTO.getFirstName()?"":userDTO.getFirstName());
+        lastNameTf.setText(null == userDTO.getLastName()?"":userDTO.getLastName());
         workPhoneNumberTf.setText(userDTO.getWorkPhoneNumber());
-        workEmailTf.setText(userDTO.getWorkEmail());
-        companyNameTf.setText(userDTO.getOfficeCompanyName());
-        officeStateTf.setText(userDTO.getOfficeState());
-        officeCityTf.setText(userDTO.getOfficeCity());
-        officeZipTf.setText(userDTO.getOfficeZip());
-        officeFaxNumberTf.setText(userDTO.getOfficeFaxNumber());
-        officeAddressTa.setText(userDTO.getOfficeAddress());
-        billingStateTf.setText(userDTO.getHomeState());
-        billingCityTf.setText(userDTO.getHomeCity());
-        billingAddressTa.setText(userDTO.getHomeAddress());
-        billingZipTf.setText(userDTO.getHomeZip());
+        workEmailTf.setText(null == userDTO.getWorkEmail()?"":userDTO.getWorkEmail());
+        companyNameTf.setText(null == userDTO.getOfficeCompanyName()?"":userDTO.getOfficeCompanyName());
+        officeStateTf.setText(null == userDTO.getOfficeState()?"":userDTO.getOfficeState());
+        officeCityTf.setText(null == userDTO.getOfficeCity()?"":userDTO.getOfficeCity());
+        officeZipTf.setText(null == userDTO.getOfficeZip()?"":userDTO.getOfficeZip());
+        officeFaxNumberTf.setText(null == userDTO.getOfficeFaxNumber()?"":userDTO.getOfficeFaxNumber());
+        officeAddressTa.setText(null == userDTO.getOfficeAddress()?"":userDTO.getOfficeAddress());
+        billingStateTf.setText(null == userDTO.getHomeState()?"": userDTO.getHomeState());
+        billingCityTf.setText(null == userDTO.getHomeCity()?"":userDTO.getHomeCity());
+        billingAddressTa.setText(null == userDTO.getHomeAddress()?"":userDTO.getHomeAddress());
+        billingZipTf.setText(null == userDTO.getHomeZip()?"":userDTO.getHomeZip());
         currentUsername = userDTO.getRequestedLoginName();
         isEmailAvailable = null != userDTO.getWorkEmail();
         sharingMethodCom.getSelectionModel().select(userDTO.getPrefaredMethodForReportSharing().toUpperCase());
@@ -171,11 +171,9 @@ public class CreateProfile implements Initializable {
                 }
             }
         }
-
         if (Objects.equals(userDTO.getOfficeAddress(), userDTO.getHomeAddress())) {
             sameAsOfficeAddress.setSelected(true);
         }
-
         checkAllRoleSelected();
     }
 
@@ -337,28 +335,44 @@ public class CreateProfile implements Initializable {
             switch (sharedMethod){
 
                 case ReportingMethods.EMAIL -> {
-                    if (null == email){
-                        method.show_popup("Please enter email.", workEmailTf);
-                        return;
+                    if (userCreateOperationType == OperationType.CREATE){
+                        if (email.isEmpty()){
+                            method.show_popup("Please enter email.", workEmailTf);
+                            return;
+                        }
+
+                    }else {
+                        if (null == email){
+                            method.show_popup("Please enter email.", workEmailTf);
+                            return;
+                        }
                     }
                 }
                 case ReportingMethods.FAX -> {
 
-                    if (null == officeFax){
-                        method.show_popup("Please enter fax number.", officeFaxNumberTf);
-                        return;
+                    if (userCreateOperationType == OperationType.CREATE){
+                        if (officeFax.isEmpty()) {
+                            method.show_popup("Please enter fax number.", officeFaxNumberTf);
+                            return;
+                        }
+                    }else {
+                        if (null == officeFax) {
+                            method.show_popup("Please enter fax number.", officeFaxNumberTf);
+                            return;
+                        }
                     }
                 }
             }
 
         }
 
-        if (null != officeFax) {
+        if (!officeFax.isEmpty() ) {
             if (officeFax.length() < 9) {
                 method.show_popup("Enter fax number more then 8 digit", officeFaxNumberTf);
                 return;
             }
-        } else if (null == officeAddress || officeAddress.isEmpty()) {
+        }
+        if (null == officeAddress || officeAddress.isEmpty()) {
             method.show_popup("Please Enter Office Address", officeAddressTa);
             return;
         }
@@ -568,6 +582,7 @@ public class CreateProfile implements Initializable {
                             cancelBnClick(null);
                             String signedUsername = (String) Login.authInfo.get("username");
                             if (signedUsername.equals(currentUsername)) {
+
                                 new Main().changeScene("auth/login.fxml", "LOGIN HERE");
                                 Login.authInfo.clear();
                             }

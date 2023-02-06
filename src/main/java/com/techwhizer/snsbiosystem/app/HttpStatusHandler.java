@@ -1,26 +1,35 @@
 package com.techwhizer.snsbiosystem.app;
 
+import com.techwhizer.snsbiosystem.CssLoader;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.user.controller.auth.Login;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class HttpStatusHandler {
+import java.io.IOException;
+import java.util.Objects;
 
+public class HttpStatusHandler {
     private CustomDialog customDialog;
 
     {
+
         customDialog = new CustomDialog();
     }
 
@@ -72,20 +81,36 @@ public class HttpStatusHandler {
                 "-fx-text-fill: white;-fx-font-weight: bold");
 
         loginButton.addEventFilter(ActionEvent.ACTION, ae -> {
-            new Main().changeScene("auth/login.fxml", "LOGIN HERE");
+            goToLoginPage();
         });
         exitButton.addEventFilter(ActionEvent.ACTION, ae -> System.exit(0));
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(Main.primaryStage);
         alert.initStyle(StageStyle.UNDECORATED);
-        alert.setOnCloseRequest(new EventHandler<>() {
-            @Override
-            public void handle(DialogEvent dialogEvent) {
-
-                new Main().changeScene("auth/login.fxml", "LOGIN HERE");
-            }
-        });
         alert.showAndWait();
+    }
+
+    private void goToLoginPage() {
+        new CommonUtility().closeAllPreviousStage(Main.primaryStage, CustomDialog.stage3,
+                CustomDialog.stage2, CustomDialog.stage);
+        Login.authInfo.clear();
+        try {
+            Stage stage = new Stage();
+            Parent root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("auth/login.fxml")));
+            Main.primaryStage = stage;
+            stage.getIcons().add(new ImageLoader().load(AppConfig.APPLICATION_ICON));
+            stage.setTitle(AppConfig.APPLICATION_NAME);
+            stage.setMaximized(true);
+            Scene scene = new Scene(root);
+            new CssLoader().set(scene, "main.css");
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

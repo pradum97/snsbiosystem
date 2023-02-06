@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
@@ -27,6 +28,16 @@ public class CommonUtility {
             node.setTooltip(t);
         }
     }
+
+   public void closeAllPreviousStage(Stage... stages){
+
+        for (Stage stage:stages){
+
+            if (null != stage && stage.isShowing()){
+                stage.close();
+            }
+        }
+   }
 
     public static void onHoverShowTextLabel(Label node, String text){
 

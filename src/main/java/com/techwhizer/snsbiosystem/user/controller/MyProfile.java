@@ -4,11 +4,12 @@ import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
+import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.User;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
@@ -26,7 +27,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 public class MyProfile implements Initializable {
@@ -110,6 +111,7 @@ public class MyProfile implements Initializable {
             HttpEntity resEntity = response.getEntity();
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
+
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == 200){
@@ -148,11 +150,16 @@ public class MyProfile implements Initializable {
         officeZipL.setText(user.getOfficeZip());
         officeAddressL.setText(user.getOfficeAddress());
         officeFaxNumberL.setText(user.getOfficeFaxNumber());
+
+        System.out.println(user.getPrefaredMethodForReportSharing());
+
         reportSharingMethod.setText(user.getPrefaredMethodForReportSharing());
+
         homeStateL.setText(user.getHomeState());
         homeCityL.setText(user.getHomeCity());
         homeZipL.setText(user.getHomeZip());
         homeAddressL.setText(user.getHomeAddress());
-        createdDateL.setText(String.valueOf(user.getCreatedDate()));
+        LocalDateTime localDateTime = CommonUtility.getLocalDateTimeObject(user.getCreatedDate());
+        createdDateL.setText(CommonUtility.dateTimeFormator.format(localDateTime));
     }
 }
