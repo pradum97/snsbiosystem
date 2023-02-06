@@ -5,6 +5,13 @@ step-2:taskkill /F /PID<PID NUM>
 
 schedual true set publish date auto
 
+In Add User, Fax Number is Requried.
+In Kit, When Hower on view Button then Show View Kit. But Show here View Kit Ussage.
+when Update Of Admin Then automatic LogOut.
+If User has only first Name Or Only Last Name then user Full Name Is showing Anythings.
+If User Creating without Email then Password is Automatic set on Username. But If User Creating With Email then Password is
+Not Set. 
+
 
 note;
 token expire;
