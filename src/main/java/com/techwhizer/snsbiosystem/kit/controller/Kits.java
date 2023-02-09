@@ -8,20 +8,21 @@ import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.constants.KitOperationType;
-import com.techwhizer.snsbiosystem.kit.constants.KitSearchFilters;
 import com.techwhizer.snsbiosystem.kit.constants.KitSortingOptions;
 import com.techwhizer.snsbiosystem.kit.model.KitDTO;
 import com.techwhizer.snsbiosystem.kit.model.KitPageResponse;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.report.DownloadReport;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.util.*;
+import com.techwhizer.snsbiosystem.util.ChooseFile;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
+import com.techwhizer.snsbiosystem.util.Message;
+import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -49,8 +50,6 @@ import java.util.*;
 
 public class Kits implements Initializable {
     public ImageView refreshBn;
-    public ComboBox<String> searchByCom;
-    public TextField searchTf;
     public TableView<KitDTO> tableview;
     public TableColumn<KitDTO, Integer> colSlNum;
     public TableColumn<KitDTO, String> colClientId;
@@ -71,9 +70,10 @@ public class Kits implements Initializable {
     public HBox paginationContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
+    private int currentPageRowCount;
+    private boolean isCrud = false;
 
     private ObservableList<KitDTO> kitsList = FXCollections.observableArrayList();
-    private FilteredList<KitDTO> filteredData;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -88,10 +88,6 @@ public class Kits implements Initializable {
                 topButtonContainer.setVisible(true);
             }
         }
-
-        searchByCom.setItems(new LocalDb().getKitsSearchType());
-        searchByCom.getSelectionModel().select(KitSearchFilters.KIT_NUMBER);
-        searchByCom.valueProperty().addListener((observableValue, s, t1) -> searchTf.setText(""));
 
         startThread(OperationType.SORTING_LOADING, 0L, null, null, null);
     }
@@ -121,14 +117,17 @@ public class Kits implements Initializable {
             rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
             pagination.currentPageIndexProperty().addListener(
                     (observable1, oldValue1, newValue1) -> {
-                        int pageIndex = newValue1.intValue();
-                        sortData(pageIndex, 0, OperationType.START, 0L, null, null);
+
+                        if (!isCrud) {
+                            int pageIndex = newValue1.intValue();
+                            sortData(pageIndex, 0, OperationType.START, 0L, null, null);
+                        }
                     });
             applySorting.setDisable(false);
         });
     }
     public void applySorting(ActionEvent event) {
-        sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null, null);
+        sortData(0, 0, OperationType.START, 0L, null, null);
     }
 
     private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long kitId, Button button,
@@ -243,6 +242,15 @@ public class Kits implements Initializable {
     }
 
     private void deleteKit(Long kitsId, Button button, Map<String, Object> sortingMap) {
+        int pageIndex = (Integer) sortingMap.get("page_index");
+        int rowIndex = (Integer) sortingMap.get("row_index");
+
+        if (pagination.getPageCount() > 1) {
+            if (currentPageRowCount < 2) {
+                pageIndex = pageIndex - 1;
+                rowIndex = 0;
+            }
+        }
 
         try {
             Thread.sleep(100);
@@ -258,8 +266,6 @@ public class Kits implements Initializable {
                 String content = EntityUtils.toString(resEntity);
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == 200) {
-                    int pageIndex = (Integer) sortingMap.get("page_index");
-                    int rowIndex = (Integer) sortingMap.get("row_index");
                     sortData(pageIndex, rowIndex, OperationType.START, 0L, null, null);
 
                 } else if (statusCode == 401) {
@@ -281,6 +287,7 @@ public class Kits implements Initializable {
     }
 
     private void getAllKits(Map<String, Object> sortedDataMap) {
+        paginationContainer.setDisable(true);
 
         if (null != kitsList) {
             kitsList.clear();
@@ -323,16 +330,16 @@ public class Kits implements Initializable {
 
                     KitPageResponse KkitPageResponse = new Gson().fromJson(content, KitPageResponse.class);
                     List<KitDTO> kds = KkitPageResponse.getKits();
-
+                    currentPageRowCount = kitsList.size();
+                    int totalPage = KkitPageResponse.getTotalPage();
                     kitsList = FXCollections.observableArrayList(kds);
-                    if (kitsList.size() > 0) {
-                        paginationContainer.setVisible(true);
-                        int totalPage = KkitPageResponse.getTotalPage();
 
-                        assert sortedDataMap != null;
-                        search_Item(totalPage, (Integer) sortedDataMap.get("page_index"), (Integer) sortedDataMap.get("row_index"));
+                    currentPageRowCount = kitsList.size();
 
-                    }
+                    paginationContainer.setVisible(currentPageRowCount > 0);
+                    paginationContainer.setDisable(!(currentPageRowCount > 0));
+                    changeTableView(totalPage, (Integer) sortedDataMap.get("page_index"),
+                            (Integer) sortedDataMap.get("row_index"));
 
                 } else if (statusCode == 401) {
                     new HttpStatusHandler(401);
@@ -359,57 +366,6 @@ public class Kits implements Initializable {
         return iv;
     }
 
-    private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
-       Platform.runLater(()->{searchTf.setText("");} );
-
-        filteredData = new FilteredList<>(kitsList, p -> true);
-
-        searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
-
-            filteredData.setPredicate(kit -> {
-
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-
-                String lowerCaseFilter = newValue.toLowerCase();
-                String searchBy = searchByCom.getSelectionModel().getSelectedItem();
-
-                switch (searchBy) {
-
-                    case KitSearchFilters.DEALER_ID -> {
-
-                        return null != kit.getDealerID() &&
-                                String.valueOf(kit.getDealerID()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-                    case KitSearchFilters.CLIENT_ID -> {
-                        return null != kit.getClientID() &&
-                                String.valueOf(kit.getClientID()).toLowerCase().equals(lowerCaseFilter);
-                    }
-
-                    case KitSearchFilters.KIT_ID -> {
-                        return null != kit.getId() &&
-                                String.valueOf(kit.getId()).toLowerCase().equalsIgnoreCase(lowerCaseFilter);
-                    }
-
-                    default -> {
-
-                        return null != kit.getKitNumber() && String.valueOf(kit.getKitNumber()).toLowerCase().contains(lowerCaseFilter);
-                    }
-                }
-            });
-
-           Platform.runLater(()->{
-               if (filteredData.size() > 0) {
-                   tableview.setPlaceholder(method.getProgressBar(40, 40));
-               } else {
-                   tableview.setPlaceholder(new Label("Kit not found"));
-               }
-           });
-
-        });
-        changeTableView(totalPage, pageIndex, rowIndex);
-    }
 
     private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
 
@@ -419,13 +375,15 @@ public class Kits implements Initializable {
             pagination.setCurrentPageIndex(pageIndex);
             tableview.scrollTo(rowIndex);
 
+            isCrud = false;
+
         });
 
         colSlNum.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
                 tableview.getItems().indexOf(cellData.getValue()) + 1));
         setOptionalCell();
 
-        tableview.setItems(filteredData);
+        tableview.setItems(kitsList);
 
         tableview.setRowFactory(tv -> new TableRow<>() {
             @Override
@@ -505,10 +463,15 @@ public class Kits implements Initializable {
 
                         data.put("operation_type", OperationType.SINGLE_KIT_USAGE);
                         data.put("kit_id", kd.getId());
+                        data.put("kit_number", kd.getKitNumber());
 
-                        Main.primaryStage.setUserData(data);
+                        if (null == kd.getKitNumber()) {
+                            customDialog.showAlertBox("", "You cannot add/view kit usage. because kit number is not available");
+                        } else {
+                            Main.primaryStage.setUserData(data);
 
-                        customDialog.showFxmlFullDialog("kit/kitUsages/kitUsages.fxml", "KIT USAGE LIST");
+                            customDialog.showFxmlFullDialog("kit/kitUsages/kitUsages.fxml", "KIT USAGE LIST");
+                        }
                     });
 
                     editBn.setOnAction((event) -> {
@@ -825,7 +788,9 @@ public class Kits implements Initializable {
 
                 boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                 if (isUpdated) {
-                    applySorting(null);
+                    isCrud = true;
+                    sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null, null);
+
                 }
             }
         }
@@ -841,7 +806,9 @@ public class Kits implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-                applySorting(null);
+                isCrud = true;
+                sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null, null);
+
             }
         }
     }

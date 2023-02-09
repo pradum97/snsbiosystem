@@ -537,11 +537,10 @@ public class CreateProfile implements Initializable {
         json = gson.toJson(userArray.get(0));
 
         try {
-            String token = (String) Login.authInfo.get("token");
 
             HttpPut httpPut = new HttpPut(UrlConfig.getUserprofileUrl().concat(String.valueOf(clientId)));
             httpPut.addHeader("Content-Type", "application/json");
-            httpPut.addHeader("Cookie", token);
+            httpPut.addHeader("Cookie", (String) Login.authInfo.get("token"));
             StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
@@ -644,6 +643,7 @@ public class CreateProfile implements Initializable {
 
             HttpPost httpPut = new HttpPost(UrlConfig.getProfileCreateUrl());
             httpPut.addHeader("Content-Type", "application/json");
+            httpPut.addHeader("Cookie", (String) Login.authInfo.get("token"));
             StringEntity se = new StringEntity(json,StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 

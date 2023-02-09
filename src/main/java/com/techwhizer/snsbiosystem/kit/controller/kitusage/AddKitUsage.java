@@ -58,6 +58,7 @@ public class AddKitUsage implements Initializable {
     private  KitUsageDTO kud;
     private Map<String,Object> sterilizerData = new HashMap<>();
     private OperationType operationType;
+    private OperationType kit_preview_operation_type;
     private HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
             .setCookieSpec("easy").build()).build();
 
@@ -72,6 +73,7 @@ public class AddKitUsage implements Initializable {
 
         Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
         operationType = (OperationType) map.get("operation_type");
+        kit_preview_operation_type = (OperationType) map.get("kit_preview_operation_type");
 
         if (null == operationType && null == Main.primaryStage.getUserData()) {
             customDialog.showAlertBox("", "Something went wrong..");
@@ -83,6 +85,19 @@ public class AddKitUsage implements Initializable {
             });
             return;
         }
+
+        if (kit_preview_operation_type == OperationType.SINGLE_KIT_USAGE){
+            Long kitNumber = (Long) map.get("kit_number");
+
+            if (null != kitNumber){
+
+                kitNumberTf.setText(String.valueOf(kitNumber));
+                kitNumberTf.setEditable(false);
+                kitNumberTf.setFocusTraversable(false);
+                testDateDp.setFocusTraversable(true);
+            }
+        }
+
         switch (operationType) {
             case CREATE -> {
                 titleL.setText("ADD KIT USAGE");

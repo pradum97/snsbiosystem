@@ -32,7 +32,6 @@ public class Main extends Application {
 
         launch(args);
 
-
     }
     public void changeScene(String fxml, String title) {
 

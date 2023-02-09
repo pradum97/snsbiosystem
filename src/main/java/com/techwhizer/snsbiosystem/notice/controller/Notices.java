@@ -17,11 +17,8 @@ import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -47,8 +44,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class Notices implements Initializable {
-    public ComboBox<String> searchByCom;
-    public TextField searchTf;
+
     public TableView<NoticeBoardDTO> tableview;
     public TableColumn<NoticeBoardDTO, String> colPublishDate;
     public TableColumn<NoticeBoardDTO, String> colExpiryDate;
@@ -64,7 +60,9 @@ public class Notices implements Initializable {
     private CustomDialog customDialog;
     private OptionalMethod method;
     private ObservableList<NoticeBoardDTO> noticeList = FXCollections.observableArrayList();
-    private FilteredList<NoticeBoardDTO> filteredData;
+
+    private int currentPageRowCount;
+    private boolean isCrud = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -76,16 +74,16 @@ public class Notices implements Initializable {
     private void comboBoxConfig() {
         rowSizeCom.setItems(PaginationUtil.rowSize);
 
-        rowSizeCom.valueProperty().addListener(new ChangeListener<Integer>() {
-            @Override
-            public void changed(ObservableValue<? extends Integer> observableValue, Integer integer, Integer t1) {
-
-                sortData(0, 0, OperationType.START, 0L);
-            }
-        });
-
-
+        rowSizeCom.valueProperty().addListener((observableValue, integer, t1) -> sortData(0, 0, OperationType.START, 0L));
         rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
+
+        pagination.currentPageIndexProperty().addListener(
+                (observable1, oldValue1, newValue1) -> {
+                    if (!isCrud) {
+                        int pageIndex = newValue1.intValue();
+                        sortData(pageIndex, 0, OperationType.START, 0L);
+                    }
+                });
     }
 
     private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long noticeId) {
@@ -148,51 +146,6 @@ public class Notices implements Initializable {
             return true;
         }
 
-        private void deleteNotice(Long noticeId, Button button, Map<String, Object> sortingMap) {
-            try {
-                Thread.sleep(100);
-                HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec("easy").build()).build();
-
-                HttpDelete httpMethod = new HttpDelete(UrlConfig.getKitNoticeUrl().concat("/").concat(String.valueOf(noticeId)));
-                httpMethod.addHeader("Content-Type", "application/json");
-                httpMethod.addHeader("Cookie", (String) Login.authInfo.get("token"));
-                HttpResponse response = httpClient.execute(httpMethod);
-                HttpEntity resEntity = response.getEntity();
-
-                if (resEntity != null) {
-                    String content = EntityUtils.toString(resEntity);
-
-                    int statusCode = response.getStatusLine().getStatusCode();
-
-                    if (statusCode == 200) {
-
-                        int pageIndex = (Integer) sortingMap.get("page_index");
-                        int rowIndex = (Integer) sortingMap.get("row_index");
-
-                        sortData(pageIndex, rowIndex, OperationType.START, 0L);
-
-                    } else if (statusCode == StatusCode.UNAUTHORISED) {
-                        new HttpStatusHandler(StatusCode.UNAUTHORISED);
-                    } else {
-                        new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
-                    }
-
-                    customDialog.showAlertBox("", content);
-                }
-            } catch (IOException | InterruptedException e) {
-                new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
-                throw new RuntimeException(e);
-            } finally {
-                Platform.runLater(() -> {
-                    if (null != button) {
-                        button.setGraphic(getImage("img/icon/delete_ic_white.png"));
-                    }
-                    refreshBn.setDisable(false);
-                });
-            }
-        }
-
         @Override
         public void onPostExecute(Boolean success) {
             refreshBn.setDisable(false);
@@ -214,7 +167,61 @@ public class Notices implements Initializable {
 
     }
 
+    private void deleteNotice(Long noticeId, Button button, Map<String, Object> sortingMap) {
+
+        int pageIndex = (Integer) sortingMap.get("page_index");
+        int rowIndex = (Integer) sortingMap.get("row_index");
+
+        if (pagination.getPageCount() > 1) {
+            if (currentPageRowCount < 2) {
+                pageIndex = pageIndex - 1;
+                rowIndex = 0;
+            }
+        }
+
+        try {
+            Thread.sleep(100);
+            HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
+                    .setCookieSpec("easy").build()).build();
+
+            HttpDelete httpMethod = new HttpDelete(UrlConfig.getKitNoticeUrl().concat("/").concat(String.valueOf(noticeId)));
+            httpMethod.addHeader("Content-Type", "application/json");
+            httpMethod.addHeader("Cookie", (String) Login.authInfo.get("token"));
+            HttpResponse response = httpClient.execute(httpMethod);
+            HttpEntity resEntity = response.getEntity();
+
+            if (resEntity != null) {
+                String content = EntityUtils.toString(resEntity);
+
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == 200) {
+                    isCrud = true;
+                    sortData(pageIndex, rowIndex, OperationType.START, 0L);
+
+                } else if (statusCode == StatusCode.UNAUTHORISED) {
+                    new HttpStatusHandler(StatusCode.UNAUTHORISED);
+                } else {
+                    new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
+                }
+
+                customDialog.showAlertBox("", content);
+            }
+        } catch (IOException | InterruptedException e) {
+            new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
+            throw new RuntimeException(e);
+        } finally {
+            Platform.runLater(() -> {
+                if (null != button) {
+                    button.setGraphic(getImage("img/icon/delete_ic_white.png"));
+                }
+                refreshBn.setDisable(false);
+            });
+        }
+    }
+
     private void getAllNotice(Map<String, Object> sortingMap) {
+        paginationContainer.setDisable(true);
 
         if (null != noticeList) {
             noticeList.clear();
@@ -248,14 +255,12 @@ public class Notices implements Initializable {
                     NoticePageResponse pageResponse = new Gson().fromJson(content, NoticePageResponse.class);
                     List<NoticeBoardDTO> noticeBoardDTOs = pageResponse.getNotices();
                     noticeList = FXCollections.observableArrayList(noticeBoardDTOs);
-
-                    if (noticeList.size() > 0) {
-                        paginationContainer.setVisible(true);
-                        int totalPage = pageResponse.getTotalPage();
-                        search_Item(totalPage, (Integer) sortingMap.get("page_index"),
-                                (Integer) sortingMap.get("row_index"));
-                    }
-
+                    currentPageRowCount = noticeList.size();
+                    paginationContainer.setVisible(currentPageRowCount > 0);
+                    paginationContainer.setDisable(!(currentPageRowCount > 0));
+                    int totalPage = pageResponse.getTotalPage();
+                    changeTableView(totalPage, (Integer) sortingMap.get("page_index"),
+                            (Integer) sortingMap.get("row_index"));
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
@@ -270,52 +275,7 @@ public class Notices implements Initializable {
         Platform.runLater(() -> {
             refreshBn.setDisable(false);
         });
-
     }
-
-    private void search_Item(int totalPage, int pageIndex, Integer rowIndex) {
-        Platform.runLater(()->{searchTf.setText("");});
-
-        filteredData = new FilteredList<>(noticeList, p -> true);
-
-        searchTf.textProperty().addListener((observable, oldValue, newValue) -> {
-
-            filteredData.setPredicate(notice -> {
-
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-
-                String lowerCaseFilter = newValue.toLowerCase();
-
-                LocalDateTime localDateTimePublish = CommonUtility.getLocalDateTimeObject(notice.getPublishOn());
-                LocalDateTime localDateTimeExpiry = CommonUtility.getLocalDateTimeObject(notice.getExpiresOn());
-                String publishDate = localDateTimePublish.format(CommonUtility.dateTimeFormator);
-                String expiryDate = localDateTimeExpiry.format(CommonUtility.dateTimeFormator);
-
-                if (notice.getStatus().toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else if (expiryDate.toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else {
-                    return (publishDate.toLowerCase().contains(lowerCaseFilter));
-                }
-
-            });
-
-          Platform.runLater(()->{
-              if (filteredData.size() > 0) {
-                  tableview.setPlaceholder(method.getProgressBar(40, 40));
-              } else {
-                  tableview.setPlaceholder(new Label("Notice not found"));
-              }
-          });
-
-        });
-
-        changeTableView(totalPage, pageIndex, rowIndex);
-    }
-
     private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
 
         Platform.runLater(() -> {
@@ -323,12 +283,13 @@ public class Notices implements Initializable {
 
             pagination.setCurrentPageIndex(pageIndex);
             tableview.scrollTo(rowIndex);
+            isCrud = false;
         });
 
         Platform.runLater(() -> pagination.setPageCount(totalPage));
         setOptionalCell();
 
-        tableview.setItems(filteredData);
+        tableview.setItems(noticeList);
         tableview.setRowFactory(tv -> new TableRow<>() {
             @Override
             protected void updateItem(NoticeBoardDTO item, boolean empty) {
@@ -672,13 +633,13 @@ public class Notices implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-                refreshClick(null);
+                isCrud = true;
+                sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L);
             }
         }
     }
 
     public void refreshClick(MouseEvent mouseEvent) {
-
         sortData(0, 0, OperationType.START, 0L);
     }
 }

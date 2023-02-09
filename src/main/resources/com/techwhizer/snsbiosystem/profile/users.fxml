@@ -107,8 +107,8 @@
                         <Insets right="50.0" />
                      </HBox.margin>
                      <children>
-                        <TextField onKeyPressed="#keyPress" fx:id="searchTf" alignment="CENTER" minWidth="161.0" prefHeight="35.0" prefWidth="221.0" promptText="Enter username" style="-fx-border-color: white grey white white; -fx-background-radius: 14 0 0 14; -fx-border-radius: 14 0 0 14;" />
-                        <ImageView onMouseClicked="#searchImgClick" fitHeight="20.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                        <TextField fx:id="searchTf" alignment="CENTER" minWidth="161.0" onKeyPressed="#keyPress" prefHeight="35.0" prefWidth="221.0" promptText="Enter username" style="-fx-border-color: white grey white white; -fx-background-radius: 14 0 0 14; -fx-border-radius: 14 0 0 14;" />
+                        <ImageView fitHeight="20.0" fitWidth="22.0" onMouseClicked="#searchImgClick" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
                            <image>
                               <Image url="@../img/icon/search_ic.png" />
                            </image>
@@ -144,7 +144,7 @@
       </VBox>
    </center>
    <bottom>
-      <HBox fx:id="paginationContainer" alignment="CENTER_LEFT" disable="true" prefHeight="65.0" prefWidth="1442.0" spacing="20.0" BorderPane.alignment="CENTER">
+      <HBox fx:id="paginationContainer" alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="1442.0" spacing="20.0" visible="false" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER" spacing="30.0">
                <children>
@@ -189,7 +189,7 @@
                </children>
             </HBox>
             <Separator orientation="VERTICAL" />
-            <Pagination fx:id="pagination" visible="false" />
+            <Pagination fx:id="pagination" minWidth="400.0" prefHeight="66.0" prefWidth="400.0" />
          </children>
       </HBox>
    </bottom>

@@ -7,7 +7,6 @@
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -113,19 +112,6 @@
                                 </HBox>
                             </children>
                         </HBox>
-                        <HBox alignment="CENTER" style="-fx-border-color: grey; -fx-background-radius: 13; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); -fx-background-color: white;">
-                            <HBox.margin>
-                                <Insets right="20.0" />
-                            </HBox.margin>
-                            <children>
-                                <ComboBox fx:id="searchByCom" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: white; -fx-border-color: white; -fx-border-radius: 14; -fx-background-radius: 14;">
-                                    <HBox.margin>
-                                        <Insets />
-                                    </HBox.margin>
-                                </ComboBox>
-                                <TextField fx:id="searchTf" alignment="CENTER" minWidth="161.0" prefHeight="35.0" prefWidth="161.0" promptText="Search By" style="-fx-border-color: white; -fx-background-radius: 14; -fx-border-radius: 14;" />
-                            </children>
-                        </HBox>
                     </children>
                 </HBox>
             </children>
@@ -173,7 +159,7 @@
                   </HBox>
                </children>
             </VBox>
-            <Pagination fx:id="pagination" focusTraversable="false" />
+            <Pagination fx:id="pagination" focusTraversable="false" minWidth="400.0" />
          </children>
       </HBox>
    </bottom>

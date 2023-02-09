@@ -7,7 +7,6 @@
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -53,7 +52,7 @@
                         </Button>
                      </children>
                   </HBox>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="61.0" prefWidth="425.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <HBox alignment="CENTER" spacing="20.0">
                                     <children>
@@ -94,19 +93,6 @@
                                 </HBox>
                             </children>
                         </HBox>
-                        <HBox alignment="CENTER" style="-fx-border-color: grey; -fx-background-radius: 13; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); -fx-background-color: white;">
-                            <HBox.margin>
-                                <Insets right="50.0" />
-                            </HBox.margin>
-                            <children>
-                                <ComboBox fx:id="searchByCom" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: white; -fx-border-color: white; -fx-border-radius: 14; -fx-background-radius: 14;">
-                                    <HBox.margin>
-                                        <Insets />
-                                    </HBox.margin>
-                                </ComboBox>
-                                <TextField fx:id="searchTf" alignment="CENTER" minWidth="161.0" prefHeight="35.0" prefWidth="161.0" promptText="Search By" style="-fx-border-color: white; -fx-background-radius: 14; -fx-border-radius: 14;" />
-                            </children>
-                        </HBox>
                     </children>
                 </HBox>
             </children>
@@ -133,7 +119,7 @@
         </VBox>
     </center>
     <bottom>
-        <HBox fx:id="paginationContainer" alignment="CENTER" disable="true" spacing="20.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" visible="false" BorderPane.alignment="CENTER">
             <children>
             <VBox>
                <children>
@@ -152,7 +138,7 @@
                   </HBox>
                </children>
             </VBox>
-                <Pagination fx:id="pagination" focusTraversable="false" />
+                <Pagination fx:id="pagination" focusTraversable="false" minWidth="400.0" />
             </children>
         </HBox>
     </bottom>

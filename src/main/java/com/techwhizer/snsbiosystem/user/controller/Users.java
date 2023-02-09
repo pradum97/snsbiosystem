@@ -78,6 +78,9 @@ public class Users implements Initializable {
     private boolean isSearchPress = false, isSearchTfClear = false;
     private int paginationIndex;
 
+    private int currentPageRowCount;
+    private boolean isCrud = false;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customDialog = new CustomDialog();
@@ -133,9 +136,11 @@ public class Users implements Initializable {
                             searchTf.setText("");
                         }
 
-                        int pageIndex = newValue1.intValue();
-                        String role = filterByRoleCom.getSelectionModel().getSelectedItem();
-                        sortData(role, OperationType.START, 0L, null, null, pageIndex, 0, null);
+                        if (!isCrud) {
+                            int pageIndex = newValue1.intValue();
+                            String role = filterByRoleCom.getSelectionModel().getSelectedItem();
+                            sortData(role, OperationType.START, 0L, null, null, pageIndex, 0, null);
+                        }
                     });
 
             rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
@@ -156,7 +161,7 @@ public class Users implements Initializable {
 
     public void applySorting(ActionEvent event) {
         String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
-        sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0, null);
+        sortData(role, OperationType.START, 0L, null, null,0, 0, null);
     }
 
     private void sortData(String role, OperationType operationType, Long clientId, Button button,
@@ -195,7 +200,10 @@ public class Users implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-                applySorting(null);
+                isCrud = true;
+                String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
+                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0, null);
+
             }
         }
     }
@@ -206,7 +214,10 @@ public class Users implements Initializable {
 
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
-                applySorting(null);
+                isCrud = true;
+                String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
+                sortData(role, OperationType.START, 0L, null, null, pagination.getCurrentPageIndex(), 0, null);
+
             }
         }
     }
@@ -246,7 +257,8 @@ public class Users implements Initializable {
         private String username;
 
         public MyAsyncTask(String role, OperationType operationType,
-                           Long clientId, Button button, Map<String, Object> reportMap, Map<String, Object> sortedDataMap, String username) {
+                           Long clientId, Button button, Map<String, Object> reportMap,
+                           Map<String, Object> sortedDataMap, String username) {
             this.role = role;
             this.operationType = operationType;
             this.clientId = clientId;
@@ -322,6 +334,8 @@ public class Users implements Initializable {
             userList.clear();
         }
 
+        paginationContainer.setDisable(true);
+
         try {
             Thread.sleep(100);
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
@@ -367,15 +381,14 @@ public class Users implements Initializable {
                     List<UserDTO> users = pageResponse.getUsers();
                     userList = FXCollections.observableArrayList(users);
                     int totalPage = pageResponse.getTotalPage();
-                    if (userList.size() > 0) {
-                        int pageIndex = (Integer) sortedDataMap.get("page_index");
-                        int rowIndex = (Integer) sortedDataMap.get("row_index");
-                        changeTableView(totalPage, pageIndex, rowIndex);
-                    }
 
-                    pagination.setVisible(totalPage > 0);
-                    paginationContainer.setDisable(!(totalPage > 0));
+                    currentPageRowCount = userList.size();
+                    paginationContainer.setVisible(currentPageRowCount > 0);
+                paginationContainer.setDisable(!(currentPageRowCount > 0));
 
+                    int pageIndex = (Integer) sortedDataMap.get("page_index");
+                    int rowIndex = (Integer) sortedDataMap.get("row_index");
+                    changeTableView(totalPage, pageIndex, rowIndex);
 
                 }else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
@@ -391,7 +404,6 @@ public class Users implements Initializable {
         }
     }
 
-
     private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
         isSearchTfClear = true;
 
@@ -399,6 +411,7 @@ public class Users implements Initializable {
             pagination.setPageCount(totalPage);
             pagination.setCurrentPageIndex(pageIndex);
             tableview.scrollTo(rowIndex);
+            isCrud = false;
         });
 
         colSlNum.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
@@ -718,6 +731,15 @@ public class Users implements Initializable {
     }
 
     private void deleteUser(Long id, Button button, Map<String, Object> sortedDataMap) {
+        int pageIndex = (Integer) sortedDataMap.get("page_index");
+        int rowIndex = (Integer) sortedDataMap.get("row_index");
+
+        if (pagination.getPageCount() > 1) {
+            if (currentPageRowCount < 2) {
+                pageIndex = pageIndex - 1;
+                rowIndex = 0;
+            }
+        }
         try {
             Thread.sleep(100);
             HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
@@ -736,12 +758,10 @@ public class Users implements Initializable {
 
                 if (statusCode == 200) {
 
-                    int pageIndex = (Integer) sortedDataMap.get("page_index");
-                    int rowIndex = (Integer) sortedDataMap.get("row_index");
+                    isCrud = true;
                     String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
                     sortData(role, OperationType.START, 0L, null, null, pageIndex, rowIndex, null);
 
-                    applySorting(null);
                 }else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {

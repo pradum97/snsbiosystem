@@ -8,7 +8,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -62,18 +61,9 @@
                             <children>
                                 <HBox alignment="CENTER" spacing="10.0">
                                     <children>
-                                        <Button minHeight="27.0" mnemonicParsing="false" onMouseClicked="#refreshClick" prefHeight="27.0" style="-fx-border-color: grey; -fx-background-radius: 5;                                -fx-background-radius: 5;">
-                                            <graphic>
-                                                <ImageView fx:id="refreshBn" fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
-                                                    <image>
-                                                        <Image url="@../../img/icon/refresh_ic_red.png" />
-                                                    </image>
-                                                </ImageView>
-                                            </graphic>
-                                        </Button>
-                                        <HBox fx:id="buttonContainer" alignment="CENTER_RIGHT" spacing="10.0">
+                                        <HBox alignment="CENTER_RIGHT" spacing="10.0">
                                             <children>
-                                                <Button graphicTextGap="8.0" minWidth="200.0" mnemonicParsing="false" onAction="#uploadKitsUsageCsvBnClick" prefHeight="27.0" style="-fx-background-color: #006666; -fx-border-radius: 3;" text="UPLOAD KIT USAGES CSV" textFill="WHITE">
+                                                <Button fx:id="uploadKitUsageBn" graphicTextGap="8.0" minWidth="200.0" mnemonicParsing="false" onAction="#uploadKitsUsageCsvBnClick" prefHeight="27.0" style="-fx-background-color: #006666; -fx-border-radius: 3;" text="UPLOAD KIT USAGES CSV" textFill="WHITE">
                                                     <font>
                                                         <Font name="Arial" size="12.0" />
                                                     </font>
@@ -96,24 +86,23 @@
                                                 </Button>
                                             </children>
                                         </HBox>
+                                        <Button minHeight="27.0" mnemonicParsing="false" onMouseClicked="#refreshClick" prefHeight="27.0" style="-fx-border-color: grey; -fx-background-radius: 5;                                -fx-background-radius: 5;">
+                                            <graphic>
+                                                <ImageView fx:id="refreshBn" fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                                                    <image>
+                                                        <Image url="@../../img/icon/refresh_ic_red.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                 <HBox.margin>
+                                    <Insets left="20.0" right="20.0" />
+                                 </HBox.margin>
+                                        </Button>
                                     </children>
                                     <HBox.margin>
                                         <Insets right="30.0" />
                                     </HBox.margin>
                                 </HBox>
-                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER" style="-fx-border-color: grey; -fx-background-radius: 13; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0); -fx-background-color: white;">
-                            <HBox.margin>
-                                <Insets right="50.0" />
-                            </HBox.margin>
-                            <children>
-                                <ComboBox fx:id="searchByCom" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: white; -fx-border-color: white; -fx-border-radius: 14; -fx-background-radius: 14;">
-                                    <HBox.margin>
-                                        <Insets />
-                                    </HBox.margin>
-                                </ComboBox>
-                                <TextField fx:id="searchTf" alignment="CENTER" minWidth="161.0" prefHeight="35.0" prefWidth="161.0" promptText="Search By" style="-fx-border-color: white; -fx-background-radius: 14; -fx-border-radius: 14;" />
                             </children>
                         </HBox>
                     </children>
@@ -145,7 +134,7 @@
         </VBox>
     </center>
    <bottom>
-      <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" disable="true" BorderPane.alignment="CENTER">
+      <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20.0" visible="false" BorderPane.alignment="CENTER">
          <children>
             <VBox>
                <children>
@@ -164,7 +153,7 @@
                   </HBox>
                </children>
             </VBox>
-            <Pagination fx:id="pagination" focusTraversable="false" />
+            <Pagination fx:id="pagination" focusTraversable="false" minWidth="400.0" />
          </children>
       </HBox>
    </bottom>
