@@ -18,6 +18,7 @@ import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -119,8 +120,6 @@ public class SterilizerChooser implements Initializable {
         MyAsyncTask myAsyncTask = new MyAsyncTask(sortingMap, operationType);
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();
-
-        System.out.println(sortingMap);
     }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
@@ -186,8 +185,6 @@ public class SterilizerChooser implements Initializable {
                 }
             }
 
-            System.out.println("param: " + param);
-
             HttpGet httpGet = new HttpGet(param.build());
             httpGet.addHeader("Content-Type", "application/json");
             httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
@@ -197,8 +194,6 @@ public class SterilizerChooser implements Initializable {
             if (resEntity != null) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 String content = EntityUtils.toString(resEntity);
-
-                System.out.println(statusCode);
 
                 if (statusCode == 200) {
 
@@ -249,6 +244,8 @@ public class SterilizerChooser implements Initializable {
         });
 
         setOptionalCell();
+        colSrNo.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
+                tableView.getItems().indexOf(cellData.getValue()) + 1));
         tableView.setItems(sterilizerList);
 
         tableView.setRowFactory(tv -> new TableRow<>() {

@@ -151,8 +151,6 @@ public class MyProfile implements Initializable {
         officeAddressL.setText(user.getOfficeAddress());
         officeFaxNumberL.setText(user.getOfficeFaxNumber());
 
-        System.out.println(user.getPrefaredMethodForReportSharing());
-
         reportSharingMethod.setText(user.getPrefaredMethodForReportSharing());
 
         homeStateL.setText(user.getHomeState());

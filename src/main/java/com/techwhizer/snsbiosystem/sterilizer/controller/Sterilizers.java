@@ -404,8 +404,8 @@ public class Sterilizers implements Initializable {
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));
 
 
-                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ");
-                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3 ");
+                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3;-fx-padding: 4 ");
+                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3;-fx-padding: 4 ");
 
 
                     editBn.setOnAction((event) -> {

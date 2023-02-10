@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.http.HttpEntity;
@@ -52,6 +53,7 @@ public class AddKitUsage implements Initializable {
     public TextField sterilizerId;
     public TextField sterilizerType;
     public ComboBox<String> testResultCom;
+    public HBox testResultContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private LocalDb localDb;
@@ -406,7 +408,9 @@ public class AddKitUsage implements Initializable {
 
     private void resetAllField() {
         Platform.runLater(() -> {
-            kitNumberTf.setText("");
+            if (kit_preview_operation_type != OperationType.SINGLE_KIT_USAGE) {
+                kitNumberTf.setText("");
+            }
             sterilizerId.setText("CHOOSE STERILIZER ID");
             sterilizerType.setText("");
             testDateDp.getEditor().setText("");

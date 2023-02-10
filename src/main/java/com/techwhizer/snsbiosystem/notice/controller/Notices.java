@@ -347,9 +347,9 @@ public class Notices implements Initializable {
                     viewBn.setGraphic(getImage("img/icon/preview_ic.png"));
 
 
-                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ");
-                    viewBn.setStyle("-fx-cursor: hand ; -fx-background-color: #04505e ; -fx-background-radius: 3 ");
-                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3 ");
+                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ;-fx-padding: 4");
+                    viewBn.setStyle("-fx-cursor: hand ; -fx-background-color: #04505e ; -fx-background-radius: 3;-fx-padding: 4 ");
+                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3;-fx-padding: 4 ");
 
                     viewBn.setOnAction(event -> {
                         method.selectTable(getIndex(), tableview);

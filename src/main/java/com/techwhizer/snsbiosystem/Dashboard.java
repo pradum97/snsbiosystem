@@ -33,7 +33,8 @@ import java.util.logging.Logger;
 
 public class Dashboard extends OptionalMethod implements Initializable {
     @FXML
-    public Button dashboardBn, manageKitBn, manageSterilizerBn, userBn,noticeBn , accountBn;
+    public Button dashboardBn, manageKitBn,
+            manageSterilizerBn, userBn,noticeBn , accountBn;
     public Button logoutBn;
 
     public Label fullName;
@@ -47,7 +48,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
     private CustomDialog customDialog;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        manageKitBnClick(null);
+        dashboardBnClick(null);
 
         customDialog = new CustomDialog();
         config();

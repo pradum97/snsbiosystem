@@ -46,7 +46,7 @@ public class CreateNotice implements Initializable {
     public CheckBox dealerCb;
     public CheckBox patientCb;
     public CheckBox guestCb;
-    public ComboBox<Boolean> scheduledCom;
+    public ComboBox<String> scheduledCom;
     public Button publishBn;
     public Label titleL;
     public Button expiryBn;
@@ -56,13 +56,15 @@ public class CreateNotice implements Initializable {
     public HBox buttonContainer;
     private OptionalMethod method;
     private CustomDialog customDialog;
-    private ObservableList<Boolean> bool = FXCollections.observableArrayList(Boolean.FALSE, Boolean.TRUE);
+    private static final String SCHEDULED_YES = "YES";
+    private static final String SCHEDULED_NO = "NO";
+    private ObservableList<String> bool = FXCollections.observableArrayList(SCHEDULED_YES, SCHEDULED_NO);
     private RoleConfigModel role = new RoleConfigModel();
     private Long expiryDate;
     private Long publishDate;
     public final static String SELECT_PUBLISH_DATE = "SELECT PUBLISH DATE";
     public final static String SELECT_EXPIRY_DATE = "SELECT EXPIRY DATE";
-    protected String previousPublishDateTime,previousExpiryDateTime;
+    protected String previousPublishDateTime, previousExpiryDateTime;
 
     private OperationType operationType;
     private NoticeBoardDTO noticeBoardDTO;
@@ -123,7 +125,7 @@ public class CreateNotice implements Initializable {
         publishBn.setText(previousPublishDateTime);
         expiryBn.setText(previousExpiryDateTime);
 
-        scheduledCom.getSelectionModel().select(noticeBoardDTO.isScheduled());
+        scheduledCom.getSelectionModel().select(noticeBoardDTO.isScheduled() ? SCHEDULED_YES : SCHEDULED_NO);
 
         publishDate = noticeBoardDTO.getPublishOn();
         expiryDate = noticeBoardDTO.getExpiresOn();
@@ -175,8 +177,8 @@ public class CreateNotice implements Initializable {
     }
 
     private void comboboxConfig() {
-        scheduledCom.valueProperty().addListener((observableValue, aBoolean, t1) -> {
-            publishDateContainer.setDisable(!t1);
+        scheduledCom.valueProperty().addListener((observableValue, aBoolean, newValue) -> {
+            publishDateContainer.setDisable(!(Objects.equals(newValue, SCHEDULED_YES)));
         });
         scheduledCom.setItems(bool);
         scheduledCom.getSelectionModel().selectFirst();
@@ -256,7 +258,7 @@ public class CreateNotice implements Initializable {
             return;
         }
 
-        if (scheduledCom.getSelectionModel().getSelectedItem()) {
+        if (Objects.equals(scheduledCom.getSelectionModel().getSelectedItem(), SCHEDULED_YES)) {
             if (null == publishDate) {
                 method.show_popup("Please select publish Date", publishBn);
                 return;
@@ -280,12 +282,10 @@ public class CreateNotice implements Initializable {
         if (null != noticeBoardDTO) {
             notice.setId(noticeBoardDTO.getId());
         }
-
-        if (scheduledCom.getSelectionModel().getSelectedItem()) {
+        if (Objects.equals(scheduledCom.getSelectionModel().getSelectedItem(), SCHEDULED_YES)) {
             notice.setScheduled(true);
             notice.setPublishOn(publishDate);
         }
-
         String json = new Gson().toJson(notice);
 
         ImageView image = new ImageView(new ImageLoader().load("img/icon/warning_ic.png"));

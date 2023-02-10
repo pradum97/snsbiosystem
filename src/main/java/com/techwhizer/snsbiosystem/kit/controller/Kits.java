@@ -72,6 +72,7 @@ public class Kits implements Initializable {
     private CustomDialog customDialog;
     private int currentPageRowCount;
     private boolean isCrud = false;
+    private Map<String, Object> previousKitMap;
 
     private ObservableList<KitDTO> kitsList = FXCollections.observableArrayList();
 
@@ -81,8 +82,8 @@ public class Kits implements Initializable {
         customDialog = new CustomDialog();
 
         if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map) {
-            Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
-            if (map.get("operation_type") == KitOperationType.PREVIEW_INDIVIDUAL_KIT) {
+            previousKitMap = (Map<String, Object>) Main.primaryStage.getUserData();
+            if (previousKitMap.get("operation_type") == KitOperationType.PREVIEW_INDIVIDUAL_KIT) {
                 method.hideElement(topButtonContainer);
             } else {
                 topButtonContainer.setVisible(true);
@@ -308,13 +309,11 @@ public class Kits implements Initializable {
                 param.setParameter("page", String.valueOf(pageIndex));
             }
 
-            if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map) {
-                Map<String, Object> map = (Map<String, Object>) Main.primaryStage.getUserData();
-                if (map.get("operation_type") == KitOperationType.PREVIEW_INDIVIDUAL_KIT) {
-                    Long userId = (Long) map.get("user_id");
+            if (null != previousKitMap) {
+
+                if (previousKitMap.get("operation_type") == KitOperationType.PREVIEW_INDIVIDUAL_KIT) {
+                    Long userId = (Long) previousKitMap.get("user_id");
                     param.setParameter("q[user_id]", String.valueOf(userId));
-                    System.out.println(userId);
-                } else {
                 }
             }
             HttpGet httpGet = new HttpGet(param.build());
@@ -430,19 +429,15 @@ public class Kits implements Initializable {
                     viewUsageBn.setGraphic(getImage("img/icon/preview_ic.png"));
                     downloadBn.setGraphic(getImage("img/icon/download_ic.png"));
 
-                    ImageView activeIc = getImage("img/icon/admin_icon.png");
-                    activeIc.setFitWidth(30);
-                    activeIc.setFitHeight(30);
-
                     CommonUtility.onHoverShowTextButton(editBn,"Update kit");
                     CommonUtility.onHoverShowTextButton(deleteBbn,"Delete kit");
                     CommonUtility.onHoverShowTextButton(viewUsageBn,"View kit usage");
                     CommonUtility.onHoverShowTextButton(downloadBn,"Download kit report");
 
-                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ");
-                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3 ");
-                    downloadBn.setStyle("-fx-cursor: hand ; -fx-background-color: #051b64 ; -fx-background-radius: 3 ");
-                    viewUsageBn.setStyle("-fx-cursor: hand ; -fx-background-color: #04505e ; -fx-background-radius: 3 ");
+                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ;-fx-padding: 4");
+                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3;-fx-padding: 4 ");
+                    downloadBn.setStyle("-fx-cursor: hand ; -fx-background-color: #051b64 ; -fx-background-radius: 3 ;-fx-padding: 4");
+                    viewUsageBn.setStyle("-fx-cursor: hand ; -fx-background-color: #04505e ; -fx-background-radius: 3;-fx-padding: 4 ");
 
                     downloadBn.setOnAction((event -> {
                         method.selectTable(getIndex(), tableview);

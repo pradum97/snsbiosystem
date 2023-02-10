@@ -74,6 +74,7 @@ public class CreateProfile implements Initializable {
     public VBox contentContainer;
     public ComboBox<String> sharingMethodCom;
     public HBox progressContainer;
+    public VBox sharingMethodContainer;
     private OperationType userCreateOperationType;
     private OptionalMethod method;
     private CustomDialog customDialog;
@@ -111,6 +112,7 @@ public class CreateProfile implements Initializable {
         switch (userCreateOperationType) {
             case CREATE -> {
                 submitBn.setText("SUBMIT");
+                method.hideElement(sharingMethodContainer);
             }
             case UPDATE -> {
                 MyAsyncTask myAsyncTask = new MyAsyncTask(OperationType.FETCH);
@@ -640,7 +642,6 @@ public class CreateProfile implements Initializable {
 
     private void createProfile(String json) {
         try {
-
             HttpPost httpPut = new HttpPost(UrlConfig.getProfileCreateUrl());
             httpPut.addHeader("Content-Type", "application/json");
             httpPut.addHeader("Cookie", (String) Login.authInfo.get("token"));

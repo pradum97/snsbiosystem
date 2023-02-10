@@ -65,6 +65,7 @@ public class Users implements Initializable {
     public TableColumn<UserDTO, String> colOfficeAddress;
     public TableColumn<UserDTO, String> colEmail;
     public TableColumn<UserDTO, String> colPhone;
+    public TableColumn<UserDTO, String> colUsername;
     public TableColumn<UserDTO, String> colAction;
     public ComboBox<Integer> rowSizeCom;
     public ComboBox<String> sortingCom;
@@ -414,9 +415,6 @@ public class Users implements Initializable {
             isCrud = false;
         });
 
-        colSlNum.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
-                tableview.getItems().indexOf(cellData.getValue()) + 1));
-
         colClientId.setCellValueFactory(new PropertyValueFactory<>("clientID"));
 
         setOptionalCell();
@@ -470,8 +468,8 @@ public class Users implements Initializable {
                     Button viewKits = new Button();
 
                     ImageView activeIc = getImage("img/icon/active_ic.png");
-                    activeIc.setFitWidth(32);
-                    activeIc.setFitHeight(32);
+                    activeIc.setFitWidth(25);
+                    activeIc.setFitHeight(25);
 
                     editBn.setGraphic(getImage("img/icon/update_ic.png"));
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));
@@ -492,11 +490,11 @@ public class Users implements Initializable {
                         deleteBbn.setVisible(false);
                     }
 
-                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3 ");
-                    viewBn.setStyle("-fx-cursor: hand ; -fx-background-color: #04505e ; -fx-background-radius: 3 ");
-                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3 ");
-                    downloadBn.setStyle("-fx-cursor: hand ; -fx-background-color: #051b64 ; -fx-background-radius: 3 ");
-                    viewKits.setStyle("-fx-cursor: hand ; -fx-background-color: #014901 ; -fx-background-radius: 3 ");
+                    editBn.setStyle("-fx-cursor: hand ; -fx-background-color: #06a5c1 ; -fx-background-radius: 3;-fx-padding: 4 ");
+                    viewBn.setStyle("-fx-cursor: hand ; -fx-background-color: #04505e ; -fx-background-radius: 3;-fx-padding: 4 ");
+                    deleteBbn.setStyle("-fx-cursor: hand ; -fx-background-color: red ; -fx-background-radius: 3 ;-fx-padding: 4");
+                    downloadBn.setStyle("-fx-cursor: hand ; -fx-background-color: #051b64 ; -fx-background-radius: 3 ;-fx-padding: 4");
+                    viewKits.setStyle("-fx-cursor: hand ; -fx-background-color: #014901 ; -fx-background-radius: 3;-fx-padding: 4");
 
                     viewKits.setOnAction(event -> {
                         method.selectTable(getIndex(), tableview);
@@ -641,6 +639,36 @@ public class Users implements Initializable {
                             setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
                         }
 
+                    } else {
+                        setGraphic(null);
+                        setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
+                    }
+                }
+            }
+
+        });
+
+        colUsername.setCellFactory((TableColumn<UserDTO, String> param) -> new TableCell<>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                    setText(null);
+
+                } else {
+                    UserDTO user = tableview.getItems().get(getIndex());
+                    if (null != user.getRequestedLoginName()) {
+                        if (!user.getRequestedLoginName().isEmpty()) {
+                            Text text = new Text(user.getRequestedLoginName());
+                            text.setStyle("-fx-text-alignment:center;");
+                            text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(2));
+                            setText(null);
+                            setGraphic(text);
+                        } else {
+                            setGraphic(null);
+                            setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);
+                        }
                     } else {
                         setGraphic(null);
                         setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);

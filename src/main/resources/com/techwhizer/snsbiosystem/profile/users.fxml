@@ -128,10 +128,10 @@
          <children>
             <TableView fx:id="tableview" VBox.vgrow="ALWAYS">
                <columns>
-                  <TableColumn fx:id="colSlNum" editable="false" maxWidth="60.0" minWidth="40.0" text="SL #" />
-                  <TableColumn fx:id="colClientId" editable="false" maxWidth="200.0" minWidth="150.0" text="CLIENT ID" />
+                  <TableColumn fx:id="colClientId" editable="false" maxWidth="200.0" minWidth="110.0" text="CLIENT ID" />
+                  <TableColumn fx:id="colUsername" editable="false" maxWidth="200.0" minWidth="150.0" text="USERNAME" />
                   <TableColumn fx:id="colName" editable="false" maxWidth="220.0" minWidth="200.0" text="FULL NAME" />
-                  <TableColumn fx:id="colOfficeAddress" editable="false" minWidth="290.0" text="OFFICE ADDRESS" />
+                  <TableColumn fx:id="colOfficeAddress" editable="false" minWidth="270.0" text="OFFICE ADDRESS" />
                   <TableColumn fx:id="colEmail" editable="false" maxWidth="330.0" minWidth="280.0" text="EMAIL" />
                   <TableColumn fx:id="colPhone" editable="false" maxWidth="220.0" minWidth="200.0" text="PHONE" />
                   <TableColumn fx:id="colAction" editable="false" minWidth="240.0" text="ACTION" />

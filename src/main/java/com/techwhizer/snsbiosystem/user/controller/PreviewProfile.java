@@ -213,9 +213,6 @@ public class PreviewProfile implements Initializable {
                 String content = EntityUtils.toString(resEntity);
                 int statusCode = response.getStatusLine().getStatusCode();
 
-                System.out.println(statusCode);
-                System.out.println(content);
-
                 if (statusCode == 200) {
                     method.hideElement(progressbar);
                     uploadNowBn.setVisible(true);
@@ -384,7 +381,6 @@ public class PreviewProfile implements Initializable {
                 new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }

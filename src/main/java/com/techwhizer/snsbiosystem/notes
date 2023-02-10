@@ -2,9 +2,6 @@ stop previous running server
 step-1:netstat -a -o -n
 step-2:taskkill /F /PID<PID NUM>
 ******************************************************************
-in User, Add UserName in List.
-In Kit Usage, When Add Kit Usage For already selected Kit then First time taken kit number but after kit number is remove.
-In User, when kit was update then Kit List Show here.
 kit usage filter between two date
 upload file
 Ques.- When Creating User without Email then it's get username is default Password. But when Creating User with Email then
