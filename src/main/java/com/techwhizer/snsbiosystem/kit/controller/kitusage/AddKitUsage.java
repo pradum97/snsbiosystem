@@ -39,8 +39,9 @@ import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class AddKitUsage implements Initializable {
@@ -116,9 +117,11 @@ public class AddKitUsage implements Initializable {
     private void setTextFieldData() {
 
         kitNumberTf.setText(null == kud.getKitNumber() ? "" : String.valueOf(kud.getKitNumber()));
+
         if (null != kud.getTestDate()) {
-            String date = new SimpleDateFormat(CommonUtility.COMMON_DATE_PATTERN).format(new Date(kud.getTestDate()));
-            testDateDp.getEditor().setText(date);
+
+            LocalDateTime localDateTime = CommonUtility.getLocalDateTimeObject(kud.getTestDate());
+            testDateDp.getEditor().setText(localDateTime.format(DateTimeFormatter.ofPattern(CommonUtility.COMMON_DATE_PATTERN)));
         }
 
         if (null != kud.getSterilizerID()){
@@ -160,7 +163,7 @@ public class AddKitUsage implements Initializable {
         } catch (NumberFormatException e) {
             method.show_popup(msg, kitNumberTf);
             throw new RuntimeException(e);
-            //  return;
+
         }
 
         if (testDate.isEmpty()) {
@@ -168,16 +171,10 @@ public class AddKitUsage implements Initializable {
             return;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat(CommonUtility.COMMON_DATE_PATTERN);
-        Date date;
-        try {
-            date = sdf.parse(testDate);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        testDateL = date.getTime();
+        LocalDateTime localDateTime = CommonUtility.getDateTimeObject(testDate + " 00:00:00");
+        testDateL = CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
 
-        if (null == sterilizerData && null == sterilizerData.get("sterilizer_id")){
+        if (null == sterilizerData && null == sterilizerData.get("sterilizer_id")) {
             method.show_popup("Please select sterilizer", sterilizerId);
             return;
         }
@@ -413,7 +410,7 @@ public class AddKitUsage implements Initializable {
             }
             sterilizerId.setText("CHOOSE STERILIZER ID");
             sterilizerType.setText("");
-            testDateDp.getEditor().setText("");
+            testDateDp.setValue(null);
         });
     }
 

@@ -45,7 +45,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="kitNumberTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter kit number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <TextField fx:id="kitNumberTf" alignment="CENTER" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter kit number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                     <VBox maxWidth="296.0" minWidth="296.0" prefHeight="62.0" spacing="5.0">
@@ -80,7 +80,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="sterilizerType" editable="false" minHeight="40.0" minWidth="190.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-highlight-fill: null; -fx-highlight-text-fill: null;" />
+                                          <TextField fx:id="sterilizerType" alignment="CENTER" editable="false" minHeight="40.0" minWidth="190.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-highlight-fill: null; -fx-highlight-text-fill: null;" />
                                        </children>
                                     </VBox>
                                  </children>

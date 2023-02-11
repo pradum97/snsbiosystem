@@ -41,8 +41,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class KitUsages implements Initializable {
     public ImageView refreshBn;
@@ -64,6 +68,9 @@ public class KitUsages implements Initializable {
     public Button applySorting;
     public HBox paginationContainer;
     public Button uploadKitUsageBn;
+    public DatePicker fromDateDP;
+    public DatePicker toDateDp;
+    public Button filterButton;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private ObservableList<KitUsageDTO> kitsUsagesList = FXCollections.observableArrayList();
@@ -75,10 +82,8 @@ public class KitUsages implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
-
+        method.convertDateFormat(fromDateDP, toDateDp);
         Platform.runLater(() -> OptionalMethod.minimizedStage((Stage) uploadKitUsageBn.getScene().getWindow(), true));
-
-
         if (Main.primaryStage.getUserData() instanceof Map<?, ?>) {
 
             data = (Map<String, Object>) Main.primaryStage.getUserData();
@@ -111,22 +116,22 @@ public class KitUsages implements Initializable {
             orderCom.getSelectionModel().selectFirst();
             sortingCom.getSelectionModel().selectFirst();
             rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
-                sortData(0, 0, OperationType.START, 0L, null);
+                sortData(0, 0, OperationType.START, 0L, null, null);
             });
             rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
             pagination.currentPageIndexProperty().addListener(
                     (observable1, oldValue1, newValue1) -> {
                         int pageIndex = newValue1.intValue();
-                        sortData(pageIndex, 0, OperationType.START, kitId, null);
+                        sortData(pageIndex, 0, OperationType.START, kitId, null, null);
                     });
             applySorting.setDisable(false);
         });
     }
     public void applySorting(ActionEvent event) {
-        sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, kitId, null);
+        sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, kitId, null, null);
     }
 
-    private void sortData(int pageIndex, int rowIndex, OperationType operationType, Long kitId, Button button) {
+    private void sortData(int pageIndex, int rowIndex, OperationType operationType, Long kitId, Button button, Map<String, Long> filterMap) {
 
         String filedName = KitUsageSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
         String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
@@ -138,6 +143,8 @@ public class KitUsages implements Initializable {
         sortedDataMap.put("row_size", rowSize);
         sortedDataMap.put("page_index", pageIndex);
         sortedDataMap.put("row_index", rowIndex);
+        sortedDataMap.put("filter_map", filterMap);
+
         startThread(operationType, kitId, button, sortedDataMap);
     }
 
@@ -146,6 +153,35 @@ public class KitUsages implements Initializable {
         MyAsyncTask myAsyncTask = new MyAsyncTask(operationType, kitId, button, sortedDataMap);
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();
+    }
+
+    public void applyFilter(ActionEvent event) {
+
+        LocalDate fromLocalDate = fromDateDP.getValue();
+        LocalDate toLocalDate = toDateDp.getValue();
+
+        if (null == fromLocalDate) {
+            method.show_popup("Please select from date", filterButton);
+            return;
+        } else if (null == toLocalDate) {
+            method.show_popup("Please select to date", filterButton);
+            return;
+        }
+
+
+        Long fromDateL = getEpochMills(fromLocalDate);
+        Long toDateL = getEpochMills(toLocalDate);
+
+        Map<String, Long> filterMap = new HashMap<>();
+        filterMap.put("from_date", fromDateL);
+        filterMap.put("to_date", toDateL);
+
+        sortData(0, 0, OperationType.START, kitId, null, filterMap);
+    }
+
+    private Long getEpochMills(LocalDate localDate) {
+        LocalDateTime localDateTime = CommonUtility.getDateTimeObject(localDate.format(CommonUtility.dateFormatter) + " 00:00:00");
+        return CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
     }
 
     private class MyAsyncTask extends AsyncTask<Object, Integer, Boolean> {
@@ -232,6 +268,18 @@ public class KitUsages implements Initializable {
                 param.setParameter("sort", sort);
                 param.setParameter("size", String.valueOf(rowSize));
                 param.setParameter("page", String.valueOf(pageIndex));
+
+                Map<String, Long> filterMap = (Map<String, Long>) sortedDataMap.get("filter_map");
+
+                if (null != filterMap) {
+                    Long fromDate = filterMap.get("from_date");
+                    Long toDate = filterMap.get("to_date");
+
+                    System.out.println(fromDate);
+                    System.out.println(toDate);
+
+                }
+
             }
 
             if (operationType == OperationType.SINGLE_KIT_USAGE) {
@@ -359,7 +407,7 @@ public class KitUsages implements Initializable {
                             if (isUpdated) {
                                 int rowPosition = getIndex();
                                 int paginationIndex = pagination.getCurrentPageIndex();
-                                sortData(paginationIndex, rowPosition, operationType, kitId, null);
+                                sortData(paginationIndex, rowPosition, operationType, kitId, null, null);
                             }
                         }
 
@@ -455,8 +503,8 @@ public class KitUsages implements Initializable {
 
                     if (null != kd.getTestDate()) {
 
-                        String txt = new SimpleDateFormat(CommonUtility.COMMON_DATE_PATTERN)
-                                .format(new Date(kd.getTestDate()));
+                        LocalDateTime localDateTime = CommonUtility.getLocalDateTimeObject(kd.getTestDate());
+                        String txt = localDateTime.format(CommonUtility.dateFormatter);
 
                         if (!txt.isEmpty()) {
                             Text text = new Text(txt);

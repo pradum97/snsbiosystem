@@ -42,7 +42,7 @@
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <TextArea fx:id="messageTa" minHeight="30.0" minWidth="602.0" onKeyPressed="#keyPress" prefHeight="130.0" prefWidth="602.0" promptText="Write message..." wrapText="true">
+                                    <TextArea fx:id="messageTa" minHeight="30.0" minWidth="602.0" prefHeight="130.0" prefWidth="602.0" promptText="Write message..." wrapText="true">
                                        <padding>
                                           <Insets left="2.0" right="2.0" />
                                        </padding>

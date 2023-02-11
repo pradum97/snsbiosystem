@@ -48,11 +48,19 @@ public class Dashboard extends OptionalMethod implements Initializable {
     private CustomDialog customDialog;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        dashboardBnClick(null);
+        manageKitBnClick(null);
 
         customDialog = new CustomDialog();
         config();
         startThread();
+
+        Platform.runLater(()->{
+            Stage stage = (Stage) logoutBn.getScene().getWindow();
+
+            stage.setMinWidth(1120);
+            stage.setMinHeight(655);
+
+        });
     }
 
     private void config() {

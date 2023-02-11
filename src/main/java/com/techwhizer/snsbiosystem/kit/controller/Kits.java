@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Kits implements Initializable {
@@ -364,7 +365,6 @@ public class Kits implements Initializable {
 
         return iv;
     }
-
 
     private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
 
@@ -709,12 +709,11 @@ public class Kits implements Initializable {
 
                     if (null != kd.getExpiryDate()) {
 
-                        String txt = new SimpleDateFormat(CommonUtility.COMMON_DATE_PATTERN)
-                                .format(new java.util.Date(kd.getExpiryDate()));
+                        LocalDateTime localDateTime = CommonUtility.getLocalDateTimeObject(kd.getExpiryDate());
+
+                        String txt = localDateTime.format(CommonUtility.dateFormatter);
 
                         if (!txt.isEmpty()) {
-
-
                             Text text = new Text(txt);
                             text.setStyle("-fx-text-alignment:center;");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
