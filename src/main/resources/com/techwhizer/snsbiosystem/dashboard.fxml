@@ -29,7 +29,7 @@
                                  <children>
                                     <VBox fx:id="topUserContainer" alignment="TOP_CENTER" minHeight="210.0" prefHeight="209.0" spacing="12.0">
                                        <children>
-                                          <ImageView fx:id="topProfileImg" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                                          <ImageView fx:id="topProfileImg" fitHeight="119.0" fitWidth="119.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
                                                 <Image url="@img/icon/avtar.png" />
                                              </image>
