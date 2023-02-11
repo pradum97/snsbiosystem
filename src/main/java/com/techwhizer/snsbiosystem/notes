@@ -2,9 +2,8 @@ stop previous running server
 step-1:netstat -a -o -n
 step-2:taskkill /F /PID<PID NUM>
 ******************************************************************
-When Kit Was Deleted but Kit Wasn't. and it,s show in report.(it,s same here for client).
-When Sterilizer Was Deleted but Sterilizer Wasn't. and it,s show in report.
-kit usage filter between two date
+
+
 upload file
 Ques.- When Creating User without Email then it's get username is default Password. But when Creating User with Email then
         It's Not Set Default Password.
