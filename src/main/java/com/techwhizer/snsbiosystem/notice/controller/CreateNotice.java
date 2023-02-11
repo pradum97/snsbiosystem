@@ -58,7 +58,7 @@ public class CreateNotice implements Initializable {
     private CustomDialog customDialog;
     private static final String SCHEDULED_YES = "YES";
     private static final String SCHEDULED_NO = "NO";
-    private ObservableList<String> bool = FXCollections.observableArrayList(SCHEDULED_YES, SCHEDULED_NO);
+    private ObservableList<String> bool = FXCollections.observableArrayList(SCHEDULED_NO, SCHEDULED_YES);
     private RoleConfigModel role = new RoleConfigModel();
     private Long expiryDate;
     private Long publishDate;
@@ -153,25 +153,22 @@ public class CreateNotice implements Initializable {
         DateAndTimePicker dateAndTimePicker = new DateAndTimePicker();
 
         publishBn.setOnAction(event -> {
-
             String dateString = dateAndTimePicker.pick(previousPublishDateTime);
             if (null != dateString) {
                 previousPublishDateTime = dateString;
                 publishBn.setText(dateString);
                 LocalDateTime localDateTime = CommonUtility.getDateTimeObject(previousPublishDateTime);
-                publishDate = CommonUtility.convertToUTCMillis(localDateTime);
+                publishDate = CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
             }
         });
 
         expiryBn.setOnAction(event -> {
-
             String dateString = dateAndTimePicker.pick(previousExpiryDateTime);
-
             if (null != dateString) {
                 previousExpiryDateTime = dateString;
                 expiryBn.setText(dateString);
                 LocalDateTime localDateTime = CommonUtility.getDateTimeObject(dateString);
-                expiryDate = CommonUtility.convertToUTCMillis(localDateTime);
+                expiryDate = CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
             }
         });
     }

@@ -2,10 +2,9 @@ package com.techwhizer.snsbiosystem.util;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.text.Text;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -92,11 +91,20 @@ public class CommonUtility {
 
 
     public static LocalDateTime getLocalDateTimeObject(long epochMillis) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneOffset.UTC);
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault());
     }
 
-    public static long convertToUTCMillis(LocalDateTime ldt) {
-        return ldt.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli();
+    public static Long getCurrentLocalDateTimeInEpoch() {
+        String currentLocalDate = LocalDate.now().format(CommonUtility.dateFormatter);
+
+        LocalDateTime localDateTime = CommonUtility.getDateTimeObject(currentLocalDate + " 00:00:00");
+        return CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
+    }
+
+    public static long convertToUTCMillisLocalDateTime(LocalDateTime ldt) {
+        ZonedDateTime ldtZoned = ldt.atZone(ZoneId.systemDefault());
+        ZonedDateTime utcZoned = ldtZoned.withZoneSameInstant(ZoneId.of("UTC"));
+        return utcZoned.toInstant().toEpochMilli();
     }
 
     public static LocalDate getLocalDateObject(String dateTime) {
@@ -115,4 +123,5 @@ public class CommonUtility {
         localDateTime = LocalDateTime.parse(dateTime, dateTimeFormator);
         return localDateTime;
     }
+
 }

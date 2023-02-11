@@ -38,6 +38,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class AddKit implements Initializable {
@@ -103,8 +105,8 @@ public class AddKit implements Initializable {
         lotNumberTf.setText(null == kd.getLotNumber() ? "" : String.valueOf(kd.getLotNumber()));
 
         if (null != kd.getExpiryDate()) {
-            String date = new SimpleDateFormat(CommonUtility.COMMON_DATE_PATTERN).format(new java.util.Date(kd.getExpiryDate()));
-            expiryDateDp.getEditor().setText(date);
+            LocalDateTime localDateTime = CommonUtility.getLocalDateTimeObject(kd.getExpiryDate());
+            expiryDateDp.getEditor().setText(localDateTime.format(DateTimeFormatter.ofPattern(CommonUtility.COMMON_DATE_PATTERN)));
         }
     }
 
@@ -168,14 +170,10 @@ public class AddKit implements Initializable {
         }
 
         if (!expiryDate.isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat(CommonUtility.COMMON_DATE_PATTERN);
-            Date date;
-            try {
-                date = sdf.parse(expiryDate);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-            expiryDateL = date.getTime();
+
+            LocalDateTime localDateTime = CommonUtility.getDateTimeObject(expiryDate+" 00:00:00");
+            expiryDateL = CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
+
         }
 
         if (testUsed.isEmpty()) {
@@ -395,7 +393,7 @@ public class AddKit implements Initializable {
             kitNumberTf.setText("");
             testUsedTf.setText("");
             lotNumberTf.setText("");
-            expiryDateDp.getEditor().setText("");
+            expiryDateDp.setValue(null);
         });
     }
 
