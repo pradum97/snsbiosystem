@@ -48,7 +48,7 @@ public class Dashboard extends OptionalMethod implements Initializable {
     private CustomDialog customDialog;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        manageKitBnClick(null);
+        dashboardBnClick(null);
 
         customDialog = new CustomDialog();
         config();
