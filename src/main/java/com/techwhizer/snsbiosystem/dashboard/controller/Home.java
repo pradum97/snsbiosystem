@@ -155,6 +155,7 @@ public class Home implements Initializable {
         } finally {
             Platform.runLater(() -> {
                 refreshBn.setDisable(false);
+                tableview.setPlaceholder(new Label("No data found"));
             });
         }
     }
@@ -530,6 +531,7 @@ public class Home implements Initializable {
 
         @Override
         public void onPostExecute(Boolean success) {
+            tableview.setPlaceholder(new Label("No data found"));
         }
 
         @Override
