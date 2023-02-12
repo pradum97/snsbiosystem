@@ -19,21 +19,6 @@ public class OptionalMethod {
         stage.setMaximized(bool);
     }
 
-    public void customColumn(TableColumn columnName) {
-
-        columnName.setCellFactory(tc -> {
-            TableCell cell = new TableCell<>();
-            Text text = new Text();
-            text.setStyle("-fx-font-size: 14");
-            cell.setGraphic(text);
-            text.setStyle("-fx-text-alignment: CENTER ;");
-            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
-            text.wrappingWidthProperty().bind(columnName.widthProperty());
-            text.textProperty().bind(cell.itemProperty());
-            return cell;
-        });
-    }
-
     public void convertDateFormat(DatePicker... date) {
         for (DatePicker datePicker : date) {
             datePicker.setConverter(new StringConverter<>() {
@@ -95,28 +80,6 @@ public class OptionalMethod {
         }
 
         tableView.getSelectionModel().select(index);
-    }
-
-    public String rec(String str){
-        String txt = "";
-
-        if (null == str || str.isEmpty()) {
-            txt = "-";
-        } else {
-            txt = str;
-        }
-        return txt;
-    }
-
-    public String getCurrentDate() {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDateTime now = LocalDateTime.now();
-        return dtf.format(now);
-    }
-
-    public String decimalFormatter(Object o) {
-        DecimalFormat formatter = new DecimalFormat("#0.0");
-        return formatter.format(o);
     }
 
 }

@@ -44,7 +44,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="clientIdTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter client id" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <TextField fx:id="clientIdTf" alignment="CENTER" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter client id" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                     <VBox layoutX="200.0" layoutY="10.0" minWidth="350.0" prefWidth="350.0" spacing="5.0">
@@ -54,7 +54,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="dealerIdTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter Dealer Id" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <TextField fx:id="dealerIdTf" alignment="CENTER" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" promptText="Enter Dealer Id" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -68,7 +68,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="kitNumberTf" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="Enter kit number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <TextField fx:id="kitNumberTf" alignment="CENTER" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="Enter kit number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                     <VBox minWidth="350.0" prefHeight="62.0" prefWidth="186.0" spacing="5.0">
@@ -92,7 +92,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="testUsedTf" minHeight="40.0" minWidth="190.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="190.0" promptText="Enter Test Used" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <TextField fx:id="testUsedTf" alignment="CENTER" minHeight="40.0" minWidth="190.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="190.0" promptText="Enter Test Used" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                     <VBox layoutX="391.0" layoutY="10.0" minWidth="350.0" spacing="5.0">
@@ -102,7 +102,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="lotNumberTf" minHeight="40.0" minWidth="190.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="190.0" promptText="Enter lot number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                          <TextField fx:id="lotNumberTf" alignment="CENTER" minHeight="40.0" minWidth="190.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="190.0" promptText="Enter lot number" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                        </children>
                                     </VBox>
                                  </children>

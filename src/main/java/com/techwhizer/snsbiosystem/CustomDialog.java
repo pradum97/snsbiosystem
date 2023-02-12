@@ -7,10 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -55,8 +53,6 @@ public class CustomDialog {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public Alert showAlertBox(String title, String message) {
@@ -129,7 +125,7 @@ public class CustomDialog {
 
     }
 
-    public Parent showFxmlFullDialog(String fxml_file, String title) {
+    public void showFxmlFullDialog(String fxml_file, String title) {
 
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource(fxml_file)));
@@ -151,11 +147,8 @@ public class CustomDialog {
 
             stage3.showAndWait();
 
-            return root;
-
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
     }
 

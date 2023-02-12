@@ -50,8 +50,6 @@ public class Login implements Initializable {
         customDialog = new CustomDialog();
         method.hideElement(progressBar);
 
-      //  CommonUtility.passwordMaskFiled(passwordTf,maskImage);
-
         passwordMaskFiled();
     }
 

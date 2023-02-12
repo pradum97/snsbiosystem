@@ -68,8 +68,7 @@ public class KitUsages implements Initializable {
     public Button applySorting;
     public HBox paginationContainer;
     public Button uploadKitUsageBn;
-    public DatePicker fromDateDP;
-    public DatePicker toDateDp;
+    public DatePicker fromDateDP, toDateDp;
     public Button filterButton;
     private OptionalMethod method;
     private CustomDialog customDialog;
@@ -77,11 +76,14 @@ public class KitUsages implements Initializable {
     private OperationType operationType = OperationType.ALL;
     private Long kitId = 0L, kitNumber;
     private Map<String, Object> data;
+    private boolean isFilter;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
+        fromDateDP.setEditable(false);
+        toDateDp.setEditable(false);
         method.convertDateFormat(fromDateDP, toDateDp);
         Platform.runLater(() -> OptionalMethod.minimizedStage((Stage) uploadKitUsageBn.getScene().getWindow(), true));
         if (Main.primaryStage.getUserData() instanceof Map<?, ?>) {
@@ -104,6 +106,48 @@ public class KitUsages implements Initializable {
         } else {
             startThread(OperationType.SORTING_LOADING, 0L, null, null);
         }
+
+        CommonUtility.onHoverShowTextButton(filterButton,"FILTER");
+        CommonUtility.onHoverShowTextButton(applySorting,"SORTING");
+
+        dateRangeDatePickerConfig();
+    }
+
+    private void dateRangeDatePickerConfig() {
+
+        fromDateDP.pressedProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (isFilter) {
+                Platform.runLater(() -> {
+                    ImageView iv = new ImageLoader().loadImageView("img/icon/filter_ic.png");
+                    iv.setFitWidth(17);
+                    iv.setFitHeight(17);
+                    filterButton.setStyle("-fx-background-color: #006666;-fx-background-radius: 17");
+
+                    fromDateDP.setValue(null);
+                    filterButton.setGraphic(iv);
+                    isFilter = false;
+                    fromDateDP.setFocusTraversable(false);
+                });
+            }
+        });
+        toDateDp.pressedProperty().addListener((observableValue, aBoolean, t1) -> {
+
+            if (isFilter) {
+                Platform.runLater(() -> {
+                    ImageView iv = new ImageLoader().loadImageView("img/icon/filter_ic.png");
+                    iv.setFitWidth(17);
+                    iv.setFitHeight(17);
+                    filterButton.setStyle("-fx-background-color: #006666;-fx-background-radius: 17");
+
+                    toDateDp.setValue(null);
+
+                    filterButton.setGraphic(iv);
+                    isFilter = false;
+
+                    toDateDp.setFocusTraversable(false);
+                });
+            }
+        });
     }
 
     private void comboBoxConfig(Long kitId) {
@@ -111,7 +155,7 @@ public class KitUsages implements Initializable {
         rowSizeCom.setItems(PaginationUtil.rowSize);
         sortingCom.setItems(FXCollections.observableArrayList(KitUsageSortingOptions.sortingMap.keySet()));
 
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             orderCom.setItems(CommonUtility.orderList);
             orderCom.getSelectionModel().selectFirst();
             sortingCom.getSelectionModel().selectFirst();
@@ -128,6 +172,8 @@ public class KitUsages implements Initializable {
         });
     }
     public void applySorting(ActionEvent event) {
+
+        resetRangeFilter();
         sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, kitId, null, null);
     }
 
@@ -155,8 +201,30 @@ public class KitUsages implements Initializable {
         myAsyncTask.execute();
     }
 
-    public void applyFilter(ActionEvent event) {
+    private void resetRangeFilter() {
+        Platform.runLater(() -> {
+            ImageView iv = new ImageLoader().loadImageView("img/icon/filter_ic.png");
+            iv.setFitWidth(17);
+            iv.setFitHeight(17);
+            filterButton.setStyle("-fx-background-color: #006666;-fx-background-radius: 17");
 
+            fromDateDP.setValue(null);
+            toDateDp.setValue(null);
+
+            filterButton.setGraphic(iv);
+            isFilter = false;
+
+            fromDateDP.setFocusTraversable(false);
+            toDateDp.setFocusTraversable(false);
+        });
+    }
+
+    public void applyFilter(ActionEvent event) {
+        if (isFilter) {
+            resetRangeFilter();
+            refreshClick(null);
+            return;
+        }
         LocalDate fromLocalDate = fromDateDP.getValue();
         LocalDate toLocalDate = toDateDp.getValue();
 
@@ -166,8 +234,10 @@ public class KitUsages implements Initializable {
         } else if (null == toLocalDate) {
             method.show_popup("Please select to date", filterButton);
             return;
+        } else if (toLocalDate.isBefore(fromLocalDate)) {
+            method.show_popup("Invalid to date", filterButton);
+            return;
         }
-
 
         Long fromDateL = getEpochMills(fromLocalDate);
         Long toDateL = getEpochMills(toLocalDate);
@@ -175,11 +245,12 @@ public class KitUsages implements Initializable {
         Map<String, Long> filterMap = new HashMap<>();
         filterMap.put("from_date", fromDateL);
         filterMap.put("to_date", toDateL);
-
+        isFilter = true;
         sortData(0, 0, OperationType.START, kitId, null, filterMap);
     }
 
     private Long getEpochMills(LocalDate localDate) {
+
         LocalDateTime localDateTime = CommonUtility.getDateTimeObject(localDate.format(CommonUtility.dateFormatter) + " 00:00:00");
         return CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
     }
@@ -203,6 +274,7 @@ public class KitUsages implements Initializable {
 
             refreshBn.setDisable(true);
             applySorting.setDisable(true);
+            filterButton.setDisable(true);
             if (operationType == OperationType.DELETE) {
                 if (null != button) {
                     ProgressIndicator pi = method.getProgressBar(25, 25);
@@ -234,6 +306,7 @@ public class KitUsages implements Initializable {
         public void onPostExecute(Boolean success) {
             refreshBn.setDisable(false);
             applySorting.setDisable(false);
+            filterButton.setDisable(false);
             if (null != button) {
                 button.setGraphic(getImage("img/icon/delete_ic_white.png"));
             }
@@ -275,8 +348,16 @@ public class KitUsages implements Initializable {
                     Long fromDate = filterMap.get("from_date");
                     Long toDate = filterMap.get("to_date");
 
-                    System.out.println(fromDate);
-                    System.out.println(toDate);
+                    param.setParameter("q[from_date]", String.valueOf(fromDate));
+                    param.setParameter("q[to_date]", String.valueOf(toDate));
+
+                    Platform.runLater(() -> {
+                        ImageView iv = new ImageLoader().loadImageView("img/icon/clear_ic.png");
+                        iv.setFitWidth(17);
+                        iv.setFitHeight(17);
+                        filterButton.setStyle("-fx-background-color: red;-fx-background-radius: 17");
+                        filterButton.setGraphic(iv);
+                    });
 
                 }
 
@@ -325,6 +406,8 @@ public class KitUsages implements Initializable {
         } finally {
             Platform.runLater(() -> {
                 refreshBn.setDisable(false);
+                applySorting.setDisable(false);
+                filterButton.setDisable(false);
             });
         }
 

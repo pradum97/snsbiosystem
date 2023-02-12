@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
@@ -120,22 +121,26 @@
     <center>
         <VBox BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="tableview" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colSlNum" editable="false" maxWidth="60.0" minWidth="40.0" text="SL #" />
-                        <TableColumn fx:id="colKitId" editable="false" maxWidth="150.0" minWidth="140.0" text="KIT ID" />
-                        <TableColumn fx:id="colClientId" editable="false" maxWidth="150.0" minWidth="140.0" text="CLIENT ID" />
-                        <TableColumn fx:id="colDealerId" editable="false" maxWidth="150.0" minWidth="140.0" text="DEALER ID" />
-                        <TableColumn fx:id="colKitNumber" editable="false" maxWidth="270.0" minWidth="230.0" text="KIT NUMBER" />
-                        <TableColumn fx:id="colExpiryDate" editable="false" maxWidth="150.0" minWidth="150.0" text="EXPIRY DATE" />
-                  <TableColumn fx:id="colLotNumber" editable="false" maxWidth="150.0" minWidth="130.0" text="LOT NUMBER" />
-                  <TableColumn fx:id="colTestUsed" editable="false" maxWidth="120.0" minWidth="90.0" text="TEST USED" />
-                        <TableColumn fx:id="colAction" editable="false" minWidth="240.0" text="ACTION" />
-                    </columns>
-                    <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                    </columnResizePolicy>
-                </TableView>
+            <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+               <content>
+                      <TableView fx:id="tableview">
+                          <columns>
+                              <TableColumn fx:id="colSlNum" editable="false" maxWidth="60.0" minWidth="40.0" text="SL #" />
+                              <TableColumn fx:id="colKitId" editable="false" maxWidth="150.0" minWidth="140.0" text="KIT ID" />
+                              <TableColumn fx:id="colClientId" editable="false" maxWidth="150.0" minWidth="140.0" text="CLIENT ID" />
+                              <TableColumn fx:id="colDealerId" editable="false" maxWidth="150.0" minWidth="140.0" text="DEALER ID" />
+                              <TableColumn fx:id="colKitNumber" editable="false" maxWidth="270.0" minWidth="230.0" text="KIT NUMBER" />
+                              <TableColumn fx:id="colExpiryDate" editable="false" maxWidth="150.0" minWidth="150.0" text="EXPIRY DATE" />
+                        <TableColumn fx:id="colLotNumber" editable="false" maxWidth="150.0" minWidth="130.0" text="LOT NUMBER" />
+                        <TableColumn fx:id="colTestUsed" editable="false" maxWidth="120.0" minWidth="90.0" text="TEST USED" />
+                              <TableColumn fx:id="colAction" editable="false" minWidth="240.0" text="ACTION" />
+                          </columns>
+                          <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                          </columnResizePolicy>
+                      </TableView>
+               </content>
+            </ScrollPane>
             </children>
         </VBox>
     </center>

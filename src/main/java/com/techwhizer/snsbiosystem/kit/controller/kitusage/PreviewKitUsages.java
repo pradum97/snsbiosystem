@@ -82,7 +82,11 @@ public class PreviewKitUsages implements Initializable {
         method.hideElement(progressbar);
 
         Platform.runLater(() -> {
-            OptionalMethod.minimizedStage((Stage) uploadNowBn.getScene().getWindow(), true);
+            Stage stage = (Stage) uploadNowBn.getScene().getWindow();
+            OptionalMethod.minimizedStage(stage, true);
+            stage.setMinWidth(1120);
+            stage.setMinHeight(655);
+
         });
 
         if (null != Main.primaryStage.getUserData() &&

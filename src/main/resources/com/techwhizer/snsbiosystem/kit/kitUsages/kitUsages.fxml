@@ -6,6 +6,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -18,168 +19,176 @@
 
 <BorderPane stylesheets="@../../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.kit.controller.kitusage.KitUsages">
     <top>
-        <VBox alignment="TOP_CENTER" prefHeight="62.0" prefWidth="756.0" style="-fx-background-color: white; -fx-border-color: #a6a6a6;" BorderPane.alignment="CENTER">
-            <children>
-                <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="100.0" prefWidth="200.0">
-                    <children>
-                  <HBox alignment="CENTER" spacing="5.0">
-                     <children>
-                        <HBox alignment="CENTER" prefHeight="30.0" prefWidth="154.0">
-                           <children>
-                              <Label minWidth="70.0" prefHeight="18.0" prefWidth="70.0" text="SORT BY :">
-                                 <font>
-                                    <Font name="Arial Black" size="12.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="sortingCom" minWidth="95.0" prefHeight="30.0" prefWidth="95.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER">
-                           <children>
-                              <Label minWidth="60.0" prefHeight="18.0" text="ORDER : ">
-                                 <font>
-                                    <Font name="Arial Black" size="12.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="orderCom" minWidth="120.0" prefHeight="30.0" prefWidth="120.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
-                           </children>
-                        </HBox>
-                        <Button fx:id="applySorting" alignment="CENTER" minWidth="40.0" mnemonicParsing="false" onAction="#applySorting" prefHeight="35.0" prefWidth="40.0" styleClass="previewsubmitButton" textAlignment="CENTER" textFill="WHITE">
-                           <font>
-                              <Font name="Arial Black" size="12.0" />
-                           </font>
-                           <HBox.margin>
-                              <Insets left="20.0" right="8.0" />
-                           </HBox.margin>
-                           <graphic>
-                              <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../img/icon/sorting_ic.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <Separator minHeight="50.0" orientation="VERTICAL" />
-                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+      <ScrollPane fitToHeight="true" fitToWidth="true" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+         <content>
+              <VBox alignment="TOP_CENTER" prefHeight="62.0" prefWidth="756.0" style="-fx-background-color: white; -fx-border-color: #a6a6a6;">
+                  <children>
+                      <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="100.0" prefWidth="200.0">
+                          <children>
+                        <HBox alignment="CENTER" spacing="5.0">
                            <children>
                               <HBox alignment="CENTER" prefHeight="30.0" prefWidth="154.0">
                                  <children>
-                                    <Label minWidth="58.0" prefHeight="18.0" prefWidth="58.0" text="FROM :">
+                                    <Label minWidth="70.0" prefHeight="18.0" prefWidth="70.0" text="SORT BY :">
                                        <font>
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <DatePicker fx:id="fromDateDP" minWidth="120.0" prefHeight="30.0" prefWidth="120.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                    <ComboBox fx:id="sortingCom" minWidth="95.0" prefHeight="30.0" prefWidth="95.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER" layoutX="20.0" layoutY="10.0" prefHeight="30.0" prefWidth="154.0">
+                              <HBox alignment="CENTER">
                                  <children>
-                                    <Label minWidth="32.0" prefHeight="18.0" prefWidth="32.0" text="TO :">
+                                    <Label minWidth="60.0" prefHeight="18.0" text="ORDER : ">
                                        <font>
                                           <Font name="Arial Black" size="12.0" />
                                        </font>
                                     </Label>
-                                    <DatePicker fx:id="toDateDp" minWidth="120.0" prefHeight="30.0" prefWidth="120.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                    <ComboBox fx:id="orderCom" minWidth="120.0" prefHeight="30.0" prefWidth="120.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                  </children>
                               </HBox>
-                              <Button fx:id="filterButton" alignment="CENTER" minWidth="40.0" mnemonicParsing="false" onAction="#applyFilter" prefHeight="35.0" prefWidth="40.0" style="-fx-background-color: #006666; -fx-border-radius: 20; -fx-background-radius: 17;" textAlignment="CENTER" textFill="WHITE">
+                              <Button fx:id="applySorting" alignment="CENTER" minWidth="40.0" mnemonicParsing="false" onAction="#applySorting" prefHeight="35.0" prefWidth="40.0" styleClass="previewsubmitButton" textAlignment="CENTER" textFill="WHITE">
                                  <font>
                                     <Font name="Arial Black" size="12.0" />
                                  </font>
                                  <HBox.margin>
-                                    <Insets left="10.0" right="8.0" />
+                                    <Insets left="20.0" right="8.0" />
                                  </HBox.margin>
                                  <graphic>
                                     <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../img/icon/filter_ic.png" />
+                                          <Image url="@../../img/icon/sorting_ic.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
                               </Button>
+                              <Separator minHeight="50.0" orientation="VERTICAL" />
+                              <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                 <children>
+                                    <HBox alignment="CENTER" prefHeight="30.0" prefWidth="154.0">
+                                       <children>
+                                          <Label minWidth="58.0" prefHeight="18.0" prefWidth="58.0" text="FROM :">
+                                             <font>
+                                                <Font name="Arial Black" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <DatePicker fx:id="fromDateDP" minWidth="130.0" prefHeight="30.0" prefWidth="120.0" promptText="yyyy/MM/dd" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" layoutX="20.0" layoutY="10.0" prefHeight="30.0" prefWidth="154.0">
+                                       <children>
+                                          <Label minWidth="32.0" prefHeight="18.0" prefWidth="32.0" text="TO :">
+                                             <font>
+                                                <Font name="Arial Black" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <DatePicker fx:id="toDateDp" minWidth="130.0" prefHeight="30.0" prefWidth="120.0" promptText="yyyy/MM/dd" style="-fx-border-color: grey; -fx-border-radius: 3;" />
+                                       </children>
+                                    </HBox>
+                                    <Button fx:id="filterButton" alignment="CENTER" minWidth="40.0" mnemonicParsing="false" onAction="#applyFilter" prefHeight="35.0" prefWidth="40.0" style="-fx-background-color: #006666; -fx-background-radius: 17;" textAlignment="CENTER" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial Black" size="12.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets left="10.0" right="8.0" />
+                                       </HBox.margin>
+                                       <graphic>
+                                          <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../../img/icon/filter_ic.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </HBox>
                            </children>
                            <padding>
                               <Insets left="10.0" />
                            </padding>
                         </HBox>
-                     </children>
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </HBox>
-                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <HBox alignment="CENTER" prefHeight="61.0" prefWidth="399.0">
-                                    <children>
-                                        <HBox alignment="CENTER_RIGHT" spacing="10.0">
-                                            <children>
-                                                <Button fx:id="uploadKitUsageBn" graphicTextGap="8.0" minWidth="170.0" mnemonicParsing="false" onAction="#uploadKitsUsageCsvBnClick" prefHeight="27.0" prefWidth="170.0" style="-fx-background-color: #006666; -fx-border-radius: 3;" text="UPLOAD KIT USAGES" textFill="WHITE">
-                                                    <font>
-                                                        <Font name="Arial" size="12.0" />
-                                                    </font>
-                                                    <graphic>
-                                                        <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../../img/icon/upload_ic.png" />
-                                                            </image>
-                                                        </ImageView>
-                                                    </graphic>
-                                                </Button>
-                                                <Button graphicTextGap="5.0" maxWidth="153.0" minWidth="125.0" mnemonicParsing="false" onAction="#addKitUsageBnClick" prefHeight="27.0" style="-fx-background-color: #006666; -fx-border-radius: 3;" text="ADD KIT USAGE" textFill="WHITE">
-                                                    <graphic>
-                                                        <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
-                                                            <image>
-                                                                <Image url="@../../img/icon/add_white_ic.png" />
-                                                            </image>
-                                                        </ImageView>
-                                                    </graphic>
-                                                </Button>
-                                            </children>
-                                        </HBox>
-                                        <Button minHeight="27.0" mnemonicParsing="false" onMouseClicked="#refreshClick" prefHeight="27.0" style="-fx-border-color: grey; -fx-background-radius: 5; -fx-border-radius: 5;">
-                                            <graphic>
-                                                <ImageView fx:id="refreshBn" fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
-                                                    <image>
-                                                        <Image url="@../../img/icon/refresh_ic_red.png" />
-                                                    </image>
-                                                </ImageView>
-                                            </graphic>
-                                 <HBox.margin>
-                                    <Insets left="20.0" />
-                                 </HBox.margin>
-                                        </Button>
-                                    </children>
-                                    <HBox.margin>
-                                        <Insets right="30.0" />
-                                    </HBox.margin>
-                                </HBox>
-                            </children>
-                        </HBox>
-                    </children>
-                </HBox>
-            </children>
-        </VBox>
+                              <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                  <children>
+                                      <HBox alignment="CENTER" prefHeight="61.0" prefWidth="399.0">
+                                          <children>
+                                              <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                                                  <children>
+                                                      <Button fx:id="uploadKitUsageBn" graphicTextGap="8.0" minWidth="170.0" mnemonicParsing="false" onAction="#uploadKitsUsageCsvBnClick" prefHeight="27.0" prefWidth="170.0" style="-fx-background-color: #006666; -fx-border-radius: 3;" text="UPLOAD KIT USAGES" textFill="WHITE">
+                                                          <font>
+                                                              <Font name="Arial" size="12.0" />
+                                                          </font>
+                                                          <graphic>
+                                                              <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+                                                                  <image>
+                                                                      <Image url="@../../img/icon/upload_ic.png" />
+                                                                  </image>
+                                                              </ImageView>
+                                                          </graphic>
+                                                      </Button>
+                                                      <Button graphicTextGap="5.0" maxWidth="153.0" minWidth="125.0" mnemonicParsing="false" onAction="#addKitUsageBnClick" prefHeight="27.0" style="-fx-background-color: #006666; -fx-border-radius: 3;" text="ADD KIT USAGE" textFill="WHITE">
+                                                          <graphic>
+                                                              <ImageView fitHeight="17.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+                                                                  <image>
+                                                                      <Image url="@../../img/icon/add_white_ic.png" />
+                                                                  </image>
+                                                              </ImageView>
+                                                          </graphic>
+                                                      </Button>
+                                                  </children>
+                                              </HBox>
+                                              <Button minHeight="27.0" mnemonicParsing="false" onMouseClicked="#refreshClick" prefHeight="27.0" style="-fx-border-color: grey; -fx-background-radius: 5; -fx-border-radius: 5;">
+                                                  <graphic>
+                                                      <ImageView fx:id="refreshBn" fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                                                          <image>
+                                                              <Image url="@../../img/icon/refresh_ic_red.png" />
+                                                          </image>
+                                                      </ImageView>
+                                                  </graphic>
+                                       <HBox.margin>
+                                          <Insets left="20.0" />
+                                       </HBox.margin>
+                                              </Button>
+                                          </children>
+                                          <HBox.margin>
+                                              <Insets right="30.0" />
+                                          </HBox.margin>
+                                      </HBox>
+                                  </children>
+                              </HBox>
+                          </children>
+                      </HBox>
+                  </children>
+              </VBox>
+         </content>
+      </ScrollPane>
     </top>
     <center>
         <VBox BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="tableview" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colId" editable="false" maxWidth="150.0" minWidth="90.0" text="ID" />
-                        <TableColumn fx:id="colKitNumber" editable="false" maxWidth="150.0" minWidth="140.0" text="KIT NUMBER" />
-                        <TableColumn fx:id="colTestDate" editable="false" maxWidth="150.0" minWidth="140.0" text="TEST DATE" />
-                        <TableColumn fx:id="colSterilizerId" editable="false" maxWidth="150.0" minWidth="100.0" prefWidth="-1.0" text="STERILIZER ID" />
-                        <TableColumn fx:id="colListNumber" editable="false" maxWidth="150.0" minWidth="100.0" text="LIST NUMBER" />
-                        <TableColumn fx:id="colSterilizerType" editable="false" maxWidth="150.0" minWidth="130.0" text="TYPE" />
-                        <TableColumn fx:id="colSterilizerBrand" editable="false" maxWidth="240.0" minWidth="150.0" text="BRAND" />
-                        <TableColumn fx:id="colSerialNumber" editable="false" maxWidth="220.0" minWidth="200.0" text="SERIAL NUMBER" />
-                  <TableColumn fx:id="colResult" editable="false" maxWidth="220.0" minWidth="200.0" text="RESULT" />
-                        <TableColumn fx:id="colAction" editable="false" minWidth="80.0" text="ACTION" />
-                    </columns>
-                    <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                    </columnResizePolicy>
-                </TableView>
+            <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+               <content>
+                      <TableView fx:id="tableview">
+                          <columns>
+                              <TableColumn fx:id="colId" editable="false" maxWidth="150.0" minWidth="90.0" text="ID" />
+                              <TableColumn fx:id="colKitNumber" editable="false" maxWidth="150.0" minWidth="140.0" text="KIT NUMBER" />
+                              <TableColumn fx:id="colTestDate" editable="false" maxWidth="150.0" minWidth="140.0" text="TEST DATE" />
+                              <TableColumn fx:id="colSterilizerId" editable="false" maxWidth="150.0" minWidth="100.0" prefWidth="-1.0" text="STERILIZER ID" />
+                              <TableColumn fx:id="colListNumber" editable="false" maxWidth="150.0" minWidth="100.0" text="LIST NUMBER" />
+                              <TableColumn fx:id="colSterilizerType" editable="false" maxWidth="150.0" minWidth="130.0" text="TYPE" />
+                              <TableColumn fx:id="colSterilizerBrand" editable="false" maxWidth="240.0" minWidth="150.0" text="BRAND" />
+                              <TableColumn fx:id="colSerialNumber" editable="false" maxWidth="220.0" minWidth="200.0" text="SERIAL NUMBER" />
+                        <TableColumn fx:id="colResult" editable="false" maxWidth="220.0" minWidth="200.0" text="RESULT" />
+                              <TableColumn fx:id="colAction" editable="false" minWidth="80.0" text="ACTION" />
+                          </columns>
+                          <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                          </columnResizePolicy>
+                      </TableView>
+               </content>
+            </ScrollPane>
             </children>
         </VBox>
     </center>

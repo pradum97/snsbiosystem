@@ -85,8 +85,13 @@ public class PreviewKits implements Initializable {
         customDialog = new CustomDialog();
         method.hideElement(progressbar);
         Platform.runLater(()->{
-            OptionalMethod.minimizedStage((Stage) uploadNowBn.getScene().getWindow(),true);
+            Stage stage = (Stage) uploadNowBn.getScene().getWindow();
+            OptionalMethod.minimizedStage(stage,true);
+            stage.setMinWidth(1120);
+            stage.setMinHeight(655);
+
         });
+
         if (null != Main.primaryStage.getUserData() &&
                 Main.primaryStage.getUserData() instanceof File) {
             file = (File) Main.primaryStage.getUserData();

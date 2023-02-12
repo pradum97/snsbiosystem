@@ -36,6 +36,11 @@
     -fx-text-fill: black;
 }
 
+.date-picker > .text-field  {
+    -fx-alignment: center;
+    -fx-font-size: 13;
+}
+
 .date-time-picker {
     -fx-font-size: 18pt;
     -fx-font-weight: bold;

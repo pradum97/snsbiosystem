@@ -92,6 +92,13 @@ public class PreviewProfile implements Initializable {
         customDialog = new CustomDialog();
         method.hideElement(progressbar, bottomContainer, tableContainer);
 
+        Platform.runLater(()->{
+            Stage stage = (Stage) uploadNowBn.getScene().getWindow();
+            stage.setMinWidth(450);
+            stage.setMinHeight(350);
+
+        });
+
         new MyAsyncTask(null,OperationType.SORTING_LOADING,null,null).execute();
     }
 
@@ -137,7 +144,11 @@ public class PreviewProfile implements Initializable {
             tableContainer.setVisible(true);
             bottomContainer.setVisible(true);
             Platform.runLater(()->{
-                OptionalMethod.minimizedStage((Stage) uploadNowBn.getScene().getWindow(),true);
+                Stage stage = (Stage) uploadNowBn.getScene().getWindow();
+                OptionalMethod.minimizedStage(stage,true);
+                stage.setMinWidth(1200);
+                stage.setMinHeight(655);
+
             });
 
             callThread(role, OperationType.PREVIEW, "Please wait Data is being verified.", null);
