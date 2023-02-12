@@ -55,7 +55,7 @@
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>
                                           </Label>
-                                          <DatePicker fx:id="testDateDp" editable="false" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="YYYY / MM / DD" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-focus-traversable: false;" />
+                                          <DatePicker fx:id="testDateDp" editable="false" minHeight="40.0" onKeyPressed="#keyPress" prefHeight="40.0" prefWidth="350.0" promptText="yyyy/MM/dd" style="-fx-border-color: grey; -fx-border-radius: 3; -fx-background-color: white; -fx-focus-traversable: false;" />
                                        </children>
                                     </VBox>
                                  </children>

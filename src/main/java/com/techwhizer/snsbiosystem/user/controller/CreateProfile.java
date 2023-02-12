@@ -570,8 +570,8 @@ public class CreateProfile implements Initializable {
                                 cancelBnClick(null);
                                 String signedUsername = (String) Login.authInfo.get("username");
                                 if (signedUsername.equals(currentUsername)) {
-                                    new Main().changeScene("auth/login.fxml", "LOGIN HERE");
                                     Login.authInfo.clear();
+                                    new Main().changeScene("auth/login.fxml", "LOGIN HERE");
                                 }
                             });
                         }
@@ -583,9 +583,8 @@ public class CreateProfile implements Initializable {
                             cancelBnClick(null);
                             String signedUsername = (String) Login.authInfo.get("username");
                             if (signedUsername.equals(currentUsername)) {
-
-                                new Main().changeScene("auth/login.fxml", "LOGIN HERE");
                                 Login.authInfo.clear();
+                                new Main().changeScene("auth/login.fxml", "LOGIN HERE");
                             }
                         });
 
