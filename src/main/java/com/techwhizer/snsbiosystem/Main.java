@@ -1,7 +1,7 @@
 package com.techwhizer.snsbiosystem;
 
 import com.techwhizer.snsbiosystem.app.AppConfig;
-import com.techwhizer.snsbiosystem.util.CommonUtility;
+import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -11,9 +11,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Objects;
 
 public class Main extends Application {

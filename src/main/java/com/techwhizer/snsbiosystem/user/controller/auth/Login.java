@@ -93,7 +93,6 @@ public class Login implements Initializable {
     }
 
     public void forget_password_bn(ActionEvent event) {
-
         customDialog.showFxmlDialog2("auth/forgotPassword.fxml","FORGOT PASSWORD");
     }
 
