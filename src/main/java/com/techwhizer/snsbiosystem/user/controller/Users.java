@@ -30,8 +30,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -58,7 +56,6 @@ public class Users implements Initializable {
     public ComboBox<String> sortByCom;
     public TextField searchTf;
     public TableView<UserDTO> tableview;
-    public TableColumn<UserDTO, Integer> colSlNum;
     public TableColumn<UserDTO, String> colName;
     public TableColumn<UserDTO, String> colClientId;
     public TableColumn<UserDTO, String> colOfficeAddress;
@@ -71,13 +68,11 @@ public class Users implements Initializable {
     public ComboBox<String> orderCom;
     public HBox paginationContainer;
     public Button applySorting;
-    public ImageView searchIconIv;
+    public ImageView searchImageButton;
     private CustomDialog customDialog;
     private OptionalMethod method;
     public Pagination pagination;
     private ObservableList<UserDTO> userList = FXCollections.observableArrayList();
-    private boolean isSearchPress = false, isSearchTfClear = false;
-    private int paginationIndex;
 
     private int currentPageRowCount;
     private boolean isCrud = false;
@@ -86,7 +81,7 @@ public class Users implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customDialog = new CustomDialog();
         method = new OptionalMethod();
-
+        searchImageButton.setVisible(false);
         searchTf.textProperty().addListener((observableValue, s, t1) -> {
             String username = searchTf.getText();
             String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
@@ -116,12 +111,6 @@ public class Users implements Initializable {
 
             pagination.currentPageIndexProperty().addListener(
                     (observable1, oldValue1, newValue1) -> {
-
-                        if (!isSearchTfClear) {
-                            isSearchPress = false;
-                            searchTf.setText("");
-                        }
-
                         if (!isCrud) {
                             int pageIndex = newValue1.intValue();
                             String role = filterByRoleCom.getSelectionModel().getSelectedItem();
@@ -210,6 +199,12 @@ public class Users implements Initializable {
 
     public void refreshClick(MouseEvent mouseEvent) {
         applySorting(null);
+    }
+
+    public void searchImageButtonClick(MouseEvent event) {
+        refreshClick(null);
+        searchTf.setText("");
+        searchImageButton.setVisible(false);
     }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
@@ -310,10 +305,15 @@ public class Users implements Initializable {
 
             if (null != username) {
                 if (!username.isEmpty()) {
-
+                    searchImageButton.setVisible(true);
                     param.setParameter("q[user_name]", username);
+                }else {
+                    searchImageButton.setVisible(false);
                 }
+            } else {
+                searchImageButton.setVisible(false);
             }
+
 
             if (null != sortedDataMap) {
                 String sort = (String) sortedDataMap.get("sort");
@@ -370,7 +370,6 @@ public class Users implements Initializable {
     }
 
     private void changeTableView(int totalPage, int pageIndex, int rowIndex) {
-        isSearchTfClear = true;
 
         Platform.runLater(() -> {
             pagination.setPageCount(totalPage);
@@ -452,7 +451,7 @@ public class Users implements Initializable {
                     try {
                         currentUsername = tableview.getItems().get(getIndex()).getRequestedLoginName();
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                       // throw new RuntimeException(e);
                     }
 
                     if (signedUsername.equals(currentUsername)) {
