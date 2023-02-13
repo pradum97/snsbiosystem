@@ -16,12 +16,12 @@ public class ImageLoader {
         return down_iv;
     }
 
-    public Image load(String imagePath){
+    public Image load(String imagePath) {
 
         try {
-         return  new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+            return new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
         } catch (Exception e) {
-            return  new Image(Objects.requireNonNull(getClass().getResourceAsStream("img/icon/img_preview.png")));
+            return new Image(Objects.requireNonNull(getClass().getResourceAsStream("img/icon/img_preview.png")));
         }
     }
 

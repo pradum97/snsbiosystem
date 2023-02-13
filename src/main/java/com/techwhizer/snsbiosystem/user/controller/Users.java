@@ -21,7 +21,6 @@ import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -72,6 +71,7 @@ public class Users implements Initializable {
     public ComboBox<String> orderCom;
     public HBox paginationContainer;
     public Button applySorting;
+    public ImageView searchIconIv;
     private CustomDialog customDialog;
     private OptionalMethod method;
     public Pagination pagination;
@@ -87,28 +87,13 @@ public class Users implements Initializable {
         customDialog = new CustomDialog();
         method = new OptionalMethod();
 
-        startThread(null, OperationType.SORTING_LOADING, 0L, null, null, null, null);
-
-        searchConfig();
-    }
-
-    private void searchConfig() {
-
         searchTf.textProperty().addListener((observableValue, s, t1) -> {
-
-            if (!isSearchTfClear) {
-                if (t1.isEmpty()) {
-                    if (isSearchPress) {
-                        String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
-                        sortData(role, OperationType.START, 0L, null, null, paginationIndex, 0, null);
-                        paginationIndex = 0;
-                        isSearchPress = false;
-                    }
-                }
-            } else {
-                isSearchTfClear = false;
-            }
+            String username = searchTf.getText();
+            String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
+            sortData(role, OperationType.START, 0L, null, null, 0, 0, username);
         });
+
+        startThread(null, OperationType.SORTING_LOADING, 0L, null, null, null, null);
     }
 
     private void comboBoxConfig() {
@@ -227,26 +212,6 @@ public class Users implements Initializable {
         applySorting(null);
     }
 
-    public void searchImgClick(MouseEvent event) {
-
-        String username = searchTf.getText();
-
-        if (null != username) {
-            if (!username.isEmpty()) {
-                String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
-                sortData(role, OperationType.START, 0L, null, null, 0, 0, username);
-            }
-        }
-    }
-
-    public void keyPress(KeyEvent keyEvent) {
-
-        if (keyEvent.getCode() == KeyCode.ENTER) {
-            searchImgClick(null);
-        }
-
-    }
-
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
         private String role;
         private OperationType operationType;
@@ -345,8 +310,7 @@ public class Users implements Initializable {
 
             if (null != username) {
                 if (!username.isEmpty()) {
-                    isSearchPress = true;
-                    paginationIndex = pagination.getCurrentPageIndex();
+
                     param.setParameter("q[user_name]", username);
                 }
             }
@@ -477,14 +441,19 @@ public class Users implements Initializable {
                     viewKits.setGraphic(getImage("img/menu_icon/kit_ic.png"));
                     downloadBn.setGraphic(new ImageLoader().getDownloadImage());
 
-                    CommonUtility.onHoverShowTextButton(editBn,"Update user");
-                    CommonUtility.onHoverShowTextButton(deleteBbn,"Delete user");
-                    CommonUtility.onHoverShowTextButton(viewBn,"View user");
-                    CommonUtility.onHoverShowTextButton(viewKits,"View kits");
-                    CommonUtility.onHoverShowTextButton(downloadBn,"Download kit report");
+                    CommonUtility.onHoverShowTextButton(editBn, "Update user");
+                    CommonUtility.onHoverShowTextButton(deleteBbn, "Delete user");
+                    CommonUtility.onHoverShowTextButton(viewBn, "View user");
+                    CommonUtility.onHoverShowTextButton(viewKits, "View kits");
+                    CommonUtility.onHoverShowTextButton(downloadBn, "Download kit report");
 
                     String signedUsername = (String) Login.authInfo.get("username");
-                    String currentUsername = tableview.getItems().get(getIndex()).getRequestedLoginName();
+                    String currentUsername = null;
+                    try {
+                        currentUsername = tableview.getItems().get(getIndex()).getRequestedLoginName();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
 
                     if (signedUsername.equals(currentUsername)) {
                         deleteBbn.setVisible(false);
