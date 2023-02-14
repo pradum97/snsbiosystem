@@ -35,6 +35,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -65,6 +66,8 @@ public class CreateNotice implements Initializable {
     public final static String SELECT_PUBLISH_DATE = "SELECT PUBLISH DATE";
     public final static String SELECT_EXPIRY_DATE = "SELECT EXPIRY DATE";
     protected String previousPublishDateTime, previousExpiryDateTime;
+
+    private static final String currentDate = LocalDate.now().format(CommonUtility.dateFormatter) + " 00:00:00";
 
     private OperationType operationType;
     private NoticeBoardDTO noticeBoardDTO;
@@ -147,7 +150,7 @@ public class CreateNotice implements Initializable {
     private void buttonConfig() {
         publishBn.setStyle("-fx-font-size: 14");
         expiryBn.setStyle("-fx-font-size: 14");
-        publishBn.setText(SELECT_PUBLISH_DATE);
+        publishBn.setText(currentDate);
         expiryBn.setText(SELECT_EXPIRY_DATE);
 
         DateAndTimePicker dateAndTimePicker = new DateAndTimePicker();
@@ -175,7 +178,16 @@ public class CreateNotice implements Initializable {
 
     private void comboboxConfig() {
         scheduledCom.valueProperty().addListener((observableValue, aBoolean, newValue) -> {
-            publishDateContainer.setDisable(!(Objects.equals(newValue, SCHEDULED_YES)));
+
+            if ((Objects.equals(newValue, SCHEDULED_YES))) {
+                publishDateContainer.setDisable(false);
+                publishBn.setText(SELECT_PUBLISH_DATE);
+            } else {
+                publishDateContainer.setDisable(true);
+                publishBn.setText(currentDate);
+            }
+
+
         });
         scheduledCom.setItems(bool);
         scheduledCom.getSelectionModel().selectFirst();

@@ -124,7 +124,7 @@ public class Users implements Initializable {
             });
 
             filterByRoleCom.valueProperty().addListener((observableValue, s, t1) ->
-                    sortData(t1, OperationType.START, 0L, null, null, 0, 0, null));
+                    sortData(t1, OperationType.START, 0L, null, null, 0, 0, searchTf.getText()));
 
             applySorting.setDisable(false);
             filterByRoleCom.getSelectionModel().select(CommonUtility.ALL);
@@ -135,6 +135,7 @@ public class Users implements Initializable {
     }
 
     public void applySorting(ActionEvent event) {
+        searchTf.setText("");
         String role = filterByRoleCom.getSelectionModel().getSelectedItem().toLowerCase();
         sortData(role, OperationType.START, 0L, null, null,0, 0, null);
     }
@@ -430,9 +431,11 @@ public class Users implements Initializable {
                     Button downloadBn = new Button();
                     Button viewKits = new Button();
 
-                    ImageView activeIc = getImage("img/icon/active_ic.png");
-                    activeIc.setFitWidth(25);
-                    activeIc.setFitHeight(25);
+                    ImageView activeIc = getImage("img/icon/admin_icon.png");
+                    activeIc.setFitWidth(26);
+                    activeIc.setFitHeight(26);
+                    activeIc.setSmooth(true);
+                    activeIc.setPreserveRatio(true);
 
                     editBn.setGraphic(getImage("img/icon/update_ic.png"));
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));

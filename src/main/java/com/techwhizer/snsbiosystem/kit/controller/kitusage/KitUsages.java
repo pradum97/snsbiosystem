@@ -70,6 +70,7 @@ public class KitUsages implements Initializable {
     public Button uploadKitUsageBn;
     public DatePicker fromDateDP, toDateDp;
     public Button filterButton;
+    public Label totalKitUsageL;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private ObservableList<KitUsageDTO> kitsUsagesList = FXCollections.observableArrayList();
@@ -384,6 +385,10 @@ public class KitUsages implements Initializable {
                     KitPageResponse KkitPageResponse = new Gson().fromJson(content, KitPageResponse.class);
                     List<KitUsageDTO> kds = KkitPageResponse.getKitUsages();
                     kitsUsagesList = FXCollections.observableArrayList(kds);
+
+                    Platform.runLater(() -> {
+                        totalKitUsageL.setText(String.valueOf(KkitPageResponse.getTotalRecord()));
+                    });
 
                     paginationContainer.setVisible(kitsUsagesList.size() > 0);
                     paginationContainer.setDisable(!(kitsUsagesList.size() > 0));

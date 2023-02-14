@@ -6,7 +6,7 @@ import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.user.model.User;
+import com.techwhizer.snsbiosystem.user.model.UserDTO;
 import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
@@ -115,7 +115,7 @@ public class MyProfile implements Initializable {
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == 200){
-                    User user = new Gson().fromJson(content, User.class);
+                    UserDTO user = new Gson().fromJson(content, UserDTO.class);
                     Platform.runLater(()-> setUserDetails(user));
                 }else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
@@ -133,7 +133,7 @@ public class MyProfile implements Initializable {
         }
 
     }
-    private void setUserDetails(User user) {
+    private void setUserDetails(UserDTO user) {
 
         String name;
         name = (null == user.getFirstName() || user.getFirstName().isEmpty()?"":user.getFirstName())+" "+

@@ -11,7 +11,10 @@ import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
-import com.techwhizer.snsbiosystem.user.model.*;
+import com.techwhizer.snsbiosystem.user.model.CreateUsersResponse;
+import com.techwhizer.snsbiosystem.user.model.RoleConfigModel;
+import com.techwhizer.snsbiosystem.user.model.UpdateUserResponse;
+import com.techwhizer.snsbiosystem.user.model.UserDTO;
 import com.techwhizer.snsbiosystem.user.util.CheckUsername;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
@@ -75,6 +78,10 @@ public class CreateProfile implements Initializable {
     public ComboBox<String> sharingMethodCom;
     public HBox progressContainer;
     public VBox sharingMethodContainer;
+    public TextField officeCountryTf;
+    public TextField officeCountyTf;
+    public TextField billingCountryTf;
+    public TextField billingCountyTf;
     private OperationType userCreateOperationType;
     private OptionalMethod method;
     private CustomDialog customDialog;
@@ -127,23 +134,29 @@ public class CreateProfile implements Initializable {
 
     }
 
-    private void setTextFieldData(User userDTO) {
+    private void setTextFieldData(UserDTO userDTO) {
 
-        usernameTf.setText(userDTO.getRequestedLoginName() == null ?"":userDTO.getRequestedLoginName());
-        firstNameTf.setText(null == userDTO.getFirstName()?"":userDTO.getFirstName());
-        lastNameTf.setText(null == userDTO.getLastName()?"":userDTO.getLastName());
+        usernameTf.setText(userDTO.getRequestedLoginName() == null ? "" : userDTO.getRequestedLoginName());
+        firstNameTf.setText(null == userDTO.getFirstName() ? "" : userDTO.getFirstName());
+        lastNameTf.setText(null == userDTO.getLastName() ? "" : userDTO.getLastName());
         workPhoneNumberTf.setText(userDTO.getWorkPhoneNumber());
-        workEmailTf.setText(null == userDTO.getWorkEmail()?"":userDTO.getWorkEmail());
-        companyNameTf.setText(null == userDTO.getOfficeCompanyName()?"":userDTO.getOfficeCompanyName());
-        officeStateTf.setText(null == userDTO.getOfficeState()?"":userDTO.getOfficeState());
-        officeCityTf.setText(null == userDTO.getOfficeCity()?"":userDTO.getOfficeCity());
-        officeZipTf.setText(null == userDTO.getOfficeZip()?"":userDTO.getOfficeZip());
-        officeFaxNumberTf.setText(null == userDTO.getOfficeFaxNumber()?"":userDTO.getOfficeFaxNumber());
-        officeAddressTa.setText(null == userDTO.getOfficeAddress()?"":userDTO.getOfficeAddress());
-        billingStateTf.setText(null == userDTO.getHomeState()?"": userDTO.getHomeState());
-        billingCityTf.setText(null == userDTO.getHomeCity()?"":userDTO.getHomeCity());
-        billingAddressTa.setText(null == userDTO.getHomeAddress()?"":userDTO.getHomeAddress());
-        billingZipTf.setText(null == userDTO.getHomeZip()?"":userDTO.getHomeZip());
+        workEmailTf.setText(null == userDTO.getWorkEmail() ? "" : userDTO.getWorkEmail());
+        companyNameTf.setText(null == userDTO.getOfficeCompanyName() ? "" : userDTO.getOfficeCompanyName());
+        officeStateTf.setText(null == userDTO.getOfficeState() ? "" : userDTO.getOfficeState());
+        officeCountryTf.setText(null == userDTO.getOfficeCountry() ? "" : userDTO.getOfficeCountry());
+        officeCountyTf.setText(null == userDTO.getOfficeCounty() ? "" : userDTO.getOfficeCounty());
+        officeCityTf.setText(null == userDTO.getOfficeCity() ? "" : userDTO.getOfficeCity());
+        officeZipTf.setText(null == userDTO.getOfficeZip() ? "" : userDTO.getOfficeZip());
+        officeFaxNumberTf.setText(null == userDTO.getOfficeFaxNumber() ? "" : userDTO.getOfficeFaxNumber());
+        officeAddressTa.setText(null == userDTO.getOfficeAddress() ? "" : userDTO.getOfficeAddress());
+        billingStateTf.setText(null == userDTO.getHomeState() ? "" : userDTO.getHomeState());
+
+        billingCountryTf.setText(null == userDTO.getHomeCountry() ? "" : userDTO.getHomeCountry());
+        billingCountyTf.setText(null == userDTO.getHomeCounty() ? "" : userDTO.getHomeCounty());
+
+        billingCityTf.setText(null == userDTO.getHomeCity() ? "" : userDTO.getHomeCity());
+        billingAddressTa.setText(null == userDTO.getHomeAddress() ? "" : userDTO.getHomeAddress());
+        billingZipTf.setText(null == userDTO.getHomeZip() ? "" : userDTO.getHomeZip());
         currentUsername = userDTO.getRequestedLoginName();
         isEmailAvailable = null != userDTO.getWorkEmail();
         sharingMethodCom.getSelectionModel().select(userDTO.getPrefaredMethodForReportSharing().toUpperCase());
@@ -186,6 +199,20 @@ public class CreateProfile implements Initializable {
                 billingStateTf.setText(t1);
             }
         });
+
+        officeCountryTf.textProperty().addListener((observableValue, s, t1) -> {
+            if (isSameAsAbove) {
+                billingCountryTf.setText(t1);
+            }
+        });
+
+        officeCountyTf.textProperty().addListener((observableValue, s, t1) -> {
+            if (isSameAsAbove) {
+                billingCountyTf.setText(t1);
+            }
+        });
+
+
         officeCityTf.textProperty().addListener((observableValue, s, t1) -> {
             if (isSameAsAbove) {
                 billingCityTf.setText(t1);
@@ -198,7 +225,6 @@ public class CreateProfile implements Initializable {
             }
 
         });
-
         officeAddressTa.textProperty().addListener((observableValue, s, t1) -> {
             if (isSameAsAbove) {
                 billingAddressTa.setText(t1);
@@ -267,12 +293,18 @@ public class CreateProfile implements Initializable {
                 billingCityTf.setText(officeCityTf.getText());
                 billingAddressTa.setText(officeAddressTa.getText());
                 billingZipTf.setText(officeZipTf.getText());
+
+                billingCountyTf.setText(officeCountyTf.getText());
+                billingCountryTf.setText(officeCountryTf.getText());
             } else {
 
                 billingStateTf.setText("");
                 billingCityTf.setText("");
                 billingAddressTa.setText("");
                 billingZipTf.setText("");
+
+                billingCountyTf.setText("");
+                billingCountryTf.setText("");
             }
 
         });
@@ -310,10 +342,16 @@ public class CreateProfile implements Initializable {
         String officeFax = officeFaxNumberTf.getText();
         String officeAddress = officeAddressTa.getText();
 
+        String officeCountry = officeCountryTf.getText();
+        String officeCounty = officeCountyTf.getText();
+
         String billingState = billingStateTf.getText();
         String billingCity = billingCityTf.getText();
         String billingZip = billingZipTf.getText();
         String billingAddress = billingAddressTa.getText();
+
+        String billingCountry = billingCountryTf.getText();
+        String billingCounty = billingCountyTf.getText();
 
         if (username.isEmpty()) {
             method.show_popup("Please Enter Username", usernameTf);
@@ -406,6 +444,10 @@ public class CreateProfile implements Initializable {
         dm.setWorkEmail(email);
         dm.setOfficeCompanyName(companyName);
         dm.setOfficeState(officeState);
+
+        dm.setOfficeCountry(officeCountry);
+        dm.setOfficeCounty(officeCounty);
+
         dm.setOfficeCity(officeCity);
         dm.setOfficeZip(officeZip);
         dm.setOfficeFaxNumber(officeFax);
@@ -415,8 +457,10 @@ public class CreateProfile implements Initializable {
         dm.setHomeCity(billingCity);
         dm.setHomeZip(billingZip);
         dm.setHomeAddress(billingAddress);
+        dm.setHomeCountry(billingCountry);
+        dm.setHomeCounty(billingCounty);
 
-        if (!sharingMethodCom.getSelectionModel().isEmpty()){
+        if (!sharingMethodCom.getSelectionModel().isEmpty()) {
             dm.setPrefaredMethodForReportSharing(sharingMethodCom.getSelectionModel().getSelectedItem());
         }
         ImageView image = new ImageView(new ImageLoader().load("img/icon/warning_ic.png"));
@@ -617,7 +661,7 @@ public class CreateProfile implements Initializable {
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == 200) {
-                    User user = new Gson().fromJson(content, User.class);
+                    UserDTO user = new Gson().fromJson(content, UserDTO.class);
                     Platform.runLater(() -> {
                         setTextFieldData(user);
                     });

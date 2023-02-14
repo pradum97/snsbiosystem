@@ -2,16 +2,19 @@ package com.techwhizer.snsbiosystem.user.controller.auth;
 
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
+import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
+import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -25,6 +28,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class ChangePassword implements Initializable {
@@ -33,14 +37,41 @@ public class ChangePassword implements Initializable {
     public TextField confirmPasswordTf;
     public Button changeBn;
     public ProgressIndicator progressBar;
+    public Label topTitle;
     private OptionalMethod method;
     private CustomDialog customDialog;
+    private OperationType operationType;
+    private Map<String, Object> map;
 
+    private String previousOldPassword;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customDialog = new CustomDialog();
         method = new OptionalMethod();
         method.hideElement(progressBar);
+
+        if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Map<?, ?>) {
+            map = (Map<String, Object>) Main.primaryStage.getUserData();
+            operationType = (OperationType) map.get("operation_type");
+
+            if (operationType == OperationType.FROM_LOGIN) {
+                previousOldPassword = (String) map.get("password");
+                StringBuilder s = new StringBuilder();
+                for (int i = 0; i < previousOldPassword.length(); i++) {
+                 s.append("*");
+                }
+                oldPasswordTf.setText(s.toString());
+                oldPasswordTf.setEditable(false);
+                oldPasswordTf.setFocusTraversable(false);
+                newPasswordTf.setFocusTraversable(true);
+                topTitle.setStyle("-fx-font-family: 'Arial Black';-fx-font-size: 14");
+                topTitle.setText("To ensure you use a strong password, you are required to change your password before you login for the first time.");
+            } else {
+                oldPasswordTf.setText("");
+                oldPasswordTf.setEditable(true);
+            }
+
+        }
 
     }
 
@@ -73,7 +104,8 @@ public class ChangePassword implements Initializable {
             return;
         }
 
-        ChangePasswordModel cpm = new ChangePasswordModel(username,oldPassword,confirmPassword);
+        ChangePasswordModel cpm = new ChangePasswordModel(username,
+                operationType == OperationType.FROM_LOGIN?previousOldPassword:oldPassword,confirmPassword);
         MyAsyncTask myAsyncTask = new MyAsyncTask(cpm);
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();

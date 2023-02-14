@@ -136,7 +136,7 @@
                         <TableColumn fx:id="colName" editable="false" maxWidth="220.0" minWidth="200.0" text="FULL NAME" />
                         <TableColumn fx:id="colOfficeAddress" editable="false" minWidth="270.0" text="OFFICE ADDRESS" />
                         <TableColumn fx:id="colEmail" editable="false" maxWidth="330.0" minWidth="280.0" text="EMAIL" />
-                        <TableColumn fx:id="colPhone" editable="false" maxWidth="220.0" minWidth="200.0" text="PHONE" />
+                        <TableColumn fx:id="colPhone" editable="false" maxWidth="220.0" minWidth="200.0" text="TELEPHONE #" />
                         <TableColumn fx:id="colAction" editable="false" minWidth="240.0" text="ACTION" />
                      </columns>
                      <columnResizePolicy>
@@ -177,16 +177,6 @@
                                     <ComboBox fx:id="orderCom" minWidth="115.0" prefHeight="30.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER">
-                                 <children>
-                                    <Label minWidth="118.0" prefHeight="18.0" text="ROW PER PAGE : ">
-                                       <font>
-                                          <Font name="Arial Black" size="12.0" />
-                                       </font>
-                                    </Label>
-                                    <ComboBox fx:id="rowSizeCom" prefHeight="30.0" prefWidth="80.0" style="-fx-border-color: grey; -fx-border-radius: 3;" />
-                                 </children>
-                              </HBox>
                               <Button fx:id="applySorting" minWidth="72.0" mnemonicParsing="false" onAction="#applySorting" prefHeight="27.0" prefWidth="71.0" styleClass="previewsubmitButton" text="Apply" textFill="WHITE">
                                  <font>
                                     <Font name="Arial Black" size="12.0" />
@@ -195,6 +185,19 @@
                                     <Insets left="20.0" right="8.0" />
                                  </HBox.margin>
                               </Button>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label minWidth="118.0" prefHeight="18.0" text="ROW PER PAGE : ">
+                                       <font>
+                                          <Font name="Arial Black" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <ComboBox fx:id="rowSizeCom" prefHeight="30.0" prefWidth="80.0" style="-fx-border-color: grey; -fx-border-radius: 3;">
+                                       <HBox.margin>
+                                          <Insets right="20.0" />
+                                       </HBox.margin></ComboBox>
+                                 </children>
+                              </HBox>
                            </children>
                         </HBox>
                         <Separator orientation="VERTICAL" />

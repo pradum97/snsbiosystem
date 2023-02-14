@@ -5,7 +5,9 @@ import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.Roles;
+import com.techwhizer.snsbiosystem.user.constant.UserStatus;
 import com.techwhizer.snsbiosystem.user.model.AuthResponse;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.victorlaerte.asynctask.AsyncTask;
@@ -151,25 +153,40 @@ public class Login implements Initializable {
                 Header[] headers = response.getHeaders("Set-Cookie");
                 String token = headers[0].getValue();
 
-                if(response.getStatusLine().getStatusCode() == 200){
+                if(response.getStatusLine().getStatusCode() == 200) {
                     AuthResponse authRes = new Gson().fromJson(content, AuthResponse.class);
                     Set<String> roles = authRes.getRoles();
                     boolean isAdmin = false;
 
-                    for (String role:roles){
+                    for (String role : roles) {
                         isAdmin = role.equals(Roles.ROLE_ADMIN.toString());
                     }
 
-                    if(isAdmin){
-                        authInfo.put("token",token);
-                        authInfo.put("username",userMap.get("username"));
+                    if (isAdmin) {
+                        authInfo.put("token", token);
+                        authInfo.put("username", userMap.get("username"));
+                        authInfo.put("password", userMap.get("password"));
                         authInfo.put("basic_auth_header",
                                 getBasicAuthenticationHeader(userMap.get("username"), userMap.get("password")));
 
-                        authInfo.put("auth_response",authRes);
-                        authInfo.put("current_id",authRes.getId());
+                        authInfo.put("auth_response", authRes);
+                        authInfo.put("current_id", authRes.getId());
 
-                        Platform.runLater(() -> new Main().changeScene("dashboard.fxml", "DASHBOARD->HOME"));
+
+                        if (Objects.equals(authRes.getStatus(), UserStatus.PENDING_PASSWORD.name())) {
+
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("operation_type", OperationType.FROM_LOGIN);
+                            map.put("password", userMap.get("password"));
+                            Main.primaryStage.setUserData(map);
+
+                            Platform.runLater(() -> {
+                                customDialog.showFxmlDialog2("auth/changePassword.fxml", "");
+                            });
+
+                        } else {
+                            Platform.runLater(() -> new Main().changeScene("dashboard.fxml", "DASHBOARD->HOME"));
+                        }
                     }else {
 
                         String msg = "You do not have permission to access this application";

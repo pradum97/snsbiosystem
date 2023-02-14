@@ -1,7 +1,7 @@
 package com.techwhizer.snsbiosystem;
 
 import com.techwhizer.snsbiosystem.app.AppConfig;
-import com.techwhizer.snsbiosystem.user.controller.auth.Login;
+import com.techwhizer.snsbiosystem.user.constant.UserStatus;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -32,6 +32,7 @@ public class Main extends Application {
     public static void main(String[] args) {
 
         launch(args);
+
 
     }
     public void changeScene(String fxml, String title) {

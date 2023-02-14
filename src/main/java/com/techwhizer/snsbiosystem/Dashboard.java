@@ -245,6 +245,10 @@ public class Dashboard extends OptionalMethod implements Initializable {
 
         changePassword.setOnAction(event1 -> {
             method.closeStage(changePassword);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("operation_type", OperationType.FROM_DASHBOARD);
+            Main.primaryStage.setUserData(map);
             customDialog.showFxmlDialog2("auth/changePassword.fxml", "");
         });
         editProfileBn.setOnAction(event1 -> {

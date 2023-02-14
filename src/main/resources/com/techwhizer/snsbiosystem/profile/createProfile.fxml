@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="655.0" prefWidth="927.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.user.controller.CreateProfile">
+<BorderPane prefHeight="660.0" prefWidth="927.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.user.controller.CreateProfile">
 
     <center>
       <VBox fx:id="contentContainer" alignment="CENTER">
@@ -185,6 +185,44 @@
                                                       <Separator prefWidth="200.0" />
                                                    </children>
                                                 </VBox>
+                                                <HBox alignment="CENTER" layoutX="21.0" layoutY="44.0" spacing="20.0">
+                                                   <children>
+                                                      <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                                         <children>
+                                                            <Label text="OFFICE COUNTRY :">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                               <VBox.margin>
+                                                                  <Insets left="3.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <TextField fx:id="officeCountryTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter office country" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                            </TextField>
+                                                         </children>
+                                                      </VBox>
+                                                      <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                                         <children>
+                                                            <Label text="OFFICE COUNTY :">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                               <VBox.margin>
+                                                                  <Insets left="3.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <TextField fx:id="officeCountyTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter office county" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                            </TextField>
+                                                         </children>
+                                                      </VBox>
+                                                   </children>
+                                                </HBox>
                                                         <HBox alignment="CENTER" spacing="20.0">
                                                             <children>
                                                                 <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
@@ -317,6 +355,44 @@
                                                       <Separator prefWidth="200.0" />
                                                    </children>
                                                 </VBox>
+                                                <HBox alignment="CENTER" layoutX="21.0" layoutY="44.0" spacing="20.0">
+                                                   <children>
+                                                      <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                                         <children>
+                                                            <Label text="BILLING COUNTRY :">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                               <VBox.margin>
+                                                                  <Insets left="3.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <TextField fx:id="billingCountryTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter billing country" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                            </TextField>
+                                                         </children>
+                                                      </VBox>
+                                                      <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                                         <children>
+                                                            <Label text="BILLING COUNTY :">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                               <VBox.margin>
+                                                                  <Insets left="3.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <TextField fx:id="billingCountyTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter billing county" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
+                                                               <font>
+                                                                  <Font name="Arial Bold" size="13.0" />
+                                                               </font>
+                                                            </TextField>
+                                                         </children>
+                                                      </VBox>
+                                                   </children>
+                                                </HBox>
                                                 <HBox alignment="CENTER" spacing="20.0">
                                                    <children>
                                                       <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">

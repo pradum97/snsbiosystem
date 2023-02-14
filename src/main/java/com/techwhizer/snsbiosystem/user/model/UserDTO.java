@@ -14,12 +14,16 @@ public class UserDTO {
     private String officeCompanyName;
     private String officeAddress;
     private String officeCity;
+    private String officeCountry;
+    private String officeCounty;
     private String officeState;
     private String officeZip;
     private String officeFaxNumber;
     private String homeAddress;
     private String homeCity;
     private String homeState;
+    private String homeCountry;
+    private String homeCounty;
     private String homeZip;
     private long createdDate;
     private String prefaredMethodForReportSharing;
@@ -32,6 +36,38 @@ public class UserDTO {
 
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public String getOfficeCountry() {
+        return officeCountry;
+    }
+
+    public void setOfficeCountry(String officeCountry) {
+        this.officeCountry = officeCountry;
+    }
+
+    public String getOfficeCounty() {
+        return officeCounty;
+    }
+
+    public void setOfficeCounty(String officeCounty) {
+        this.officeCounty = officeCounty;
+    }
+
+    public String getHomeCountry() {
+        return homeCountry;
+    }
+
+    public void setHomeCountry(String homeCountry) {
+        this.homeCountry = homeCountry;
+    }
+
+    public String getHomeCounty() {
+        return homeCounty;
+    }
+
+    public void setHomeCounty(String homeCounty) {
+        this.homeCounty = homeCounty;
     }
 
     public String getPrefaredMethodForReportSharing() {
