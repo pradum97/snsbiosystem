@@ -186,12 +186,12 @@ public class DownloadReport {
             if (resEntity != null) {
 
                 int statusCode = response.getStatusLine().getStatusCode();
-
+                String body = EntityUtils.toString(resEntity);
                 if (statusCode == 200) {
                     String filePath = ReportDownloadPath.FILE_PATH();
 
                     if (isShare) {
-                        String body = EntityUtils.toString(resEntity);
+
                         Map<String, Object> reportResponse = new Gson().fromJson(body, Map.class);
 
                         String data = (String) reportResponse.get("data");
@@ -219,6 +219,10 @@ public class DownloadReport {
                             customDialog.showAlertBox("success", "Something went wrong!");
                         }
                     }
+                } else if (statusCode == 400) {
+
+                    Map m = new Gson().fromJson(body, Map.class);
+                    new CustomDialog().showAlertBox("Failed", (String) m.get("message"));
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
