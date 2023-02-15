@@ -148,7 +148,9 @@ public class ChangePassword implements Initializable {
 
                     Platform.runLater(()->{
                         if (statusCode==200){
-
+                            if (operationType == OperationType.FROM_LOGIN) {
+                                Main.primaryStage.setUserData(true);
+                            }
                             customDialog.showAlertBox("Success","Password successfully changed.");
                             cancelBnClick(null);
 

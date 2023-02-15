@@ -163,6 +163,7 @@ public class Login implements Initializable {
                     }
 
                     if (isAdmin) {
+
                         authInfo.put("token", token);
                         authInfo.put("username", userMap.get("username"));
                         authInfo.put("password", userMap.get("password"));
@@ -171,7 +172,6 @@ public class Login implements Initializable {
 
                         authInfo.put("auth_response", authRes);
                         authInfo.put("current_id", authRes.getId());
-
 
                         if (Objects.equals(authRes.getStatus(), UserStatus.PENDING_PASSWORD.name())) {
 
@@ -182,9 +182,19 @@ public class Login implements Initializable {
 
                             Platform.runLater(() -> {
                                 customDialog.showFxmlDialog2("auth/changePassword.fxml", "");
+                                if (null != Main.primaryStage.getUserData() && Main.primaryStage.getUserData() instanceof Boolean) {
+
+                                    boolean isChanged = (Boolean) Main.primaryStage.getUserData();
+                                    if (isChanged) {
+                                        usernameTf.setText("");
+                                        passwordTf.setText("");
+                                    }
+
+                                }
                             });
 
                         } else {
+
                             Platform.runLater(() -> new Main().changeScene("dashboard.fxml", "DASHBOARD->HOME"));
                         }
                     }else {
