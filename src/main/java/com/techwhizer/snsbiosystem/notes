@@ -2,5 +2,9 @@ stop previous running server
 step-1:netstat -a -o -n
 step-2:taskkill /F /PID<PID NUM>
 ******************************************************************
+In User, When view Profile a user then change Work phone-> Telephone, Home -> Billing.
+dashboard show first name or last name null.
+Download Report then show error Attempted read from closed stream.
+When user through download report then show error something went wrong.
 upload file
 country and county view in my profile
