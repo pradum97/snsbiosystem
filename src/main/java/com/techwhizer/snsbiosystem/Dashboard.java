@@ -192,7 +192,12 @@ public class Dashboard extends OptionalMethod implements Initializable {
     private void setUserData() {
 
         AuthResponse authResponse = (AuthResponse) Login.authInfo.get("auth_response");
-        fullName.setText((authResponse.getFirstName() + " " + authResponse.getLastName()).toUpperCase());
+
+        String name;
+        name = (null == authResponse.getFirstName() || authResponse.getFirstName().isEmpty()?"":authResponse.getFirstName())+" "+
+                (null == authResponse.getLastName() || authResponse.getLastName().isEmpty()?"":authResponse.getLastName());
+
+        fullName.setText(name.toUpperCase());
         username.setText(authResponse.getUserName());
     }
 

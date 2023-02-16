@@ -5,6 +5,7 @@ import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.user.constant.Roles;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
 import com.techwhizer.snsbiosystem.util.CommonUtility;
@@ -13,6 +14,8 @@ import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -28,7 +31,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MyProfile implements Initializable {
     public ListView<String> roleLv;
@@ -50,6 +53,10 @@ public class MyProfile implements Initializable {
     public VBox contentContainer;
     public ProgressIndicator progressBar;
     public Label fullNameL;
+    public Label officeCountryL;
+    public Label officeCountyL;
+    public Label billingCountryL;
+    public Label billingCountyL;
     private OptionalMethod method;
     private CustomDialog customDialog;
 
@@ -58,7 +65,7 @@ public class MyProfile implements Initializable {
         method = new OptionalMethod();
         customDialog = new CustomDialog();
 
-        method.hideElement(roleLv);
+   //     method.hideElement(roleLv);
         contentContainer.setDisable(true);
         progressBar.setVisible(true);
 
@@ -133,12 +140,33 @@ public class MyProfile implements Initializable {
         }
 
     }
+
+
+    public String getRole(String key){
+
+        Map<String,String> map = new HashMap<>();
+        map.put(Roles.ROLE_ADMIN.name(),"ADMIN");
+        map.put(Roles.ROLE_PATIENT.name(),"PATIENT");
+        map.put(Roles.ROLE_DEALER.name(),"DEALER");
+        map.put(Roles.ROLE_DOCTOR.name(),"DOCTOR");
+        return map.get(key);
+    }
     private void setUserDetails(UserDTO user) {
 
         String name;
         name = (null == user.getFirstName() || user.getFirstName().isEmpty()?"":user.getFirstName())+" "+
                 (null == user.getLastName() || user.getLastName().isEmpty()?"":user.getLastName());
         fullNameL.setText(name);
+
+        Set<String> roles = new HashSet<>();
+        String roleTitle = user.getRoles().size()>1?"ROLES : ":"ROLE :";
+        roles.add(roleTitle);
+        for (String str:user.getRoles()){
+            roles.add(getRole(str));
+        }
+
+        ObservableList<String> roleLists = FXCollections.observableArrayList(roles);
+        roleLv.setItems(roleLists);
 
         clientIdL.setText(String.valueOf(user.getClientID()));
         usernameL.setText(user.getRequestedLoginName());
@@ -147,6 +175,8 @@ public class MyProfile implements Initializable {
         companyNameL.setText(user.getOfficeCompanyName());
         officeCityL.setText(user.getOfficeCity());
         officeStateL.setText(user.getOfficeState());
+        officeCountryL.setText(user.getOfficeCountry());
+        officeCountyL.setText(user.getOfficeCounty());
         officeZipL.setText(user.getOfficeZip());
         officeAddressL.setText(user.getOfficeAddress());
         officeFaxNumberL.setText(user.getOfficeFaxNumber());
@@ -155,6 +185,11 @@ public class MyProfile implements Initializable {
 
         homeStateL.setText(user.getHomeState());
         homeCityL.setText(user.getHomeCity());
+
+        billingCountryL.setText(user.getHomeCountry());
+        billingCountyL.setText(user.getHomeCounty());
+
+
         homeZipL.setText(user.getHomeZip());
         homeAddressL.setText(user.getHomeAddress());
         LocalDateTime localDateTime = CommonUtility.getLocalDateTimeObject(user.getCreatedDate());
