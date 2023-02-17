@@ -181,7 +181,6 @@ public class CreateNotice implements Initializable {
 
             if ((Objects.equals(newValue, SCHEDULED_YES))) {
                 publishDateContainer.setDisable(false);
-                publishBn.setText(SELECT_PUBLISH_DATE);
             } else {
                 publishDateContainer.setDisable(true);
                 publishBn.setText(currentDate);

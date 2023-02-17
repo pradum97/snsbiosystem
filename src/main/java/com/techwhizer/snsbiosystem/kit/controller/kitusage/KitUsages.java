@@ -346,8 +346,13 @@ public class KitUsages implements Initializable {
                 Map<String, Long> filterMap = (Map<String, Long>) sortedDataMap.get("filter_map");
 
                 if (null != filterMap) {
+
+                    System.out.println("filter map");
+
                     Long fromDate = filterMap.get("from_date");
                     Long toDate = filterMap.get("to_date");
+                    System.out.println(fromDate);
+                    System.out.println(toDate);
 
                     param.setParameter("q[from_date]", String.valueOf(fromDate));
                     param.setParameter("q[to_date]", String.valueOf(toDate));
@@ -365,6 +370,8 @@ public class KitUsages implements Initializable {
             }
 
             if (operationType == OperationType.SINGLE_KIT_USAGE) {
+
+                System.out.println(kitId);
                 param.addParameter("kit-id", String.valueOf(kitId));
             }
 
@@ -377,8 +384,9 @@ public class KitUsages implements Initializable {
 
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
-
                 int statusCode = response.getStatusLine().getStatusCode();
+
+                System.out.println(content);
 
                 if ( statusCode == 200) {
 

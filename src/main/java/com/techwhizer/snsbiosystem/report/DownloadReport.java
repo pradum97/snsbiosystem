@@ -183,8 +183,6 @@ public class DownloadReport {
             HttpResponse response = httpClient.execute(httpGet);
             HttpEntity resEntity = response.getEntity();
 
-            String msg = "";
-
             if (resEntity != null) {
 
                 int statusCode = response.getStatusLine().getStatusCode();
@@ -193,8 +191,6 @@ public class DownloadReport {
 
                     if (isShare) {
                         String body = EntityUtils.toString(resEntity);
-                        Map m = new Gson().fromJson(body, Map.class);
-                        msg = (String) m.get("message");
 
                         Map<String, Object> reportResponse = new Gson().fromJson(body, Map.class);
 
@@ -224,8 +220,10 @@ public class DownloadReport {
                         }
                     }
                 } else if (statusCode == 400) {
+                    String body = EntityUtils.toString(resEntity);
+                    Map m = new Gson().fromJson(body, Map.class);
 
-                    new CustomDialog().showAlertBox("Failed", msg);
+                    new CustomDialog().showAlertBox("Failed", (String) m.get("message"));
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
                 } else {
