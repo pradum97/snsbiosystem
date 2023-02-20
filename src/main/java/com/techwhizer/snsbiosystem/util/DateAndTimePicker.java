@@ -2,12 +2,17 @@ package com.techwhizer.snsbiosystem.util;
 
 import com.techwhizer.snsbiosystem.CssLoader;
 import com.techwhizer.snsbiosystem.Main;
+import com.techwhizer.snsbiosystem.notice.constant.DatePickerType;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.DatePickerSkin;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -19,12 +24,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class DateAndTimePicker {
-    public String pick(String defaultDate) {
+    public String pick(String defaultDate, DatePickerType datePickerType) {
 
         final String[] dateTime = {null};
         try {
             BorderPane root = new BorderPane();
             DatePicker dp = new DatePicker();
+            Button okBn = new Button("OK");
+            Button cancelBn = new Button("CANCEL");
 
             if (null != defaultDate) {
                 String[] s = defaultDate.split(" ");
@@ -47,7 +54,6 @@ public class DateAndTimePicker {
             DatePickerSkin datePickerSkin = new DatePickerSkin(dp);
             Node popupContent = datePickerSkin.getPopupContent();
             popupContent.getStyleClass().add("popupContent");
-
             root.setCenter(popupContent);
 
             HBox title = new HBox(new Label("SELECT TIME"));
@@ -70,6 +76,7 @@ public class DateAndTimePicker {
             hourTf.setPromptText("00");
             minuteTf.setPromptText("00");
             secondTf.setPromptText("00");
+
             hourTf.setId("hour");
             minuteTf.setId("minute");
             secondTf.setId("second");
@@ -98,10 +105,8 @@ public class DateAndTimePicker {
             setTfContainerStyle(hBoxHour, hBoxMinute, hBoxSecond);
 
             HBox fieldContainer = new HBox(hBoxHour, hBoxMinute, hBoxSecond);
-            setMainContainerStyle(fieldContainer);
 
-            Button okBn = new Button("OK");
-            Button cancelBn = new Button("CANCEL");
+            setMainContainerStyle(fieldContainer);
             actionButtonStyle(cancelBn, okBn);
 
             cancelBn.setOnAction((event -> {
@@ -111,7 +116,7 @@ public class DateAndTimePicker {
                 }
             }));
 
-            okBn.setOnAction(event -> {
+            EventHandler<ActionEvent> actionEventEventHandler = event -> {
 
                 String date = CommonUtility.formatLocalDate(dp.getValue());
 
@@ -123,6 +128,12 @@ public class DateAndTimePicker {
                 String hourI = hourTf.getText();
                 String minI = minuteTf.getText();
                 String secI = secondTf.getText();
+
+                if (datePickerType == DatePickerType.EXPIRY_DATE_PICK){
+                    hourI = "23";
+                    minI = "59";
+                    secI = "59";
+                }
 
                 OptionalMethod method = new OptionalMethod();
 
@@ -154,13 +165,24 @@ public class DateAndTimePicker {
                 dateTime[0] = date + " " + time;
                 new OptionalMethod().closeStage(okBn);
 
-            });
+            };
+
+            okBn.setOnAction(actionEventEventHandler);
 
             HBox bottomContainer = new HBox(cancelBn, okBn);
             bottomContainer.setAlignment(Pos.CENTER);
             bottomContainer.setSpacing(50);
 
-            VBox vBox = new VBox(title, new Separator(), fieldContainer, new Separator(), bottomContainer);
+            Separator sep1 = new Separator();
+
+            if (datePickerType == DatePickerType.EXPIRY_DATE_PICK){
+                dp.setOnAction(actionEventEventHandler);
+                OptionalMethod method = new OptionalMethod();
+                method.hideElement(fieldContainer,sep1,title,bottomContainer);
+            }
+
+            VBox vBox = new VBox(title, sep1,fieldContainer, new Separator(), bottomContainer);
+
             vBox.setAlignment(Pos.CENTER);
             vBox.setPadding(new Insets(10));
             vBox.setSpacing(10);

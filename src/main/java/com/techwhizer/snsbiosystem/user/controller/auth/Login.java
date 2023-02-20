@@ -6,6 +6,8 @@ import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
+import com.techwhizer.snsbiosystem.report.ReportShareOption;
+import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
 import com.techwhizer.snsbiosystem.user.constant.Roles;
 import com.techwhizer.snsbiosystem.user.constant.UserStatus;
 import com.techwhizer.snsbiosystem.user.model.AuthResponse;
@@ -194,7 +196,6 @@ public class Login implements Initializable {
                             });
 
                         } else {
-
                             Platform.runLater(() -> new Main().changeScene("dashboard.fxml", "DASHBOARD->HOME"));
                         }
                     }else {

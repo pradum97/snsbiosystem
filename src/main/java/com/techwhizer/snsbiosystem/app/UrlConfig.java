@@ -45,4 +45,6 @@ public class UrlConfig {
    // notice
    public static String getKitNoticeUrl(){ return getRootUrl()+"/v2/admin/notice-board"; }
 
+   public static String getCountriesUrl(){ return getRootUrl()+"/v1/commons/countries"; }
+
 }

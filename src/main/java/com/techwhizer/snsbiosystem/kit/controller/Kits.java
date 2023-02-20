@@ -13,6 +13,7 @@ import com.techwhizer.snsbiosystem.kit.model.KitDTO;
 import com.techwhizer.snsbiosystem.kit.model.KitPageResponse;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.report.DownloadReport;
+import com.techwhizer.snsbiosystem.report.constent.ReportType;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.util.ChooseFile;
 import com.techwhizer.snsbiosystem.util.CommonUtility;
@@ -173,7 +174,7 @@ public class Kits implements Initializable {
             this.reportMap = reportMap;
             this.sortedDataMap = sortedDataMap;
             if (null != reportMap) {
-                downloadButton = (Button) reportMap.get("button");
+                downloadButton = (Button) reportMap.get("action_button");
             }
         }
 
@@ -190,6 +191,7 @@ public class Kits implements Initializable {
                     button.setGraphic(pi);
                 }
             } else if (operationType != OperationType.DOWNLOAD_REPORT) {
+
                 if (null != tableview) {
                     tableview.setItems(null);
                     tableview.refresh();
@@ -207,8 +209,16 @@ public class Kits implements Initializable {
                 case START -> getAllKits(sortedDataMap);
                 case DELETE -> deleteKit(kitId, button, sortedDataMap);
                 case DOWNLOAD_REPORT -> {
+
                     if (null != reportMap) {
-                        new DownloadReport().dialogController(reportMap, OperationType.KIT_REPORT);
+
+                        if (null != downloadButton) {
+                            ProgressIndicator pi = new OptionalMethod().getProgressBar(25, 25);
+                            pi.setStyle("-fx-progress-color: white;-fx-border-width: 2");
+                            Platform.runLater(()->{downloadButton.setGraphic(pi);});
+                        }
+
+                        new DownloadReport().getShareOption(reportMap);
                     }
                 }
             }
@@ -232,7 +242,7 @@ public class Kits implements Initializable {
 
             if (null != downloadButton) {
                 Platform.runLater(() -> {
-                    downloadButton.setGraphic(new ImageLoader().getDownloadImage());
+                    downloadButton.setGraphic(new ImageLoader().getShareIcon());
                 });
             }
         }
@@ -427,7 +437,7 @@ public class Kits implements Initializable {
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));
 
                     viewUsageBn.setGraphic(getImage("img/icon/preview_ic.png"));
-                    downloadBn.setGraphic(getImage("img/icon/download_ic.png"));
+                    downloadBn.setGraphic(new ImageLoader().getShareIcon());
 
                     CommonUtility.onHoverShowTextButton(editBn,"Update kit");
                     CommonUtility.onHoverShowTextButton(deleteBbn,"Delete kit");
@@ -443,8 +453,9 @@ public class Kits implements Initializable {
                         method.selectTable(getIndex(), tableview);
 
                         Map<String, Object> map = new HashMap<>();
-                        map.put("button", downloadBn);
-                        map.put("kit", tableview.getItems().get(getIndex()).getId());
+                        map.put("action_button", downloadBn);
+                        map.put("kit_id", tableview.getItems().get(getIndex()).getId());
+                        map.put("customer_id", tableview.getItems().get(getIndex()).getClientID());
 
                         int rowPosition = getIndex();
                         int paginationIndex = pagination.getCurrentPageIndex();

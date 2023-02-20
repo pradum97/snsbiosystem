@@ -20,6 +20,9 @@ module com.techwhizer.snsbiosystem {
     opens com.techwhizer.snsbiosystem.dialog to javafx.fxml;
     exports com.techwhizer.snsbiosystem.dialog;
 
+    opens com.techwhizer.snsbiosystem.common to com.google.gson;
+    exports com.techwhizer.snsbiosystem.common;
+
     opens com.techwhizer.snsbiosystem.notice.controller to javafx.fxml;
     exports com.techwhizer.snsbiosystem.notice.controller;
 

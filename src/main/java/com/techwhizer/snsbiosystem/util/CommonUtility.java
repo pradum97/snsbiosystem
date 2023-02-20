@@ -20,6 +20,10 @@ public class CommonUtility {
     public final static String ORDER_ASC = "ASCENDING";
     public final static String ORDER_DESC = "DESCENDING";
 
+
+    public final static String DEFAULT_COUNTRY_SELECTION = "United States";
+    public final static String DEFAULT_PHONE_CODE_SELECTION = "+1";
+
     public static void onHoverShowTextButton(Button node, String text){
 
         if (node.isVisible()) {
@@ -88,7 +92,6 @@ public class CommonUtility {
     public static String formatLocalDateTime(LocalDateTime dateTime) {
         return dateTime.format(dateFormatter);
     }
-
 
     public static LocalDateTime getLocalDateTimeObject(long epochMillis) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault());

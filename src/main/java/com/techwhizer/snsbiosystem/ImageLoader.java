@@ -16,6 +16,14 @@ public class ImageLoader {
         return down_iv;
     }
 
+    public ImageView getShareIcon() {
+        ImageView down_iv = new ImageView();
+        down_iv.setFitHeight(20);
+        down_iv.setFitWidth(20);
+        down_iv.setImage(load("img/icon/share_icon.png"));
+        return down_iv;
+    }
+
     public Image load(String imagePath) {
 
         try {

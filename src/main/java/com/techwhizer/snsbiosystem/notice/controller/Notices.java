@@ -455,12 +455,11 @@ public class Notices implements Initializable {
                         LocalDateTime localDateTime = CommonUtility.getLocalDateTimeObject(noticeBoardDTO.getExpiresOn());
                         String txt = localDateTime.format(CommonUtility.dateTimeFormator);
                         if (!txt.isEmpty()) {
-                            Text text = new Text(txt);
+                            Text text = new Text(txt.split(" ")[0]);
                             text.setStyle("-fx-text-alignment:center;-fx-font-size: 14");
                             text.wrappingWidthProperty().bind(getTableColumn().widthProperty().subtract(35));
                             setText(null);
                             setGraphic(text);
-
                         } else {
                             setGraphic(null);
                             setText(CommonUtility.EMPTY_LABEL_FOR_TABLE);

@@ -15,7 +15,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="660.0" prefWidth="927.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.user.controller.CreateProfile">
+<BorderPane prefHeight="660.0" prefWidth="927.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.user.controller.CreateProfile">
 
     <center>
       <VBox fx:id="contentContainer" alignment="CENTER">
@@ -107,11 +108,16 @@
                                                                           <Insets left="3.0" />
                                                                       </VBox.margin>
                                                                   </Label>
-                                                                  <TextField fx:id="workPhoneNumberTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="XXXXXXXX87" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
-                                                                      <font>
-                                                                          <Font name="Arial Bold" size="13.0" />
-                                                                      </font>
-                                                                  </TextField>
+                                                      <HBox>
+                                                         <children>
+                                                            <ComboBox fx:id="countryCodeCom" minHeight="30.0" prefHeight="34.0" prefWidth="106.0" style="-fx-border-color: grey; -fx-border-radius: 3 0 0  3;" />
+                                                                        <TextField fx:id="workPhoneNumberTf" minHeight="33.0" minWidth="0.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="34.0" prefWidth="253.0" promptText="XXXXXXXX87" style="-fx-border-color: #b3b3b3; -fx-border-radius: 0 3 3 0;" HBox.hgrow="ALWAYS">
+                                                                            <font>
+                                                                                <Font name="Arial Bold" size="13.0" />
+                                                                            </font>
+                                                                        </TextField>
+                                                         </children>
+                                                      </HBox>
                                                               </children>
                                                           </VBox>
                                                           <VBox prefHeight="50.0" prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
@@ -197,11 +203,7 @@
                                                                   <Insets left="3.0" />
                                                                </VBox.margin>
                                                             </Label>
-                                                            <TextField fx:id="officeCountryTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter office country" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
-                                                               <font>
-                                                                  <Font name="Arial Bold" size="13.0" />
-                                                               </font>
-                                                            </TextField>
+                                                            <ComboBox fx:id="officeCountryCom" minHeight="33.0" minWidth="280.0" prefHeight="34.0" prefWidth="358.0" promptText="SELECT OFFICE COUNTRY" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                                          </children>
                                                       </VBox>
                                                       <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
@@ -367,11 +369,7 @@
                                                                   <Insets left="3.0" />
                                                                </VBox.margin>
                                                             </Label>
-                                                            <TextField fx:id="billingCountryTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter billing country" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
-                                                               <font>
-                                                                  <Font name="Arial Bold" size="13.0" />
-                                                               </font>
-                                                            </TextField>
+                                                            <ComboBox fx:id="billingCountryCom" minHeight="33.0" minWidth="280.0" prefHeight="34.0" prefWidth="358.0" promptText="SELECT BILLING COUNTRY" style="-fx-border-color: grey; -fx-border-radius: 3;" />
                                                          </children>
                                                       </VBox>
                                                       <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">

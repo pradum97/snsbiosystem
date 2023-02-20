@@ -7,6 +7,7 @@ import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
+import com.techwhizer.snsbiosystem.notice.constant.DatePickerType;
 import com.techwhizer.snsbiosystem.notice.model.NoticeBoardDTO;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.user.model.RoleConfigModel;
@@ -156,7 +157,7 @@ public class CreateNotice implements Initializable {
         DateAndTimePicker dateAndTimePicker = new DateAndTimePicker();
 
         publishBn.setOnAction(event -> {
-            String dateString = dateAndTimePicker.pick(previousPublishDateTime);
+            String dateString = dateAndTimePicker.pick(previousPublishDateTime, DatePickerType.PUBLISH_DATE_PICK);
             if (null != dateString) {
                 previousPublishDateTime = dateString;
                 publishBn.setText(dateString);
@@ -166,10 +167,12 @@ public class CreateNotice implements Initializable {
         });
 
         expiryBn.setOnAction(event -> {
-            String dateString = dateAndTimePicker.pick(previousExpiryDateTime);
+            String dateString = dateAndTimePicker.pick(previousExpiryDateTime, DatePickerType.EXPIRY_DATE_PICK);
+
+            System.out.println(dateString);
             if (null != dateString) {
                 previousExpiryDateTime = dateString;
-                expiryBn.setText(dateString);
+                expiryBn.setText(dateString.split(" ")[0]);
                 LocalDateTime localDateTime = CommonUtility.getDateTimeObject(dateString);
                 expiryDate = CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
             }

@@ -8,6 +8,8 @@ import com.techwhizer.snsbiosystem.ImageLoader;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.common.CountryUtility;
+import com.techwhizer.snsbiosystem.common.constant.CountryType;
 import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.constant.ReportingMethods;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
@@ -16,11 +18,13 @@ import com.techwhizer.snsbiosystem.user.model.RoleConfigModel;
 import com.techwhizer.snsbiosystem.user.model.UpdateUserResponse;
 import com.techwhizer.snsbiosystem.user.model.UserDTO;
 import com.techwhizer.snsbiosystem.user.util.CheckUsername;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
@@ -78,10 +82,11 @@ public class CreateProfile implements Initializable {
     public ComboBox<String> sharingMethodCom;
     public HBox progressContainer;
     public VBox sharingMethodContainer;
-    public TextField officeCountryTf;
     public TextField officeCountyTf;
-    public TextField billingCountryTf;
     public TextField billingCountyTf;
+    public ComboBox<String> countryCodeCom;
+    public ComboBox<String> officeCountryCom;
+    public ComboBox<String> billingCountryCom;
     private OperationType userCreateOperationType;
     private OptionalMethod method;
     private CustomDialog customDialog;
@@ -96,6 +101,7 @@ public class CreateProfile implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         method = new OptionalMethod();
+        method.hideElement(sharingMethodContainer);
         customDialog = new CustomDialog();
         method.hideElement(progressBar, progressContainer);
         sharingMethodCom.setItems(ReportingMethods.reportShareMethod);
@@ -119,7 +125,9 @@ public class CreateProfile implements Initializable {
         switch (userCreateOperationType) {
             case CREATE -> {
                 submitBn.setText("SUBMIT");
-                method.hideElement(sharingMethodContainer);
+
+                MyAsyncTask myAsyncTask = new MyAsyncTask(OperationType.FETCH_COUNTRY);
+                myAsyncTask.execute();
             }
             case UPDATE -> {
                 MyAsyncTask myAsyncTask = new MyAsyncTask(OperationType.FETCH);
@@ -139,11 +147,16 @@ public class CreateProfile implements Initializable {
         usernameTf.setText(userDTO.getRequestedLoginName() == null ? "" : userDTO.getRequestedLoginName());
         firstNameTf.setText(null == userDTO.getFirstName() ? "" : userDTO.getFirstName());
         lastNameTf.setText(null == userDTO.getLastName() ? "" : userDTO.getLastName());
-        workPhoneNumberTf.setText(userDTO.getWorkPhoneNumber());
+
         workEmailTf.setText(null == userDTO.getWorkEmail() ? "" : userDTO.getWorkEmail());
         companyNameTf.setText(null == userDTO.getOfficeCompanyName() ? "" : userDTO.getOfficeCompanyName());
         officeStateTf.setText(null == userDTO.getOfficeState() ? "" : userDTO.getOfficeState());
-        officeCountryTf.setText(null == userDTO.getOfficeCountry() ? "" : userDTO.getOfficeCountry());
+
+        if (null != userDTO.getOfficeCountry()) {
+            officeCountryCom.getSelectionModel().select(userDTO.getOfficeCountry());
+        }
+
+
         officeCountyTf.setText(null == userDTO.getOfficeCounty() ? "" : userDTO.getOfficeCounty());
         officeCityTf.setText(null == userDTO.getOfficeCity() ? "" : userDTO.getOfficeCity());
         officeZipTf.setText(null == userDTO.getOfficeZip() ? "" : userDTO.getOfficeZip());
@@ -151,7 +164,10 @@ public class CreateProfile implements Initializable {
         officeAddressTa.setText(null == userDTO.getOfficeAddress() ? "" : userDTO.getOfficeAddress());
         billingStateTf.setText(null == userDTO.getHomeState() ? "" : userDTO.getHomeState());
 
-        billingCountryTf.setText(null == userDTO.getHomeCountry() ? "" : userDTO.getHomeCountry());
+        if (null != userDTO.getHomeCountry()) {
+            billingCountryCom.getSelectionModel().select(userDTO.getHomeCountry());
+        }
+
         billingCountyTf.setText(null == userDTO.getHomeCounty() ? "" : userDTO.getHomeCounty());
 
         billingCityTf.setText(null == userDTO.getHomeCity() ? "" : userDTO.getHomeCity());
@@ -190,6 +206,18 @@ public class CreateProfile implements Initializable {
             sameAsOfficeAddress.setSelected(true);
         }
         checkAllRoleSelected();
+
+        String phoneNumWithCode = userDTO.getWorkPhoneNumber();
+
+        try {
+            String[] phoneList = phoneNumWithCode.split("-",2);
+            String phoneCode = phoneList[0];
+            String phoneNumber = phoneList[1];
+            countryCodeCom.getSelectionModel().select(phoneCode);
+            workPhoneNumberTf.setText(phoneNumber);
+        } catch (Exception e) {
+            workPhoneNumberTf.setText(phoneNumWithCode);
+        }
     }
 
     private void addressConfig() {
@@ -200,9 +228,9 @@ public class CreateProfile implements Initializable {
             }
         });
 
-        officeCountryTf.textProperty().addListener((observableValue, s, t1) -> {
+        officeCountryCom.valueProperty().addListener((observableValue, s, t1) -> {
             if (isSameAsAbove) {
-                billingCountryTf.setText(t1);
+                billingCountryCom.getSelectionModel().select(t1);
             }
         });
 
@@ -295,7 +323,9 @@ public class CreateProfile implements Initializable {
                 billingZipTf.setText(officeZipTf.getText());
 
                 billingCountyTf.setText(officeCountyTf.getText());
-                billingCountryTf.setText(officeCountryTf.getText());
+
+                billingCountryCom.getSelectionModel().select(officeCountryCom.getSelectionModel().getSelectedItem());
+
             } else {
 
                 billingStateTf.setText("");
@@ -304,7 +334,7 @@ public class CreateProfile implements Initializable {
                 billingZipTf.setText("");
 
                 billingCountyTf.setText("");
-                billingCountryTf.setText("");
+                billingCountryCom.getSelectionModel().clearSelection();
             }
 
         });
@@ -332,6 +362,7 @@ public class CreateProfile implements Initializable {
         String username = usernameTf.getText();
         String firstName = firstNameTf.getText();
         String lastName = lastNameTf.getText();
+        String phoneCode = countryCodeCom.getSelectionModel().getSelectedItem();
         String telephoneNumber = workPhoneNumberTf.getText();
         String email = workEmailTf.getText();
         String companyName = companyNameTf.getText();
@@ -342,7 +373,7 @@ public class CreateProfile implements Initializable {
         String officeFax = officeFaxNumberTf.getText();
         String officeAddress = officeAddressTa.getText();
 
-        String officeCountry = officeCountryTf.getText();
+        String officeCountry = officeCountryCom.getSelectionModel().getSelectedItem();
         String officeCounty = officeCountyTf.getText();
 
         String billingState = billingStateTf.getText();
@@ -350,13 +381,22 @@ public class CreateProfile implements Initializable {
         String billingZip = billingZipTf.getText();
         String billingAddress = billingAddressTa.getText();
 
-        String billingCountry = billingCountryTf.getText();
+        String billingCountry = billingCountryCom.getSelectionModel().getSelectedItem();
         String billingCounty = billingCountyTf.getText();
 
         if (username.isEmpty()) {
             method.show_popup("Please Enter Username", usernameTf);
             return;
-        } else if (telephoneNumber.isEmpty()) {
+        }
+
+        if (userCreateOperationType == OperationType.UPDATE) {
+            if (null == phoneCode) {
+                method.show_popup("Please Select country code", countryCodeCom);
+                return;
+            }
+        }
+
+        if (telephoneNumber.isEmpty()) {
             method.show_popup("Please Enter Telephone Number", workPhoneNumberTf);
             return;
         } else if (telephoneNumber.length() < 9) {
@@ -440,7 +480,7 @@ public class CreateProfile implements Initializable {
         dm.setRequestedLoginName(username);
         dm.setFirstName(firstName);
         dm.setLastName(lastName);
-        dm.setWorkPhoneNumber(telephoneNumber);
+        dm.setWorkPhoneNumber(phoneCode + "-" + telephoneNumber);
         dm.setWorkEmail(email);
         dm.setOfficeCompanyName(companyName);
         dm.setOfficeState(officeState);
@@ -517,32 +557,56 @@ public class CreateProfile implements Initializable {
 
         @Override
         public Boolean doInBackground(String... params) {
+            getCountryData();
+
             if (operationType != OperationType.FETCH) {
-                String json = params[0];
-                String username = params[1];
 
-                if (operationType == OperationType.UPDATE) {
-                    switch (userCreateOperationType) {
-                        case CREATE -> createProfile(json);
-                        case UPDATE -> update(json);
-                    }
-
-                } else {
-                    if (new CheckUsername().check(username)) {
-                        Platform.runLater(() -> customDialog.showAlertBox("", "Username already exists"));
-                    } else {
+                if (params.length > 0) {
+                    String json = params[0];
+                    String username = params[1];
+                    if (operationType == OperationType.UPDATE) {
                         switch (userCreateOperationType) {
                             case CREATE -> createProfile(json);
                             case UPDATE -> update(json);
                         }
+
+                    } else {
+                        if (new CheckUsername().check(username)) {
+                            Platform.runLater(() -> customDialog.showAlertBox("", "Username already exists"));
+                        } else {
+                            switch (userCreateOperationType) {
+                                case CREATE -> createProfile(json);
+                                case UPDATE -> update(json);
+                            }
+                        }
                     }
                 }
-
 
             } else {
                 getUserData();
             }
             return false;
+        }
+
+        void getCountryData() {
+
+            ObservableList<String> countryNameList = CountryUtility.getCountryName(CountryType.COUNTRY_NAME);
+            ObservableList<String> countryPhoneCode = CountryUtility.getCountryName(CountryType.COUNTRY_CODE);
+
+            Platform.runLater(() -> {
+                countryCodeCom.setItems(countryPhoneCode);
+                officeCountryCom.setItems(countryNameList);
+                billingCountryCom.setItems(countryNameList);
+
+
+                if (userCreateOperationType == OperationType.CREATE) {
+
+                    countryCodeCom.getSelectionModel().select(CommonUtility.DEFAULT_PHONE_CODE_SELECTION);
+                    officeCountryCom.getSelectionModel().select(CommonUtility.DEFAULT_COUNTRY_SELECTION);
+                    billingCountryCom.getSelectionModel().select(CommonUtility.DEFAULT_COUNTRY_SELECTION);
+
+                }
+            });
         }
 
         @Override
@@ -583,7 +647,6 @@ public class CreateProfile implements Initializable {
         json = gson.toJson(userArray.get(0));
 
         try {
-
             HttpPut httpPut = new HttpPut(UrlConfig.getUserprofileUrl().concat(String.valueOf(clientId)));
             httpPut.addHeader("Content-Type", "application/json");
             httpPut.addHeader("Cookie", (String) Login.authInfo.get("token"));
@@ -682,11 +745,12 @@ public class CreateProfile implements Initializable {
     }
 
     private void createProfile(String json) {
+
         try {
             HttpPost httpPut = new HttpPost(UrlConfig.getProfileCreateUrl());
             httpPut.addHeader("Content-Type", "application/json");
             httpPut.addHeader("Cookie", (String) Login.authInfo.get("token"));
-            StringEntity se = new StringEntity(json,StandardCharsets.UTF_8);
+            StringEntity se = new StringEntity(json, StandardCharsets.UTF_8);
             httpPut.setEntity(se);
 
             HttpResponse response = httpClient.execute(httpPut);

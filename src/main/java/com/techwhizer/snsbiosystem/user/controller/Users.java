@@ -10,6 +10,7 @@ import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.kit.constants.KitOperationType;
 import com.techwhizer.snsbiosystem.pagination.PaginationUtil;
 import com.techwhizer.snsbiosystem.report.DownloadReport;
+import com.techwhizer.snsbiosystem.report.constent.ReportType;
 import com.techwhizer.snsbiosystem.user.constant.RoleOption;
 import com.techwhizer.snsbiosystem.user.constant.UserSortingOption;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
@@ -261,7 +262,14 @@ public class Users implements Initializable {
                 case DELETE -> deleteUser(clientId, button, sortedDataMap);
                 case DOWNLOAD_REPORT -> {
                     if (null != reportMap) {
-                        new DownloadReport().dialogController(reportMap, OperationType.CUSTOMER_REPORT);
+                      Platform.runLater(()->{
+                          if (null != downloadButton) {
+                              ProgressIndicator pi = new OptionalMethod().getProgressBar(25, 25);
+                              pi.setStyle("-fx-progress-color: white;-fx-border-width: 2");
+                              Platform.runLater(()->{downloadButton.setGraphic(pi);});
+                          }
+                          new DownloadReport().getShareOption(reportMap);
+                      });
                     }
                 }
             }
@@ -275,7 +283,7 @@ public class Users implements Initializable {
 
             if (null != downloadButton) {
                 Platform.runLater(() -> {
-                    downloadButton.setGraphic(new ImageLoader().getDownloadImage());
+                    downloadButton.setGraphic(new ImageLoader().getShareIcon());
                 });
             }
 
@@ -441,7 +449,7 @@ public class Users implements Initializable {
                     deleteBbn.setGraphic(getImage("img/icon/delete_ic_white.png"));
                     viewBn.setGraphic(getImage("img/icon/preview_ic.png"));
                     viewKits.setGraphic(getImage("img/menu_icon/kit_ic.png"));
-                    downloadBn.setGraphic(new ImageLoader().getDownloadImage());
+                    downloadBn.setGraphic(new ImageLoader().getShareIcon());
 
                     CommonUtility.onHoverShowTextButton(editBn, "Update user");
                     CommonUtility.onHoverShowTextButton(deleteBbn, "Delete user");
@@ -480,7 +488,8 @@ public class Users implements Initializable {
                     downloadBn.setOnAction((event -> {
                         method.selectTable(getIndex(), tableview);
                         Map<String, Object> map = new HashMap<>();
-                        map.put("button", downloadBn);
+                        map.put("action_button", downloadBn);
+                        map.put("kit_id", null);
                         map.put("customer_id", tableview.getItems().get(getIndex()).getClientID());
 
                         String role = filterByRoleCom.getSelectionModel().getSelectedItem();

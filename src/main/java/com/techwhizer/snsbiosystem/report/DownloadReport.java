@@ -3,21 +3,24 @@ package com.techwhizer.snsbiosystem.report;
 import com.google.gson.Gson;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.ImageLoader;
+import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
-import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.report.constent.ReportDownloadPath;
+import com.techwhizer.snsbiosystem.report.constent.ReportType;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,135 +31,235 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import java.io.FileOutputStream;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 public class DownloadReport {
 
-    private Map<String, Object> getAlertDialog() {
 
-        Map<String, Object> map = new HashMap<>();
+    public void getShareOption(Map<String, Object> previousMap) {
+        previousMap.put("report_type", ReportType.FETCH_SHARING_OPTION);
+
+      /*  Map<String, Object> previousMap = new HashMap<>();
+        previousMap.put("reportType", reportType);
+        previousMap.put("actionButton", actionButton);
+        previousMap.put("kit_id", kitId);
+        previousMap.put("customer_id", customerId);*/
+
+        action(null, previousMap);
+    }
+
+    public void alertDialog(Map<String, Object> previousMap, Map<String, Boolean> option) {
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        ImageView iv = new ImageLoader().loadImageView("img/icon/info_ic.png");
-        iv.setFitWidth(30);
-        iv.setFitHeight(30);
-        alert.setGraphic(iv);
+        alert.setGraphic(null);
+        alert.setHeaderText(null);
+        alert.setTitle("Share To");
+        ImageView downloadIcon = ReportIcon.getDownloadIcon();
+        ImageView emailIcon = ReportIcon.getEmailIcon();
+        ImageView faxIcon = ReportIcon.getFaxIcon();
+        ImageView smsIcon = ReportIcon.getSmsIcon();
 
-        alert.setHeaderText("SELECT METHOD");
-        alert.setTitle("");
-        CheckBox download = new CheckBox("DOWNLOAD");
-        CheckBox share = new CheckBox("SHARE");
 
-        HBox hBox = new HBox(download, share);
-        hBox.setSpacing(30);
-        hBox.setStyle("-fx-alignment: center");
+        Button downloadButton = new Button();
+        downloadButton.setId("download");
+        Button emailButton = new Button();
+        emailButton.setId("email");
+        Button faxButton = new Button();
+        faxButton.setId("fax");
+        Button smsButton = new Button();
+        smsButton.setId("sms");
 
-        VBox vBox = new VBox(hBox);
-        vBox.setStyle("-fx-alignment: center");
-        vBox.setSpacing(20);
-        alert.getDialogPane().setPrefSize(320, 200);
-        alert.getDialogPane().setContent(vBox);
-        download.setSelected(true);
-        map.put("alert", alert);
-        map.put("share_button", share);
-        map.put("download_button", download);
-        return map;
+        buttonCustomize(downloadButton, emailButton, faxButton, smsButton);
+
+        downloadButton.setGraphic(downloadIcon);
+        emailButton.setGraphic(emailIcon);
+        faxButton.setGraphic(faxIcon);
+        smsButton.setGraphic(smsIcon);
+
+        buttonClickEvent(downloadButton, emailButton, faxButton, smsButton, alert, previousMap);
+
+        Label downloadL = new Label("SAVE");
+        Label emailL = new Label("EMAIL");
+        Label faxL = new Label("FAX");
+        Label smsL = new Label("SMS");
+
+        labelCustomize(downloadL, emailL, faxL, smsL);
+
+        VBox downloadContainer = new VBox(downloadButton, downloadL);
+        VBox emailContainer = new VBox(emailButton, emailL);
+        VBox faxContainer = new VBox(faxButton, faxL);
+        VBox smsContainer = new VBox(smsButton, smsL);
+
+        faxContainer.setDisable(!option.get("FAX"));
+        emailContainer.setDisable(!option.get("EMAIL"));
+        smsContainer.setDisable(!option.get("SMS"));
+
+        subContainerCustomize(downloadContainer, emailContainer, faxContainer, smsContainer);
+
+        HBox mainContainer = new HBox(downloadContainer, emailContainer, faxContainer, smsContainer);
+        mainContainer.setSpacing(20);
+        mainContainer.setAlignment(Pos.CENTER);
+        alert.getDialogPane().setContent(mainContainer);
+
+        alert.getDialogPane().setPrefSize(350, 250);
+
+        final Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+        final Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
+
+        new OptionalMethod().hideElement(okButton, cancelButton);
+        alert.initOwner(Main.primaryStage);
+
+        alert.showAndWait();
+    }
+
+    private void buttonClickEvent(Button downloadButton, Button emailButton,
+                                  Button faxButton, Button smsButton, Alert alert,
+                                  Map<String, Object> prevousMap) {
+        prevousMap.put("report_type", ReportType.REPORT_PROCESSED);
+        downloadButton.setOnAction(event -> {
+            prevousMap.put("is_share", false);
+            action(alert, prevousMap);
+        });
+
+        emailButton.setOnAction(event -> {
+            prevousMap.put("is_share", true);
+            prevousMap.put("via", "email");
+            action(alert, prevousMap);
+        });
+
+        faxButton.setOnAction(event -> {
+            prevousMap.put("is_share", true);
+            prevousMap.put("via", "fax");
+            action(alert, prevousMap);
+        });
+
+        smsButton.setOnAction(event -> {
+            prevousMap.put("is_share", true);
+            prevousMap.put("via", "sms");
+            action(alert, prevousMap);
+        });
+    }
+
+    private void action(Alert alert, Map<String, Object> previousMap) {
+        MyAsyncTask myAsyncTask = new MyAsyncTask(alert, previousMap);
+        myAsyncTask.execute();
+    }
+
+
+    private void labelCustomize(Label... labels) {
+
+        for (Label label : labels) {
+
+            label.setStyle("-fx-font-size: 13;-fx-font-weight: bold");
+
+        }
+    }
+
+    private void subContainerCustomize(VBox... arrayContainer) {
+
+        for (VBox v : arrayContainer) {
+            v.setAlignment(Pos.CENTER);
+            v.setSpacing(5);
+        }
+    }
+
+    private void buttonCustomize(Button... buttons) {
+
+        for (Button button : buttons) {
+            button.setMinHeight(50);
+            button.setMinWidth(50);
+
+            String id = button.getId();
+
+            switch (id) {
+                case "download" -> buttonStyle(button, "#006666");
+                case "email" -> buttonStyle(button, "rgba(180,3,3,0.75)");
+                case "fax" -> buttonStyle(button, "#04238a");
+                case "sms" -> buttonStyle(button, "#1611a4");
+            }
+        }
+    }
+
+    private void buttonStyle(Button button, String backgroundColor) {
+
+        button.setStyle("-fx-background-radius:50;-fx-border-radius: 50" +
+                ";-fx-border-color: transparent;-fx-cursor: hand;-fx-background-color:" + backgroundColor);
     }
 
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
 
-       private Map<String, Object> map;
-        private OperationType operationType;
-        private Button downloadButton;
+        private Button actionButton;
+        private Alert alert;
+        private Map<String, Object> previousMap;
 
-        public MyAsyncTask(Map<String, Object> map, OperationType operationType) {
-            this.map = map;
-            this.operationType = operationType;
+        public MyAsyncTask(Alert alert, Map<String, Object> previousMap) {
+            this.alert = alert;
+            this.previousMap = previousMap;
+
+            if (null != previousMap) {
+                actionButton = (Button) previousMap.get("action_button");
+            }
         }
 
         @Override
         public void onPreExecute() {
-
-            if (null != map.get("button")) {
-                downloadButton = (Button) map.get("button");
-                if (null != downloadButton) {
-                    ProgressIndicator pi = new OptionalMethod().getProgressBar(25, 25);
-                    pi.setStyle("-fx-progress-color: white;-fx-border-width: 2");
-                    downloadButton.setGraphic(pi);
-                }
+            if (null != alert && alert.isShowing()) {
+                alert.close();
             }
 
         }
 
         @Override
         public Boolean doInBackground(String... params) {
-            downloadReport(map, operationType);
+            ProgressIndicator pi = new OptionalMethod().getProgressBar(25, 25);
+            pi.setStyle("-fx-progress-color: white;-fx-border-width: 2");
+            Platform.runLater(() -> {
+                actionButton.setGraphic(pi);
+            });
+            if (null != previousMap && previousMap.get("report_type") == ReportType.FETCH_SHARING_OPTION) {
+                getOption(previousMap);
+            } else {
+                downloadReport(previousMap, actionButton);
+            }
             return false;
-
         }
 
         @Override
         public void onPostExecute(Boolean success) {
-
-            if (null != downloadButton) {
-                Platform.runLater(() -> {
-                    downloadButton.setGraphic(new ImageLoader().getDownloadImage());
-                });
-            }
+            resetActionButton(actionButton);
         }
+
         @Override
         public void progressCallback(Integer... params) {
 
         }
     }
 
-    public void dialogController(Map<String, Object> map, OperationType operationType) {
+    private void getOption(Map<String, Object> previousMap) {
+        Long customerId = (Long) previousMap.get("customer_id");
+        Map<String, Boolean> getOption = ReportShareOption.getOption(customerId);
 
         Platform.runLater(() -> {
-            Map<String, Object> alertrMap = getAlertDialog();
-            map.putAll(alertrMap);
-
-            Alert alert = (Alert) alertrMap.get("alert");
-            CheckBox share = (CheckBox) alertrMap.get("share_button");
-
-            final Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-            okButton.addEventFilter(ActionEvent.ACTION, ae -> {
-
-                if (map.keySet().size() < 1) {
-                    new OptionalMethod().show_popup("Please select method", share);
-                    ae.consume();
-                    return;
-                }
-                new MyAsyncTask(map, operationType).execute();
-            });
-            alert.show();
+            alertDialog(previousMap, getOption);
         });
     }
 
-    private void downloadReport(Map<String, Object> map, OperationType operationType) {
+    private void resetActionButton(Button actionButton) {
+        if (null != actionButton) {
+            Platform.runLater(() -> {
+                actionButton.setGraphic(new ImageLoader().getShareIcon());
+            });
+        }
+    }
 
+    private void downloadReport(Map<String, Object> map, Button actionButton) {
+        boolean isShare = (Boolean) map.get("is_share");
 
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
-
-        Button downloadButton;
-        CheckBox downloadCheckButton = (CheckBox) map.get("download_button");
-        CheckBox shareCheckButton = (CheckBox) map.get("share_button");
-
-        boolean isDownload = downloadCheckButton.isSelected();
-        boolean isShare = shareCheckButton.isSelected();
-
-        if (null != map.get("button")) {
-            downloadButton = (Button) map.get("button");
-        } else {
-            downloadButton = null;
         }
 
         CustomDialog customDialog = new CustomDialog();
@@ -166,46 +269,47 @@ public class DownloadReport {
                     .setCookieSpec("easy").build()).build();
             URIBuilder param = new URIBuilder(UrlConfig.getKitReportUrl());
 
-            if (operationType == OperationType.CUSTOMER_REPORT) {
-                Long customerId = (Long) map.get("customer_id");
-                param.setParameter("customer", String.valueOf(customerId));
-            } else if (operationType == OperationType.KIT_REPORT) {
-                Long kitId = (Long) map.get("kit");
-                param.setParameter("kit", String.valueOf(kitId));
-            }
+            param.setParameter("share", String.valueOf(isShare));
 
             if (isShare) {
-                param.setParameter("share", String.valueOf(true));
+                Long customerId = (Long) map.get("customer_id");
+                Long kitId = (Long) map.get("kit_id");
+                String via = map.get("via").toString().toLowerCase();
+
+                if (null == kitId) {
+                    param.setParameter("customer", String.valueOf(customerId));
+                } else {
+                    param.setParameter("kit", String.valueOf(kitId));
+                }
+                param.setParameter("via", via);
+            } else {
+                Long customerId = (Long) map.get("customer_id");
+                Long kitId = (Long) map.get("kit_id");
+                if (null == customerId) {
+                    param.setParameter("kit", String.valueOf(kitId));
+                } else {
+                    param.setParameter("customer", String.valueOf(customerId));
+                }
             }
+
             HttpGet httpGet = new HttpGet(param.build());
             httpGet.addHeader("Content-Type", "application/pdf");
             httpGet.addHeader("Cookie", (String) Login.authInfo.get("token"));
             HttpResponse response = httpClient.execute(httpGet);
             HttpEntity resEntity = response.getEntity();
 
+            int statusCode = response.getStatusLine().getStatusCode();
+
             if (resEntity != null) {
 
-                int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == 200) {
                     String filePath = ReportDownloadPath.FILE_PATH();
 
                     if (isShare) {
                         String body = EntityUtils.toString(resEntity);
-
                         Map<String, Object> reportResponse = new Gson().fromJson(body, Map.class);
-
-                        String data = (String) reportResponse.get("data");
                         String message = (String) reportResponse.get("message");
-                        String fileName = (String) reportResponse.get("file_name");
-                        if (isDownload) {
-                            FileOutputStream fos = new FileOutputStream(filePath + "\\" + fileName);
-                            byte[] decoder = Base64.getDecoder().decode(data);
-                            fos.write(decoder);
-                            fos.close();
-                            customDialog.showAlertBox("success", "File successfully download.\n\n" + message, filePath + "\\" + fileName);
-                        } else {
-                            customDialog.showAlertBox("success", message);
-                        }
+                        customDialog.showAlertBox("success", message);
 
                     } else {
                         Header[] h = response.getHeaders("Content-Disposition");
@@ -230,25 +334,13 @@ public class DownloadReport {
                     new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
                 }
 
-                if (null != downloadButton) {
-                    Platform.runLater(() -> {
-                        downloadButton.setGraphic(new ImageLoader().getDownloadImage());
-                    });
-                }
             }
         } catch (Exception e) {
-            if (null != downloadButton) {
-                Platform.runLater(() -> {
-                    downloadButton.setGraphic(new ImageLoader().getDownloadImage());
-                });
-            }
             new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
             throw new RuntimeException(e);
         }finally {
-            if (null != downloadButton) {
-                Platform.runLater(() -> {
-                    downloadButton.setGraphic(new ImageLoader().getDownloadImage());
-                });
+            if (null != actionButton) {
+                resetActionButton(actionButton);
             }
         }
     }
