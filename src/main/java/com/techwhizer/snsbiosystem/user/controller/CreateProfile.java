@@ -547,8 +547,6 @@ public class CreateProfile implements Initializable {
                 method.hideElement(submitBn);
                 progressBar.setVisible(true);
 
-                disableFocusTraversable();
-
             } else {
                 progressContainer.setVisible(true);
                 contentContainer.setDisable(true);

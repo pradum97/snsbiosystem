@@ -16,11 +16,9 @@ import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -270,26 +268,18 @@ public class DownloadReport {
             URIBuilder param = new URIBuilder(UrlConfig.getKitReportUrl());
 
             param.setParameter("share", String.valueOf(isShare));
+            Long customerId = (Long) map.get("customer_id");
+            Long kitId = (Long) map.get("kit_id");
+
+            if (null == kitId) {
+                param.setParameter("customer", String.valueOf(customerId));
+            } else {
+                param.setParameter("kit", String.valueOf(kitId));
+            }
 
             if (isShare) {
-                Long customerId = (Long) map.get("customer_id");
-                Long kitId = (Long) map.get("kit_id");
                 String via = map.get("via").toString().toLowerCase();
-
-                if (null == kitId) {
-                    param.setParameter("customer", String.valueOf(customerId));
-                } else {
-                    param.setParameter("kit", String.valueOf(kitId));
-                }
                 param.setParameter("via", via);
-            } else {
-                Long customerId = (Long) map.get("customer_id");
-                Long kitId = (Long) map.get("kit_id");
-                if (null == customerId) {
-                    param.setParameter("kit", String.valueOf(kitId));
-                } else {
-                    param.setParameter("customer", String.valueOf(customerId));
-                }
             }
 
             HttpGet httpGet = new HttpGet(param.build());

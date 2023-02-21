@@ -2,4 +2,6 @@ stop previous running server
 step-1:netstat -a -o -n
 step-2:taskkill /F /PID<PID NUM>
 ******************************************************************
+https://www.baeldung.com/spring-boot-run-maven-vs-executable-jar
+*******************************************************************
 upload file

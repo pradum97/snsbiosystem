@@ -381,6 +381,7 @@ public class AddKitUsage implements Initializable {
                         resetAllField();
                         Main.primaryStage.setUserData(true);
                         customDialog.showAlertBox("Success", "Successfully added");
+                        Platform.runLater(() -> cancelBnClick(null));
                     }
 
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
@@ -388,10 +389,6 @@ public class AddKitUsage implements Initializable {
                 } else {
                     customDialog.showAlertBox("Failed.", content);
                 }
-
-                Platform.runLater(() -> {
-
-                });
             }
 
         } catch (Exception e) {
