@@ -109,7 +109,7 @@
                                                                   </Label>
                                                       <HBox>
                                                          <children>
-                                                            <ComboBox fx:id="countryCodeCom" focusTraversable="false" minHeight="30.0" prefHeight="34.0" prefWidth="106.0" style="-fx-border-color: grey; -fx-border-radius: 3 0 0  3;" />
+                                                            <ComboBox fx:id="countryCodeCom" focusTraversable="false" minHeight="30.0" prefHeight="34.0" prefWidth="106.0" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3 0 0  3;" />
                                                                         <TextField fx:id="workPhoneNumberTf" minHeight="33.0" minWidth="0.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="34.0" prefWidth="253.0" promptText="XXXXXXXX87" style="-fx-border-color: #b3b3b3; -fx-border-radius: 0 3 3 0;" HBox.hgrow="ALWAYS">
                                                                             <font>
                                                                                 <Font name="Arial Bold" size="13.0" />
@@ -153,14 +153,14 @@
                                                                           <Insets left="3.0" />
                                                                       </VBox.margin>
                                                                   </Label>
-                                                                  <TextField fx:id="companyNameTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter company name" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
+                                                                  <TextField fx:id="companyNameTf" minHeight="33.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter company name" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
                                                                       <font>
                                                                           <Font name="Arial Bold" size="13.0" />
                                                                       </font>
                                                                   </TextField>
                                                               </children>
                                                           </VBox>
-                                                <VBox fx:id="sharingMethodContainer" layoutX="14.0" layoutY="10.0" prefWidth="280.0" spacing="5.0">
+                                                <VBox fx:id="sharingMethodContainer" layoutX="14.0" layoutY="10.0" prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="REPORT SHARING METHOD :">
                                                          <font>
@@ -170,7 +170,7 @@
                                                             <Insets left="3.0" />
                                                          </VBox.margin>
                                                       </Label>
-                                                      <ComboBox fx:id="sharingMethodCom" minHeight="33.0" onKeyPressed="#keyPress" prefHeight="30.0" prefWidth="278.0" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;" />
+                                                      <ComboBox fx:id="sharingMethodCom" minHeight="33.0" onKeyPressed="#keyPress" prefHeight="34.0" prefWidth="362.0" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;" />
                                                    </children>
                                                 </VBox>
                                                       </children>
@@ -194,7 +194,7 @@
                                                    <children>
                                                       <VBox prefWidth="280.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                                          <children>
-                                                            <Label text="OFFICE COUNTRY :">
+                                                            <Label text="OFFICE COUNTRY* :">
                                                                <font>
                                                                   <Font name="Arial Bold" size="13.0" />
                                                                </font>
@@ -291,11 +291,16 @@
                                                                                 <Insets left="3.0" />
                                                                             </VBox.margin>
                                                                         </Label>
-                                                                        <TextField fx:id="officeFaxNumberTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="30.0" promptText="Enter fax number" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;">
-                                                                            <font>
-                                                                                <Font name="Arial Bold" size="13.0" />
-                                                                            </font>
-                                                                        </TextField>
+                                                            <HBox>
+                                                               <children>
+                                                                  <ComboBox fx:id="faxCountryCodeCom" focusTraversable="false" minHeight="34.0" minWidth="106.0" prefWidth="106.0" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3 0 0  3;" />
+                                                                              <TextField fx:id="officeFaxNumberTf" minHeight="33.0" minWidth="130.0" onKeyPressed="#keyPress" opacity="0.89" prefHeight="34.0" prefWidth="244.0" promptText="Enter fax number" style="-fx-border-color: #b3b3b3; -fx-border-radius: 0 3 3 0;">
+                                                                                  <font>
+                                                                                      <Font name="Arial Bold" size="13.0" />
+                                                                                  </font>
+                                                                              </TextField>
+                                                               </children>
+                                                            </HBox>
                                                                     </children>
                                                                 </VBox>
                                                             </children>
@@ -312,13 +317,16 @@
                                                                                 <Insets left="3.0" />
                                                                             </VBox.margin>
                                                                         </Label>
-                                                                        <TextArea fx:id="officeAddressTa" minHeight="60.0" opacity="0.89" prefHeight="60.0" promptText="Enter office addrerss" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;" wrapText="true" VBox.vgrow="ALWAYS">
+                                                                        <TextArea fx:id="officeAddressTa" minHeight="60.0" opacity="0.89" prefHeight="60.0" prefWidth="722.0" promptText="Enter office addrerss" style="-fx-border-color: #b3b3b3; -fx-border-radius: 3;" wrapText="true" VBox.vgrow="ALWAYS">
                                                                             <font>
                                                                                 <Font name="Arial Bold" size="13.0" />
                                                                             </font>
                                                                <VBox.margin>
                                                                   <Insets right="6.0" />
                                                                </VBox.margin>
+                                                               <padding>
+                                                                  <Insets right="1.0" />
+                                                               </padding>
                                                                         </TextArea>
                                                                     </children>
                                                                 </VBox>
@@ -466,6 +474,9 @@
                                                          <VBox.margin>
                                                             <Insets left="2.0" right="5.0" />
                                                          </VBox.margin>
+                                                         <padding>
+                                                            <Insets right="1.0" />
+                                                         </padding>
                                                       </TextArea>
                                                    </children>
                                                 </VBox>

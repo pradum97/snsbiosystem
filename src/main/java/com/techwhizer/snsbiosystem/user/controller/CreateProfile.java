@@ -87,6 +87,7 @@ public class CreateProfile implements Initializable {
     public ComboBox<String> countryCodeCom;
     public ComboBox<String> officeCountryCom;
     public ComboBox<String> billingCountryCom;
+    public ComboBox<String> faxCountryCodeCom;
     private OperationType userCreateOperationType;
     private OptionalMethod method;
     private CustomDialog customDialog;
@@ -175,7 +176,6 @@ public class CreateProfile implements Initializable {
         billingZipTf.setText(null == userDTO.getHomeZip() ? "" : userDTO.getHomeZip());
         currentUsername = userDTO.getRequestedLoginName();
         isEmailAvailable = null != userDTO.getWorkEmail();
-        sharingMethodCom.getSelectionModel().select(userDTO.getPrefaredMethodForReportSharing().toUpperCase());
         String signedUsername = (String) Login.authInfo.get("username");
         if (signedUsername.equals(currentUsername)) {
             adminCb.setDisable(true);
@@ -208,15 +208,27 @@ public class CreateProfile implements Initializable {
         checkAllRoleSelected();
 
         String phoneNumWithCode = userDTO.getWorkPhoneNumber();
+        String faxNumWithCode = userDTO.getOfficeFaxNumber();
 
         try {
-            String[] phoneList = phoneNumWithCode.split("-",2);
+            String[] phoneList = phoneNumWithCode.split("-", 2);
             String phoneCode = phoneList[0];
             String phoneNumber = phoneList[1];
             countryCodeCom.getSelectionModel().select(phoneCode);
             workPhoneNumberTf.setText(phoneNumber);
         } catch (Exception e) {
             workPhoneNumberTf.setText(phoneNumWithCode);
+        }
+
+        try {
+            String[] faxList = faxNumWithCode.split("-", 2);
+            String faxCode = faxList[0];
+            String faxNumber = faxList[1];
+            faxCountryCodeCom.getSelectionModel().select(faxCode);
+            officeFaxNumberTf.setText(faxNumber);
+        } catch (Exception e) {
+
+            officeFaxNumberTf.setText(null == faxNumWithCode || faxNumWithCode.isEmpty() ? "" : faxNumWithCode);
         }
     }
 
@@ -371,6 +383,7 @@ public class CreateProfile implements Initializable {
         String officeCity = officeCityTf.getText();
         String officeZip = officeZipTf.getText();
         String officeFax = officeFaxNumberTf.getText();
+        String faxCountryCode = faxCountryCodeCom.getSelectionModel().getSelectedItem();
         String officeAddress = officeAddressTa.getText();
 
         String officeCountry = officeCountryCom.getSelectionModel().getSelectedItem();
@@ -446,12 +459,18 @@ public class CreateProfile implements Initializable {
 
         }
 
-        if (!officeFax.isEmpty() ) {
+        if (!officeFax.isEmpty()) {
             if (officeFax.length() < 9) {
                 method.show_popup("Enter fax number more then 8 digit", officeFaxNumberTf);
                 return;
             }
         }
+
+        if (officeCountryCom.getSelectionModel().isEmpty()) {
+            method.show_popup("Please Select Office Country", officeCountryCom);
+            return;
+        }
+
         if (null == officeAddress || officeAddress.isEmpty()) {
             method.show_popup("Please Enter Office Address", officeAddressTa);
             return;
@@ -490,7 +509,7 @@ public class CreateProfile implements Initializable {
 
         dm.setOfficeCity(officeCity);
         dm.setOfficeZip(officeZip);
-        dm.setOfficeFaxNumber(officeFax);
+        dm.setOfficeFaxNumber(!officeFax.isEmpty() ? faxCountryCode + "-" + officeFax : "");
         dm.setOfficeAddress(officeAddress);
         dm.setRoles(role);
         dm.setHomeState(billingState);
@@ -593,15 +612,16 @@ public class CreateProfile implements Initializable {
 
             Platform.runLater(() -> {
                 countryCodeCom.setItems(countryPhoneCode);
+                faxCountryCodeCom.setItems(countryPhoneCode);
                 officeCountryCom.setItems(countryNameList);
                 billingCountryCom.setItems(countryNameList);
 
 
                 if (userCreateOperationType == OperationType.CREATE) {
-
                     countryCodeCom.getSelectionModel().select(CommonUtility.DEFAULT_PHONE_CODE_SELECTION);
+                    faxCountryCodeCom.getSelectionModel().select(CommonUtility.DEFAULT_PHONE_CODE_SELECTION);
                     officeCountryCom.getSelectionModel().select(CommonUtility.DEFAULT_COUNTRY_SELECTION);
-                    billingCountryCom.getSelectionModel().select(CommonUtility.DEFAULT_COUNTRY_SELECTION);
+                    // billingCountryCom.getSelectionModel().select(CommonUtility.DEFAULT_COUNTRY_SELECTION);
 
                 }
             });
