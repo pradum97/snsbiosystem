@@ -1,6 +1,7 @@
 package com.techwhizer.snsbiosystem.user.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.techwhizer.snsbiosystem.CustomDialog;
@@ -126,7 +127,6 @@ public class CreateProfile implements Initializable {
         switch (userCreateOperationType) {
             case CREATE -> {
                 submitBn.setText("SUBMIT");
-
                 MyAsyncTask myAsyncTask = new MyAsyncTask(OperationType.FETCH_COUNTRY);
                 myAsyncTask.execute();
             }
@@ -607,22 +607,20 @@ public class CreateProfile implements Initializable {
 
         void getCountryData() {
 
-            ObservableList<String> countryNameList = CountryUtility.getCountryName(CountryType.COUNTRY_NAME);
-            ObservableList<String> countryPhoneCode = CountryUtility.getCountryName(CountryType.COUNTRY_CODE);
+            JsonArray jsonArray = CountryUtility.getCountryJson();
 
+            ObservableList<String> countryNameList = CountryUtility.getCountryTypeFromJsonArray(jsonArray, CountryType.COUNTRY_NAME);
+            ObservableList<String> countryPhoneCode = CountryUtility.getCountryTypeFromJsonArray(jsonArray, CountryType.COUNTRY_CODE);
             Platform.runLater(() -> {
                 countryCodeCom.setItems(countryPhoneCode);
                 faxCountryCodeCom.setItems(countryPhoneCode);
                 officeCountryCom.setItems(countryNameList);
                 billingCountryCom.setItems(countryNameList);
 
-
                 if (userCreateOperationType == OperationType.CREATE) {
                     countryCodeCom.getSelectionModel().select(CommonUtility.DEFAULT_PHONE_CODE_SELECTION);
                     faxCountryCodeCom.getSelectionModel().select(CommonUtility.DEFAULT_PHONE_CODE_SELECTION);
                     officeCountryCom.getSelectionModel().select(CommonUtility.DEFAULT_COUNTRY_SELECTION);
-                    // billingCountryCom.getSelectionModel().select(CommonUtility.DEFAULT_COUNTRY_SELECTION);
-
                 }
             });
         }
@@ -722,6 +720,7 @@ public class CreateProfile implements Initializable {
         } catch (Exception e) {
             method.hideElement(progressBar);
             submitBn.setVisible(true);
+            System.out.println("pppp111" + e.getMessage());
             customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
             e.printStackTrace();
         }

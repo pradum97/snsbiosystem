@@ -121,6 +121,8 @@ public class MyProfile implements Initializable {
 
                 int statusCode = response.getStatusLine().getStatusCode();
 
+                System.out.println(statusCode);
+
                 if (statusCode == 200){
                     UserDTO user = new Gson().fromJson(content, UserDTO.class);
                     Platform.runLater(()-> setUserDetails(user));

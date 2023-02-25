@@ -10,45 +10,17 @@ public class CountryModel {
     private List<String> timeZones;
     private String cca3;
 
+    public String getName() { return name; }
+    public void setName(String value) { this.name = value; }
 
-    @Override
-    public String toString() {
-        return "CountryModel{" +
-                "name='" + name + '\'' +
-                '}';
-    }
+    public String getPhoneCode() { return phoneCode; }
+    public void setPhoneCode(String value) { this.phoneCode = value; }
 
-    public String getName() {
-        return name;
-    }
+    public String getCurrency() { return currency; }
+    public void setCurrency(String value) { this.currency = value; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhoneCode() {
-        return phoneCode;
-    }
-
-    public void setPhoneCode(String phoneCode) {
-        this.phoneCode = phoneCode;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
+    public String getRegion() { return region; }
+    public void setRegion(String value) { this.region = value; }
 
     public List<String> getTimeZones() {
         return timeZones;
@@ -58,11 +30,6 @@ public class CountryModel {
         this.timeZones = timeZones;
     }
 
-    public String getCca3() {
-        return cca3;
-    }
-
-    public void setCca3(String cca3) {
-        this.cca3 = cca3;
-    }
+    public String getCca3() { return cca3; }
+    public void setCca3(String value) { this.cca3 = value; }
 }

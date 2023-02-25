@@ -7,7 +7,6 @@ import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
 import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.common.constant.CountryType;
-import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.controller.auth.Login;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.StatusCode;
@@ -29,9 +28,25 @@ import java.net.URISyntaxException;
 
 public class CountryUtility extends Application {
 
-    public static  ObservableList<String> getCountryName(CountryType countryType) {
+    public static ObservableList<String> getCountryTypeFromJsonArray(JsonArray jsonArray , CountryType countryType) {
 
         ObservableList<String> countryList = FXCollections.observableArrayList();
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jo = jsonArray.get(i).getAsJsonObject();
+
+            if (countryType == CountryType.COUNTRY_NAME) {
+                countryList.add(jo.get("name").getAsString());
+            } else {
+                countryList.add(jo.get("phoneCode").getAsString());
+            }
+        }
+        return countryList;
+    }
+
+    public static JsonArray getCountryJson() {
+
+        JsonArray jsonArray = new JsonArray();
 
         try {
             Thread.sleep(100);
@@ -50,30 +65,18 @@ public class CountryUtility extends Application {
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == StatusCode.OK) {
-
-                    JsonArray jsonArray = JsonParser.parseString(content).getAsJsonArray();
-
-                    for (int i = 0; i < jsonArray.size(); i++) {
-                        JsonObject jo = jsonArray.get(i).getAsJsonObject();
-
-                        if (countryType == CountryType.COUNTRY_NAME){
-                            countryList.add(jo.get("name").getAsString());
-                        }else {
-                            countryList.add(jo.get("phoneCode").getAsString());
-                        }
-                    }
-                    return countryList;
+                    return JsonParser.parseString(content).getAsJsonArray();
 
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
-                    return countryList;
+                    return jsonArray;
                 } else {
                     new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
-                    return  FXCollections.observableArrayList();
+                    return jsonArray;
                 }
 
             }else  {
-                return   FXCollections.observableArrayList();
+                return jsonArray;
             }
         } catch (IOException | URISyntaxException | InterruptedException e) {
             new CustomDialog().showAlertBox("Failed", Message.SOMETHING_WENT_WRONG);
