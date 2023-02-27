@@ -53,6 +53,7 @@ public class AddKit implements Initializable {
     public TextField testUsedTf;
     public TextField lotNumberTf;
     public Label titleL;
+    public TextField serialNumberTf;
     private OptionalMethod method;
     private CustomDialog customDialog;
     private LocalDb localDb;
@@ -101,6 +102,7 @@ public class AddKit implements Initializable {
         clientIdTf.setText(kd.getClientID() == null ? "" : String.valueOf(kd.getClientID()));
         dealerIdTf.setText(null == kd.getDealerID() ? "" : String.valueOf(kd.getDealerID()));
         kitNumberTf.setText(null == kd.getKitNumber() ? "" : String.valueOf(kd.getKitNumber()));
+        serialNumberTf.setText(null == kd.getKitSerialNumber() ? "" : String.valueOf(kd.getKitSerialNumber()));
         testUsedTf.setText(null == kd.getTestUsed() ? "" : String.valueOf(kd.getTestUsed()));
         lotNumberTf.setText(null == kd.getLotNumber() ? "" : String.valueOf(kd.getLotNumber()));
 
@@ -123,6 +125,7 @@ public class AddKit implements Initializable {
         String clientId = clientIdTf.getText();
         String dealerId = dealerIdTf.getText();
         String kitNumber = kitNumberTf.getText();
+        String serialNumber = serialNumberTf.getText();
         String expiryDate = expiryDateDp.getEditor().getText();
         String testUsed = testUsedTf.getText();
         String lotNumber = lotNumberTf.getText();
@@ -206,6 +209,7 @@ public class AddKit implements Initializable {
         kitDTO.setClientID(clientIdL);
         kitDTO.setDealerID(dealerIdL);
         kitDTO.setKitNumber(kitNumberL);
+        kitDTO.setKitSerialNumber(serialNumber);
         kitDTO.setExpiryDate(expiryDateL);
         kitDTO.setLotNumber(lotNumberL);
         kitDTO.setTestUsed(testUsedI);
@@ -391,6 +395,7 @@ public class AddKit implements Initializable {
             clientIdTf.setText("");
             dealerIdTf.setText("");
             kitNumberTf.setText("");
+            serialNumberTf.setText("");
             testUsedTf.setText("");
             lotNumberTf.setText("");
             expiryDateDp.setValue(null);

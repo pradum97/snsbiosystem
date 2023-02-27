@@ -7,6 +7,7 @@ public class KitDTO {
     private Long dealerID;
     private Long sterilizerID;
     private Long kitNumber;
+    private String kitSerialNumber;
     private Long expiryDate;
     private Long lotNumber;
     private Integer testUsed;
@@ -14,6 +15,14 @@ public class KitDTO {
     private Integer sterilizerListNumber;
     private boolean valid = true;
     private String errorMessage;
+
+    public String getKitSerialNumber() {
+        return kitSerialNumber;
+    }
+
+    public void setKitSerialNumber(String kitSerialNumber) {
+        this.kitSerialNumber = kitSerialNumber;
+    }
 
     public Long getId() {
         return id;
