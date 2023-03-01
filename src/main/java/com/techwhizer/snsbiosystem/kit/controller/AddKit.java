@@ -208,7 +208,7 @@ public class AddKit implements Initializable {
         kitDTO.setClientID(clientIdL);
         kitDTO.setDealerID(dealerIdL);
         kitDTO.setKitNumber(kitNumberL);
-        kitDTO.setKitSerialNumber(serialNumber);
+        kitDTO.setKitSerialNumber(null == serialNumber || serialNumber.isEmpty()?null:serialNumber );
         kitDTO.setExpiryDate(expiryDateL);
         kitDTO.setLotNumber(lotNumberL);
         kitDTO.setTestUsed(testUsedI);
@@ -308,8 +308,6 @@ public class AddKit implements Initializable {
             if (resEntity != null) {
                 String content = EntityUtils.toString(resEntity);
                 int statusCode = response.getStatusLine().getStatusCode();
-
-                System.out.println(content);
 
                 AddKitResponse asr = new Gson().fromJson(content, AddKitResponse.class);
                 List<KitDTO> failedData = asr.getInvalidKits();
