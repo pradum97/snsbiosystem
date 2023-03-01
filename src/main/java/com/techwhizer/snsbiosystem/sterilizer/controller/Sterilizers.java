@@ -86,7 +86,7 @@ public class Sterilizers implements Initializable {
         });
 
         rowSizeCom.valueProperty().addListener((observableValue, integer, rowPerPage) -> {
-            sortData(0, 0, OperationType.START, 0L, null);
+            sortData(0, 0, OperationType.START, 0L, null, null);
         });
 
         Platform.runLater(() -> rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE));
@@ -95,7 +95,7 @@ public class Sterilizers implements Initializable {
                 (observable1, oldValue1, newValue1) -> {
                     if (!isCrud) {
                         int pageIndex = newValue1.intValue();
-                        sortData(pageIndex, 0, OperationType.START, 0L, null);
+                        sortData(pageIndex, 0, OperationType.START, 0L, null, null);
                     }
 
                 });
@@ -104,10 +104,11 @@ public class Sterilizers implements Initializable {
 
     public void applySorting(ActionEvent event) {
         sortData(0, 0,
-                OperationType.START, 0L, null);
+                OperationType.START, 0L, null, null);
     }
 
-    private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long sterilizerId, Long searchSterilizerId) {
+    private void sortData(int pageIndex, int tableRowIndex, OperationType operationType,
+                          Long sterilizerId, Long searchSterilizerId,Button actionButton) {
 
         String filedName = SterilizerSortingOptions.getKeyValue(sortingCom.getSelectionModel().getSelectedItem());
         String order = CommonUtility.parserOrder(orderCom.getSelectionModel().getSelectedItem());
@@ -120,7 +121,7 @@ public class Sterilizers implements Initializable {
         map.put("page_index", pageIndex);
         map.put("row_index", tableRowIndex);
 
-        startThread(operationType, sterilizerId, null, map);
+        startThread(operationType, sterilizerId, actionButton, map);
     }
 
     public void refreshClick(MouseEvent mouseEvent) {
@@ -138,7 +139,7 @@ public class Sterilizers implements Initializable {
                 boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                 if (isUpdated) {
                     isCrud = true;
-                    sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null);
+                    sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null, null);
                 }
             }
         }
@@ -282,6 +283,7 @@ public class Sterilizers implements Initializable {
     }
 
     private void deleteSterilizer(Long sterilizerId, Button button, Map<String, Object> sortingMap) {
+
         int pageIndex = (Integer) sortingMap.get("page_index");
         int rowIndex = (Integer) sortingMap.get("row_index");
 
@@ -309,7 +311,7 @@ public class Sterilizers implements Initializable {
 
                 if (statusCode == 200) {
                     isCrud = true;
-                    sortData(pageIndex, rowIndex, OperationType.START, 0L, null);
+                    sortData(pageIndex, rowIndex, OperationType.START, 0L, null, null);
                     customDialog.showAlertBox("", content);
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
@@ -423,7 +425,7 @@ public class Sterilizers implements Initializable {
                             if (isUpdated) {
                                 int rowPosition = getIndex();
                                 int paginationIndex = pagination.getCurrentPageIndex();
-                                sortData(paginationIndex, rowPosition, OperationType.START, stv.getId(), null);
+                                sortData(paginationIndex, rowPosition, OperationType.START, stv.getId(), null, null);
                             }
                         }
 
@@ -448,7 +450,7 @@ public class Sterilizers implements Initializable {
 
                             int rowPosition = getIndex() - 1;
                             int paginationIndex = pagination.getCurrentPageIndex();
-                            sortData(paginationIndex, rowPosition, OperationType.DELETE, stv.getId(), null);
+                            sortData(paginationIndex, rowPosition, OperationType.DELETE, stv.getId(), null, deleteBbn);
 
                         } else {
                             alert.close();
@@ -607,7 +609,7 @@ public class Sterilizers implements Initializable {
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
                 isCrud = true;
-                sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null);
+                sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null, null);
             }
         }
     }

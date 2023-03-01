@@ -4,7 +4,6 @@ import com.techwhizer.snsbiosystem.CssLoader;
 import com.techwhizer.snsbiosystem.Main;
 import com.techwhizer.snsbiosystem.notice.constant.DatePickerType;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,7 +11,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.DatePickerSkin;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -43,9 +41,9 @@ public class DateAndTimePicker {
                 }
             } else {
 
-                LocalDateTime localDateTime = CommonUtility.getCurrentUTCDateTime();
+/*                LocalDateTime localDateTime = CommonUtility.getCurrentUTCDateTime();
                 LocalDate ld = CommonUtility.getLocalDateObject(CommonUtility.formatLocalDateTime(localDateTime));
-                dp.setValue(ld);
+                dp.setValue(ld);*/
             }
 
             new OptionalMethod().convertDateFormat(dp);
@@ -120,6 +118,8 @@ public class DateAndTimePicker {
 
                 String date = CommonUtility.formatLocalDate(dp.getValue());
 
+                System.out.println(date);
+
                 if (date.isEmpty()) {
                     new OptionalMethod().show_popup("Please select date and time", okBn);
                     return;
@@ -160,7 +160,6 @@ public class DateAndTimePicker {
                 String hourStr = hourI.isEmpty() ? "00" : hourI.length() < 2 ? "0" + hourI : hourI;
                 String minuteString = minI.isEmpty() ? "00" : minI.length() < 2 ? "0" + minI : minI;
                 String secondString = secI.isEmpty() ? "00" : secI.length() < 2 ? "0" + secI : secI;
-
                 String time = hourStr + ":" + minuteString + ":" + secondString;
                 dateTime[0] = date + " " + time;
                 new OptionalMethod().closeStage(okBn);
@@ -177,6 +176,7 @@ public class DateAndTimePicker {
 
             if (datePickerType == DatePickerType.EXPIRY_DATE_PICK){
                 dp.setOnAction(actionEventEventHandler);
+
                 OptionalMethod method = new OptionalMethod();
                 method.hideElement(fieldContainer,sep1,title,bottomContainer);
             }

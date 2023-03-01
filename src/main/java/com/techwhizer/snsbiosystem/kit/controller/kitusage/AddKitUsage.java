@@ -171,7 +171,7 @@ public class AddKitUsage implements Initializable {
             return;
         }
 
-        LocalDateTime localDateTime = CommonUtility.getDateTimeObject(testDate + " 00:00:00");
+        LocalDateTime localDateTime = CommonUtility.getDateTimeObject(testDate + " 23:59:59");
         testDateL = CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
 
         if ( null == sterilizerData.get("sterilizer_id")) {
@@ -191,8 +191,6 @@ public class AddKitUsage implements Initializable {
 
         kitDTO.setSterilizerID((Long)sterilizerData.get("sterilizer_id"));
         kitDTO.setSterilizerListNumber((Integer) sterilizerData.get("sterilizer_list_number"));
-
-        System.out.println("ster:"+sterilizerData.get("sterilizer_id"));
 
        if (null != kud && null != kud.getId()){
            kitDTO.setId(kud.getId());

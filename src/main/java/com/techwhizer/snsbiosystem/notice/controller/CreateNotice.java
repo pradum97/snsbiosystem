@@ -168,8 +168,6 @@ public class CreateNotice implements Initializable {
 
         expiryBn.setOnAction(event -> {
             String dateString = dateAndTimePicker.pick(previousExpiryDateTime, DatePickerType.EXPIRY_DATE_PICK);
-
-            System.out.println(dateString);
             if (null != dateString) {
                 previousExpiryDateTime = dateString;
                 expiryBn.setText(dateString.split(" ")[0]);
@@ -455,8 +453,9 @@ public class CreateNotice implements Initializable {
         guestCb.setSelected(false);
         publishBn.setText(SELECT_PUBLISH_DATE);
         expiryBn.setText(SELECT_EXPIRY_DATE);
-
-        expiryDate = null;
+        previousExpiryDateTime = null;
+        previousPublishDateTime = null;
+                expiryDate = null;
         publishDate = null;
     }
 }

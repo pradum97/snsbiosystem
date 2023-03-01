@@ -12,8 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="490.0" prefWidth="803.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.kit.controller.AddKit">
+<BorderPane prefHeight="490.0" prefWidth="803.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.techwhizer.snsbiosystem.kit.controller.AddKit">
    <center>
       <VBox alignment="CENTER" fillWidth="false" BorderPane.alignment="CENTER">
          <children>
@@ -108,7 +107,7 @@
                                     </VBox>
                                     <VBox layoutX="392.0" layoutY="10.0" minWidth="309.0" prefHeight="62.0" prefWidth="309.0" spacing="5.0">
                                        <children>
-                                          <Label text="SERIAL NUMBER* :">
+                                          <Label text="SERIAL NUMBER :">
                                              <font>
                                                 <Font name="Arial Black" size="12.0" />
                                              </font>

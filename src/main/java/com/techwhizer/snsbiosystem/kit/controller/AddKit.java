@@ -174,9 +174,8 @@ public class AddKit implements Initializable {
 
         if (!expiryDate.isEmpty()) {
 
-            LocalDateTime localDateTime = CommonUtility.getDateTimeObject(expiryDate+" 00:00:00");
+            LocalDateTime localDateTime = CommonUtility.getDateTimeObject(expiryDate+" 23:59:59");
             expiryDateL = CommonUtility.convertToUTCMillisLocalDateTime(localDateTime);
-
         }
 
         if (testUsed.isEmpty()) {
@@ -310,6 +309,8 @@ public class AddKit implements Initializable {
                 String content = EntityUtils.toString(resEntity);
                 int statusCode = response.getStatusLine().getStatusCode();
 
+                System.out.println(content);
+
                 AddKitResponse asr = new Gson().fromJson(content, AddKitResponse.class);
                 List<KitDTO> failedData = asr.getInvalidKits();
 
@@ -339,8 +340,6 @@ public class AddKit implements Initializable {
             customDialog.showAlertBox("Failed", "Something went wrong. Please try again.");
             e.printStackTrace();
         }
-
-
     }
 
     private void createKit(String json) {

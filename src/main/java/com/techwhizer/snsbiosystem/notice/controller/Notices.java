@@ -74,19 +74,19 @@ public class Notices implements Initializable {
     private void comboBoxConfig() {
         rowSizeCom.setItems(PaginationUtil.rowSize);
 
-        rowSizeCom.valueProperty().addListener((observableValue, integer, t1) -> sortData(0, 0, OperationType.START, 0L));
+        rowSizeCom.valueProperty().addListener((observableValue, integer, t1) -> sortData(0, 0, OperationType.START, 0L, null));
         rowSizeCom.getSelectionModel().select(PaginationUtil.DEFAULT_PAGE_SIZE);
 
         pagination.currentPageIndexProperty().addListener(
                 (observable1, oldValue1, newValue1) -> {
                     if (!isCrud) {
                         int pageIndex = newValue1.intValue();
-                        sortData(pageIndex, 0, OperationType.START, 0L);
+                        sortData(pageIndex, 0, OperationType.START, 0L, null);
                     }
                 });
     }
 
-    private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long noticeId) {
+    private void sortData(int pageIndex, int tableRowIndex, OperationType operationType, Long noticeId,Button actionButton) {
 
 
         int rowSize = rowSizeCom.getSelectionModel().getSelectedItem();
@@ -95,7 +95,7 @@ public class Notices implements Initializable {
         map.put("row_size", rowSize);
         map.put("page_index", pageIndex);
         map.put("row_index", tableRowIndex);
-        callThread(operationType, noticeId, null, map);
+        callThread(operationType, noticeId, actionButton, map);
     }
 
     private void callThread(OperationType operationType, Long noticeId, Button button, Map<String, Object> sortingMap) {
@@ -197,7 +197,7 @@ public class Notices implements Initializable {
 
                 if (statusCode == 200) {
                     isCrud = true;
-                    sortData(pageIndex, rowIndex, OperationType.START, 0L);
+                    sortData(pageIndex, rowIndex, OperationType.START, 0L, null);
 
                 } else if (statusCode == StatusCode.UNAUTHORISED) {
                     new HttpStatusHandler(StatusCode.UNAUTHORISED);
@@ -368,7 +368,7 @@ public class Notices implements Initializable {
                         if (Main.primaryStage.getUserData() instanceof Boolean) {
                             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
                             if (isUpdated) {
-                                sortData(pagination.getCurrentPageIndex(), getIndex(), OperationType.START, 0L);
+                                sortData(pagination.getCurrentPageIndex(), getIndex(), OperationType.START, 0L, null);
                             }
                         }
 
@@ -389,7 +389,7 @@ public class Notices implements Initializable {
                         Optional<ButtonType> result = alert.showAndWait();
                         ButtonType button = result.orElse(ButtonType.CANCEL);
                         if (button == ButtonType.OK) {
-                            sortData(pagination.getCurrentPageIndex(), getIndex(), OperationType.DELETE, noticeBoardDTO.getId());
+                            sortData(pagination.getCurrentPageIndex(), getIndex(), OperationType.DELETE, noticeBoardDTO.getId(), deleteBbn);
 
                         } else {
                             alert.close();
@@ -633,12 +633,12 @@ public class Notices implements Initializable {
             boolean isUpdated = (boolean) Main.primaryStage.getUserData();
             if (isUpdated) {
                 isCrud = true;
-                sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L);
+                sortData(pagination.getCurrentPageIndex(), 0, OperationType.START, 0L, null);
             }
         }
     }
 
     public void refreshClick(MouseEvent mouseEvent) {
-        sortData(0, 0, OperationType.START, 0L);
+        sortData(0, 0, OperationType.START, 0L, null);
     }
 }
