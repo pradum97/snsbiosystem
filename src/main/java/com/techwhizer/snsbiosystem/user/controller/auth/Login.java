@@ -64,7 +64,6 @@ public class Login implements Initializable {
         passwordTf.setManaged(false);
         passwordTf.setVisible(false);
         final PasswordField passwordField = new PasswordField();
-        passwordField.setText("snsadmin");
         ImageView icon = new ImageView(new ImageLoader().load("img/icon/showPassword.png"));
         icon.setFitHeight(26);
         icon.setFitWidth(26);

@@ -1,19 +1,26 @@
 package com.techwhizer.snsbiosystem.user.controller.auth;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.techwhizer.snsbiosystem.CustomDialog;
 import com.techwhizer.snsbiosystem.app.HttpStatusHandler;
+import com.techwhizer.snsbiosystem.app.UrlConfig;
+import com.techwhizer.snsbiosystem.common.CountryUtility;
+import com.techwhizer.snsbiosystem.common.constant.CountryType;
+import com.techwhizer.snsbiosystem.custom_enum.OperationType;
 import com.techwhizer.snsbiosystem.user.model.UserCredentials;
 import com.techwhizer.snsbiosystem.user.util.CheckUsername;
+import com.techwhizer.snsbiosystem.util.CommonUtility;
 import com.techwhizer.snsbiosystem.util.Message;
 import com.techwhizer.snsbiosystem.util.OptionalMethod;
-import com.techwhizer.snsbiosystem.app.UrlConfig;
 import com.techwhizer.snsbiosystem.util.StatusCode;
 import com.victorlaerte.asynctask.AsyncTask;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -42,15 +49,20 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
     public Button submit_bn;
     public ProgressIndicator progressBar;
     public Button cancelBn1;
+    public ComboBox<String> countryCodeCom;
     private CustomDialog customDialog;
     private String isEmailExists = "FRESH" ;
+    private OptionalMethod method;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customDialog = new CustomDialog();
+        method = new OptionalMethod();
 
-      hideElement(progressBar);
+        hideElement(progressBar);
         phoneContainer.setVisible(false);
+
+        callThread("","",OperationType.FETCH_COUNTRY);
     }
 
     public void submit(ActionEvent event) {
@@ -58,8 +70,8 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
         String username = usernameTf.getText();
         String phone = phoneTf.getText();
 
-        if (username.isEmpty()){
-            show_popup("Please enter username",usernameTf);
+        if (username.isEmpty()) {
+            show_popup("Please enter username", usernameTf);
             return;
         }
 
@@ -76,11 +88,11 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
                 return;
             }
         }
-        callThread(username,phone);
+        callThread(username,phone, OperationType.START);
     }
 
-    private void callThread(String username, String phone) {
-        MyAsyncTask myAsyncTask = new MyAsyncTask(username,phone);
+    private void callThread(String username, String phone, OperationType operationType) {
+        MyAsyncTask myAsyncTask = new MyAsyncTask(username,phone,operationType);
         myAsyncTask.setDaemon(false);
         myAsyncTask.execute();
     }
@@ -105,11 +117,14 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
     }
 
     private class MyAsyncTask extends AsyncTask<String, Integer, Boolean> {
-        String username, phone;
+        private String username, phone;
+        private OperationType operationType;
 
-        public MyAsyncTask(String username, String phone) {
+
+        public MyAsyncTask(String username, String phone, OperationType operationType) {
             this.username = username;
             this.phone = phone;
+            this.operationType = operationType;
         }
 
         @Override
@@ -119,17 +134,23 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
 
         }
 
+
         @Override
         public Boolean doInBackground(String... params) {
-            if (new CheckUsername().check(username)){
-                switch (isEmailExists){
-                    case "FRESH" ->  sendResetLink(username,phone);
-                    case "NO" -> usernameWithPhoneValid(username,phone);
-                }
 
+            if (operationType == OperationType.FETCH_COUNTRY){
+                getCountryData();
             }else {
-                usernameTf.setText("");
-             customDialog.showAlertBox("Incorrect username","Please enter valid username");
+                if (new CheckUsername().check(username)){
+                    switch (isEmailExists){
+                        case "FRESH" ->  sendResetLink(username,phone);
+                        case "NO" -> usernameWithPhoneValid(username,phone);
+                    }
+
+                }else {
+                    usernameTf.setText("");
+                    customDialog.showAlertBox("Incorrect username","Please enter valid username");
+                }
             }
             return false;
         }
@@ -139,16 +160,24 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
             hideElement(progressBar);
             submit_bn.setVisible(true);
         }
+        void getCountryData() {
 
+            JsonArray jsonArray = CountryUtility.getCountryJson();
+            ObservableList<String> countryPhoneCode = CountryUtility.getCountryTypeFromJsonArray(jsonArray, CountryType.COUNTRY_CODE);
+            Platform.runLater(() -> {
+                countryCodeCom.setItems(countryPhoneCode);
+                countryCodeCom.getSelectionModel().select(CommonUtility.DEFAULT_PHONE_CODE_SELECTION);
+            });
+        }
         @Override
         public void progressCallback(Integer... params) {
 
         }
     }
     private void usernameWithPhoneValid(String username, String phone) {
+        String countryCode = countryCodeCom.getSelectionModel().getSelectedItem();
 
         try {
-
             HttpClient httpClient = HttpClients.custom() .setDefaultRequestConfig(RequestConfig.custom()
                     .setCookieSpec("easy") .build()).build();
 
@@ -158,7 +187,7 @@ public class ForgotPassword extends OptionalMethod implements Initializable {
 
             UserCredentials user = new UserCredentials();
             user.setUserName(username);
-            user.setPhoneNumber(phone);
+            user.setPhoneNumber(countryCode+"-"+phone);
             String json = new Gson().toJson(user);
             StringEntity se = new StringEntity(json);
 
